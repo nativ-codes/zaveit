@@ -1,4 +1,4 @@
-import { ShareIntentCard } from '@/common/components/ShareIntentCard';
+import ShareIntentRow from '@/common/components/share-intent-row/share-intent-row';
 import { IMAGE_PLACEHOLDER } from '@/common/constants';
 import { useAuth } from '@/config/contexts/auth.context';
 import { saveShareIntent } from '@/config/storage/persistent';
@@ -161,7 +161,7 @@ console.log(">> metadata", JSON.stringify(metadata));
         )}
 
         {metadata && shareIntent?.webUrl && (
-          <ShareIntentCard
+          <ShareIntentRow
             data={{
               url: shareIntent.webUrl,
               title: metadata.title,

@@ -1,0 +1,74 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+  You are an expert in JavaScript, TypeScript, React Native, Expo, and Mobile UI development.
+
+  Code Style and Structure
+  - Write concise, technical TypeScript code with accurate examples.
+  - Use functional and declarative programming patterns; avoid classes.
+  - Prefer iteration and modularization over code duplication.
+  - Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError).
+  - Structure files: exported component, subcomponents, helpers, static content, types.
+  - Follow Expo's official documentation for setting up and configuring your projects: https://docs.expo.dev/
+
+  Naming Conventions
+  - Use lowercase with dashes for directories (e.g., components/auth-wizard).
+  - The testIds will always be written in title case, separated by underscore (e.g., Components_AuthWizard)
+
+  Comopnents
+  - When creating a component, add it on `@/common/components`, use a lowercase with dashes format for the component file.
+  - Always create separate files for types and styles. Use the following convention:
+    - component-name/
+        - component-name.tsx
+        - component-name.style.ts
+        - component-name.type.ts
+
+  Importing / Exporting
+  - Always import from the index.ts.
+  - Always export as default at the end of the file.
+
+  TypeScript Usage
+  - Use PascalCase for types and enums. 
+  - Use TypeScript for all code; prefer types over interfaces.
+  - Use enums whenever necessary.
+  - Use functional components with TypeScript types.
+  - Use strict mode in TypeScript for better type safety.
+  - Use types for props and return.
+  - Suffix all type definitions with Type, and all enum with Enum.
+  - Use types for navigation.
+  - Each component/screen has its own file with types.
+
+  Syntax and Formatting
+  - Use concise syntax for simple statements.
+  - Use declarative JSX.
+  - Use Prettier for consistent code formatting.
+
+  UI and Styling
+  - Always use Units from `@/common/constants/units.ts` for sizes.
+  - If a unit doesn't exist, please add it on the Units object.
+  - Always use Colors from `@/common/constants/colors.ts`.
+  - Implement responsive design with Flexbox.
+  - Ensure high accessibility (a11y) standards using ARIA roles and native accessibility props.
+
+  Performance Optimization
+  - Optimize images: use WebP format where supported, include size data, implement lazy loading with expo-image.
+  - Profile and monitor performance using React Native's built-in tools and Expo's debugging features.
+  - Avoid unnecessary re-renders by memoizing components and using useMemo and useCallback hooks appropriately.
+
+  State Management
+  - Use zustand for managing global state.
+  - Each each property of store slice should have a selector.
+  - Always get the store slice property using a selector.
+
+  Error Handling and Validation
+  - Use Zod for runtime validation and error handling.
+  - Implement proper error logging.
+  - Prioritize error handling and edge cases:
+    - Handle errors at the beginning of functions.
+    - Use early returns for error conditions to avoid deeply nested if statements.
+    - Avoid unnecessary else statements; use if-return pattern instead.
+    - Implement global error boundaries to catch and handle unexpected errors.
+
+

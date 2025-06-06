@@ -1,0 +1,29 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+## Code Review Analysis
+
+Please examine these code changes and provide:
+
+1. **Change Summary**: What's the primary objective? What problem is being solved or feature added?
+
+2. **Technical Assessment**:
+   - Architecture & design choices
+   - Implementation quality
+   - Potential edge cases
+   - Security implications (if applicable)
+
+3. **Risk Analysis**:
+   - Identify any bugs or logical errors
+   - Performance impact concerns
+   - Testing gaps
+   - Integration considerations
+
+4. **Recommendations**:
+   - Specific improvement suggestions (with examples where possible)
+   - Alternative approaches worth considering
+   - Best practices that should be applied
+
+5. **Overall Evaluation**: Is this change ready to merge or does it need further work?
