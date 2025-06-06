@@ -1,5 +1,8 @@
 import { ShareIntentCard } from '@/common/components/ShareIntentCard';
+import { IMAGE_PLACEHOLDER } from '@/common/constants';
+import { useAuth } from '@/config/contexts/auth.context';
 import { saveShareIntent } from '@/config/storage/persistent';
+import { savePost } from '@/services/posts.service';
 import { OEmbedData, PlatformConfig, SocialPlatform } from '@/types';
 import { Stack, useRouter } from 'expo-router';
 import { useShareIntentContext } from 'expo-share-intent';
@@ -39,21 +42,43 @@ const checkSocialPlatform = (url: string): PlatformConfig | undefined => {
   }
 };
 
+
+
+
 export default function ShareIntentScreen() {
   const { shareIntent, resetShareIntent } = useShareIntentContext();
   const router = useRouter();
-  const [oembedData, setOembedData] = useState<OEmbedData | null>(null);
+  const { user } = useAuth();
+  const [metadata, setMetadata] = useState<OEmbedData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+console.log(">> metadata", JSON.stringify(metadata));
   const platformConfig = shareIntent?.webUrl ? checkSocialPlatform(shareIntent.webUrl) : undefined;
+
+  console.log(">> shareIntent", JSON.stringify(shareIntent));
 
   useEffect(() => {
     const fetchOEmbedData = async () => {
-      if (!platformConfig || !shareIntent?.webUrl) return;
+      if (!shareIntent?.webUrl) return;
 
       setIsLoading(true);
       setError(null);
+      console.log(">> shareIntent", JSON.stringify(platformConfig));
+      // If no platform config is found, use shareIntent metadata directly
+      if (!platformConfig) {
+        if (shareIntent.meta) {
+
+          setMetadata({
+            title: shareIntent.meta.title || shareIntent.webUrl,
+            author_name: shareIntent.meta.author || "Unknown",
+            thumbnail_url: shareIntent.meta["og:image"] || IMAGE_PLACEHOLDER
+          });
+        } else {
+          setError('No metadata available for this URL');
+        }
+        setIsLoading(false);
+        return;
+      }
 
       try {
         const response = await fetch(
@@ -65,9 +90,20 @@ export default function ShareIntentScreen() {
         }
 
         const data = await response.json();
-        setOembedData(data);
+        console.log(">> data", JSON.stringify(data));
+        setMetadata(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch metadata');
+        console.log(">> oEmbed failed, falling back to shareIntent metadata");
+        // Fallback to shareIntent metadata if available
+        if (shareIntent.meta) {
+          setMetadata({
+            title: shareIntent.meta.title || shareIntent.webUrl,
+            author_name: shareIntent.meta.author || "Unknown",
+            thumbnail_url: shareIntent.meta["og:image"] || IMAGE_PLACEHOLDER
+          });
+        } else {
+          setError(err instanceof Error ? err.message : 'Failed to fetch metadata');
+        }
       } finally {
         setIsLoading(false);
       }
@@ -76,16 +112,29 @@ export default function ShareIntentScreen() {
     fetchOEmbedData();
   }, [platformConfig, shareIntent?.webUrl]);
 
-  const handleSave = () => {
-    if (shareIntent?.webUrl && platformConfig && oembedData) {
+  const handleSave = async () => {
+    if (shareIntent?.webUrl) {
+      // Save to local storage
       saveShareIntent({
         url: shareIntent.webUrl,
-        platform: platformConfig.platform,
-        title: oembedData.title,
-        author: oembedData.author_name,
-        thumbnail: oembedData.thumbnail_url,
-        metadata: oembedData
+        platform: platformConfig?.platform || '',
+        title: metadata.title,
+        author: metadata.author_name,
+        thumbnail: metadata.thumbnail_url,
+        timestamp: Date.now()
       });
+
+      // Save to Firestore
+      try {
+        await savePost(user.id, {
+          url: shareIntent.webUrl,
+          title: metadata.title,
+          thumbnail: metadata.thumbnail_url
+        });
+      } catch (err) {
+        console.error('Failed to save post to Firestore:', err);
+        // Continue with the flow even if Firestore save fails
+      }
     }
     resetShareIntent();
     router.replace('/');
@@ -111,16 +160,16 @@ export default function ShareIntentScreen() {
           <Text style={styles.errorText}>Error: {error}</Text>
         )}
 
-        {oembedData && platformConfig && shareIntent?.webUrl && (
+        {metadata && shareIntent?.webUrl && (
           <ShareIntentCard
             data={{
               url: shareIntent.webUrl,
-              platform: platformConfig.platform,
-              title: oembedData.title,
-              author: oembedData.author_name,
-              thumbnail: oembedData.thumbnail_url,
+              title: metadata.title,
+              author: metadata.author_name,
+              thumbnail: metadata.thumbnail_url,
               timestamp: Date.now(),
-              metadata: oembedData
+              metadata: metadata,
+              tags: []
             }}
           />
         )}

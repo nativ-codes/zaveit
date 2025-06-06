@@ -10,7 +10,8 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.nativcodes.zaveit"
+      "bundleIdentifier": "com.nativcodes.zaveit",
+      "googleServicesFile": "./keys/GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
@@ -18,7 +19,8 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.nativcodes.zaveit"
+      "package": "com.nativcodes.zaveit",
+      "googleServicesFile": "./keys/google-services.json"
     },
     "web": {
       "bundler": "metro",
@@ -36,7 +38,19 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "expo-share-intent"
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ],
+      "expo-share-intent",
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
+      "@react-native-google-signin/google-signin"
+
     ],
     "experiments": {
       "typedRoutes": true

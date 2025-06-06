@@ -1,10 +1,11 @@
-import { generateTags, getContentForTagGeneration } from '@/services/llm';
+import { MAX_CONTENT_LENGTH } from '@/common/constants';
+import { generateTags } from '@/services/llm';
 import { StoredShareIntent } from '@/types/share-intents';
 import { MMKV } from 'react-native-mmkv';
 
 export const storage = new MMKV({
-  id: 'zaveit-storage',
-  encryptionKey: 'zaveit-encryption-key'
+  id: "zaveit-storage",
+  encryptionKey: process.env.EXPO_PUBLIC_MMKV_ENCRYPTON_KEY,
 });
 
 export function getShareIntents(): StoredShareIntent[] {
@@ -16,12 +17,10 @@ export async function saveShareIntent(intent: Omit<StoredShareIntent, 'tags'>): 
   const intents = getShareIntents();
   
   // Generate tags for the content
-  const content = getContentForTagGeneration(
-    intent.url,
-    intent.title,
-  );
+  const content = intent.title?.substring(0, MAX_CONTENT_LENGTH) || "";
   
   const tags = await generateTags(content);
+  console.log(">> tags", JSON.stringify(tags));
   
   const newIntent: StoredShareIntent = {
     ...intent,

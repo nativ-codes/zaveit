@@ -10,7 +10,8 @@ interface ShareIntentCardProps {
 }
 
 export function ShareIntentCard({ data, onDelete, showDeleteButton }: ShareIntentCardProps) {
-  const { url, platform, title, author, thumbnail, tags, timestamp, metadata } = data;
+  const { url, title, author, thumbnail, tags, timestamp } = data;
+  console.log(">> data", JSON.stringify(data));
 
   return (
     <View style={styles.container}>
@@ -21,21 +22,19 @@ export function ShareIntentCard({ data, onDelete, showDeleteButton }: ShareInten
           resizeMode="cover"
         />
       )}
-      
+
       <View style={styles.content}>
-        {title && <Text style={styles.title}>{title}</Text>}
-        
-        {author && (
-          <Text style={styles.author}>by {author}</Text>
-        )}
-        
-        <Text style={styles.url} numberOfLines={1}>{url}</Text>
-        
-        {metadata?.html && (
-          <Text style={styles.description} numberOfLines={2}>
-            {metadata.html}
+        {title && (
+          <Text numberOfLines={4} style={styles.title}>
+            {title}
           </Text>
         )}
+
+        {author && <Text style={styles.author}>by {author}</Text>}
+
+        <Text style={styles.url} numberOfLines={2}>
+          {url}
+        </Text>
 
         {tags?.length > 0 && (
           <View style={styles.tagsContainer}>

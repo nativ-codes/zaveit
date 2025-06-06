@@ -1,11 +1,13 @@
+import { AuthProvider } from '@/config/contexts/auth.context';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { Ionicons } from '@expo/vector-icons';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { router, Stack } from 'expo-router';
 import { ShareIntentProvider } from "expo-share-intent";
 import { StatusBar } from 'expo-status-bar';
+import { TouchableOpacity } from 'react-native';
 import 'react-native-reanimated';
-
-import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -30,13 +32,36 @@ export default function RootLayout() {
           }),
       }}
     >
+      <AuthProvider>
+        
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen 
+            name="(tabs)" 
+            options={{ 
+              headerShown: false,
+              headerRight: () => (
+                <TouchableOpacity
+                  onPress={() => router.push('/login')}
+                  style={{ marginRight: 16 }}
+                >
+                  <Ionicons name="log-in-outline" size={24} color={colorScheme === 'dark' ? '#fff' : '#000'} />
+                </TouchableOpacity>
+              ),
+            }} 
+          />
           <Stack.Screen name="+not-found" />
+          <Stack.Screen 
+            name="login" 
+            options={{ 
+              headerShown: false,
+              presentation: 'modal',
+            }} 
+          />
         </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </AuthProvider>
     </ShareIntentProvider>
   );
 }

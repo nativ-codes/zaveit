@@ -26,7 +26,6 @@ export interface OEmbedData {
 
 export interface StoredShareIntent {
   url: string;
-  platform: SocialPlatform;
   title?: string;
   author?: string;
   thumbnail?: string;
@@ -35,11 +34,17 @@ export interface StoredShareIntent {
   tags: string[];
 }
 
+export type ShareIntentMetadata = {
+  title?: string;
+  'og:image'?: string;
+};
+
 export interface ShareIntentResponse {
   type: string;
   text?: string;
   webUrl?: string;
   files?: string[];
+  metadata?: ShareIntentMetadata;
 }
 
 // Platform-specific types
