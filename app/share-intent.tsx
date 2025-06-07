@@ -1,4 +1,4 @@
-import ShareIntentRow from '@/common/components/share-intent-row/share-intent-row';
+import { PreviewPost } from '@/common/components';
 import { IMAGE_PLACEHOLDER } from '@/common/constants';
 import { useAuth } from '@/config/contexts/auth.context';
 import { saveShareIntent } from '@/config/storage/persistent';
@@ -117,20 +117,21 @@ console.log(">> metadata", JSON.stringify(metadata));
       // Save to local storage
       saveShareIntent({
         url: shareIntent.webUrl,
-        platform: platformConfig?.platform || '',
-        title: metadata.title,
-        author: metadata.author_name,
-        thumbnail: metadata.thumbnail_url,
+        title: metadata?.title,
+        author: metadata?.author_name,
+        thumbnail: metadata?.thumbnail_url,
         timestamp: Date.now()
       });
 
       // Save to Firestore
       try {
-        await savePost(user.id, {
-          url: shareIntent.webUrl,
-          title: metadata.title,
-          thumbnail: metadata.thumbnail_url
-        });
+        if (user) {
+          await savePost(user.id, {
+            url: shareIntent.webUrl,
+            title: metadata?.title,
+            thumbnail: metadata?.thumbnail_url
+          });
+        }
       } catch (err) {
         console.error('Failed to save post to Firestore:', err);
         // Continue with the flow even if Firestore save fails
@@ -161,16 +162,12 @@ console.log(">> metadata", JSON.stringify(metadata));
         )}
 
         {metadata && shareIntent?.webUrl && (
-          <ShareIntentRow
-            data={{
-              url: shareIntent.webUrl,
-              title: metadata.title,
-              author: metadata.author_name,
-              thumbnail: metadata.thumbnail_url,
-              timestamp: Date.now(),
-              metadata: metadata,
-              tags: []
-            }}
+          <PreviewPost
+            url={shareIntent.webUrl}
+            title={metadata?.title}
+            thumbnail={metadata?.thumbnail_url}
+            tags={[]}
+            onPress={() => {}}
           />
         )}
 

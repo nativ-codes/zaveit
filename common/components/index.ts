@@ -1,1 +1,3 @@
-export { default as ShareIntentRow } from './share-intent-row/share-intent-row';
+export { default as PreviewPostCard } from './preview-post-card/preview-post-card';
+export { default as PreviewPost } from './preview-post/preview-post';
+

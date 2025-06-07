@@ -8,7 +8,8 @@ export const styles = StyleSheet.create({
     backgroundColor: Colors.background.primary,
     borderRadius: Units.s16,
     alignItems: 'center',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    marginBottom: Units.s16,
   },
   image: {
     width: Units.s128,
