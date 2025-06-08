@@ -1,9 +1,11 @@
 import { MAX_TAGS_LENGTH } from "@/common/constants";
 import { ACTIVITY_OPACITY } from "@/common/constants/ui";
 import { Units } from "@/common/constants/units";
+import { GeneralStyles } from "@/common/styles";
+import { getDomainFromUrl } from "@/common/utils";
 import { Image } from "expo-image";
 import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { styles } from "./preview-post-card.style";
 import { PreviewPostCardPropsType } from "./preview-post-card.type";
 
@@ -14,19 +16,10 @@ function PreviewPostCard({
   tags,
   onPress,
 }: PreviewPostCardPropsType) {
-  const getDomainFromUrl = (url: string): string => {
-    try {
-      const urlObj = new URL(url);
-      return urlObj.hostname.replace('www.', '');
-    } catch (error) {
-      return url;
-    }
-  };
-
     
   return (
     <TouchableOpacity
-      style={styles.container}
+      style={StyleSheet.compose(styles.container, GeneralStyles.shadow)}
       onPress={onPress}
       activeOpacity={ACTIVITY_OPACITY}
       accessibilityRole="button"

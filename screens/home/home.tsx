@@ -1,5 +1,6 @@
-import { PreviewPost } from "@/common/components";
+import { HorizontalScrollViewPosts, PreviewPostCard, PreviewPostTile } from "@/common/components";
 import { Colors } from "@/common/constants/colors";
+import { Units } from "@/common/constants/units";
 import { useAuth } from "@/config/contexts/auth.context";
 import { removeShareIntent, storage } from "@/config/storage/persistent";
 import { signOut } from "@/services/google-auth.service";
@@ -9,49 +10,14 @@ import { useRouter } from "expo-router";
 import { useShareIntentContext } from "expo-share-intent";
 import React, { useEffect, useState } from "react";
 import {
-    RefreshControl,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import FilterResults from "./components/filter-results/filter-results";
 import { Filters } from "./components/filters/filters";
-import MostRecentSection from "./components/most-recent-section/most-recent-section";
-
-const TAGS = [
-  "Technology",
-  "Science",
-  "Art",
-  "Music",
-  "Sports",
-  "Food",
-  "Travel",
-  "Health",
-  "Fitness",
-  "Education",
-  "Business",
-  "Finance",
-  "Nature",
-  "Animals",
-  "History",
-  "Culture",
-  "Politics",
-  "Entertainment",
-  "Fashion",
-  "Beauty",
-  "Gaming",
-  "Books",
-  "Movies",
-  "Photography",
-  "Architecture",
-  "Design",
-  "Cars",
-  "Space",
-  "Weather",
-  "Environment",
-] as const;
 
 export default function HomeScreen() {
   const { hasShareIntent } = useShareIntentContext();
@@ -63,14 +29,6 @@ export default function HomeScreen() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState("all");
   const insets = useSafeAreaInsets();
-
-  const tabs = [
-    { id: "all", label: "All" },
-    { id: "links", label: "Links" },
-    { id: "images", label: "Images" },
-    { id: "text", label: "Text" },
-    { id: "files", label: "Files" },
-  ];
 
   const loadShareIntents = () => {
     const storedIntents = storage.getString("share_intents");
@@ -151,7 +109,10 @@ export default function HomeScreen() {
             onTagSelect={handleTagSelect}
             selectedTags={selectedTags}
           />
-          <MostRecentSection
+          <View style={styles.tilesContainer}>
+          <HorizontalScrollViewPosts
+            Element={PreviewPostCard}
+            title="Recently Added"
             posts={shareIntents}
             onPostPress={(timestamp) =>
               router.push({
@@ -164,40 +125,49 @@ export default function HomeScreen() {
               console.log("View all clicked");
             }}
           />
-          <ScrollView
-            style={styles.content}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+
+          <HorizontalScrollViewPosts
+            Element={PreviewPostTile}
+            title="Frequently Accessed"
+            posts={shareIntents}
+            onPostPress={(timestamp) =>
+              router.push({
+                pathname: "/share-intent/[id]",
+                params: { id: timestamp.toString() },
+              })
             }
+            onViewAll={() => {
+              // TODO: Implement view all functionality
+              console.log("View all clicked");
+            }}
+          />
+          </View>
+
+          <FilterResults
+          
+            searchQuery={searchQuery}
+            selectedTags={selectedTags}
+            shareIntents={shareIntents}
+            onPostPress={(timestamp) =>
+              router.push({
+                pathname: "/share-intent/[id]",
+                params: { id: timestamp.toString() },
+              })
+            }
+          />
+
+          <TouchableOpacity
+            style={styles.logoutListButton}
+            onPress={handleLogout}
           >
-            {shareIntents.map((intent: StoredShareIntent) => (
-              <PreviewPost
-                key={intent.timestamp}
-                url={intent.url}
-                title={intent.title}
-                thumbnail={intent.thumbnail}
-                tags={intent.tags}
-                onPress={() =>
-                  router.push({
-                    pathname: "/share-intent/[id]",
-                    params: { id: intent.timestamp.toString() },
-                  })
-                }
-              />
-            ))}
-            <TouchableOpacity
-              style={styles.logoutListButton}
-              onPress={handleLogout}
-            >
-              <Ionicons
-                name="log-out-outline"
-                size={24}
-                color="#666"
-                style={styles.logoutListIcon}
-              />
-              <Text style={styles.logoutListButtonText}>Log out</Text>
-            </TouchableOpacity>
-          </ScrollView>
+            <Ionicons
+              name="log-out-outline"
+              size={24}
+              color="#666"
+              style={styles.logoutListIcon}
+            />
+            <Text style={styles.logoutListButtonText}>Log out</Text>
+          </TouchableOpacity>
         </View>
       )}
     </View>
@@ -323,6 +293,16 @@ const styles = StyleSheet.create({
   },
   activeTabText: {
     color: "#fff",
+  },
+  tilesContainer: {
+    gap: Units.s16,
+  },
+  tilesScrollContent: {
+    paddingHorizontal: Units.s16,
+    gap: Units.s16,
+  },
+  tileWrapper: {
+    marginRight: Units.s16,
   },
 });
 

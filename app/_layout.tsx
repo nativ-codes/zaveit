@@ -7,6 +7,7 @@ import { router, Stack } from 'expo-router';
 import { ShareIntentProvider } from "expo-share-intent";
 import { StatusBar } from 'expo-status-bar';
 import { TouchableOpacity } from 'react-native';
+import "react-native-get-random-values";
 import 'react-native-reanimated';
 
 export default function RootLayout() {

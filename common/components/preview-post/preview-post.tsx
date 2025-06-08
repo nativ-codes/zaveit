@@ -1,6 +1,7 @@
 import { MAX_TAGS_LENGTH } from "@/common/constants";
 import { ACTIVITY_OPACITY } from "@/common/constants/ui";
 import { Units } from "@/common/constants/units";
+import { getDomainFromUrl } from "@/common/utils/formatters";
 import { Image } from "expo-image";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -45,9 +46,9 @@ function PreviewPost({
         <Text
           style={styles.url}
           numberOfLines={3}
-          accessibilityLabel={`URL: ${url}`}
+          accessibilityLabel={`URL: ${getDomainFromUrl(url)}`}
         >
-          {url}
+          {getDomainFromUrl(url)}
         </Text>
 
         {tags?.length > 0 && (

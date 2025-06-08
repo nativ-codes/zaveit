@@ -14,12 +14,13 @@ export const Colors = {
 
   // Background colors
   background: {
-    primary: "#FCFCFC",
+    primary: "#FCFCFC"
   },
 
   // Surface colors
   surface: {
     primary: "#FFFFFF",
+    secondary: "#F7F7F7",
   },
 
   // Status colors

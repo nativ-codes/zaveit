@@ -25,6 +25,7 @@ export interface OEmbedData {
 }
 
 export interface StoredShareIntent {
+  id: string;
   url: string;
   title?: string;
   author?: string;

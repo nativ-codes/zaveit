@@ -5,16 +5,8 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   container: {
     width: Units.s304,
-    backgroundColor: Colors.surface.primary,
-    borderRadius: Units.s24,
-    shadowColor: Colors.black,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: Colors.white,
+    borderRadius: Units.s24
   },
   image: {
     borderTopLeftRadius: Units.s24,

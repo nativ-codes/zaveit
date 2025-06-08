@@ -2,7 +2,7 @@ import { Colors } from "@/common/constants/colors";
 import { Units } from "@/common/constants/units";
 import { StyleSheet } from "react-native";
 
-export const styles = StyleSheet.create({
+export default StyleSheet.create({
   titleContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -25,4 +25,4 @@ export const styles = StyleSheet.create({
     padding: Units.s16,
     gap: Units.s16,
   },
-}); 
+});

@@ -26,8 +26,8 @@ export const styles = StyleSheet.create({
     color: Colors.text.primary,
   },
   url: {
-    fontSize: 11,
-    color: Colors.primary,
+    fontSize: 13,
+    color: Colors.text.secondary,
     marginBottom: Units.s4,
   },
   tagsContainer: {
@@ -36,7 +36,7 @@ export const styles = StyleSheet.create({
     gap: Units.s4,
   },
   tag: {
-    backgroundColor: Colors.background.secondary,
+    backgroundColor: Colors.background.primary,
     borderRadius: Units.s8,
     paddingHorizontal: Units.s8,
     paddingVertical: Units.s4

@@ -8,6 +8,7 @@ import { Stack, useRouter } from 'expo-router';
 import { useShareIntentContext } from 'expo-share-intent';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { v4 as uuid } from 'uuid';
 
 const PLATFORM_CONFIGS: PlatformConfig[] = [
   {
@@ -116,6 +117,7 @@ console.log(">> metadata", JSON.stringify(metadata));
     if (shareIntent?.webUrl) {
       // Save to local storage
       saveShareIntent({
+        id: uuid(),
         url: shareIntent.webUrl,
         title: metadata?.title,
         author: metadata?.author_name,

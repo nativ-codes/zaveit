@@ -1,18 +1,20 @@
-import { PreviewPostCard } from "@/common/components";
 import { Units } from "@/common/constants/units";
+import React from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { styles } from "./most-recent-section.style";
-import { MostRecentSectionPropsType } from "./most-recent-section.type";
+import styles from "./horizontal-scrollview-posts.style";
+import { HorizontalScrollViewPostsType } from "./horizontal-scrollview-posts.type";
 
-function MostRecentSection({
+function HorizontalScrollViewPosts({
+  title,
   posts,
-  onPostPress,
+  Element,
   onViewAll,
-}: MostRecentSectionPropsType) {
+  onPostPress,
+}: HorizontalScrollViewPostsType) {
   return (
     <View>
       <View style={styles.titleContainer}>
-        <Text style={styles.title}>Most recent</Text>
+        <Text style={styles.title}>{title}</Text>
         <TouchableOpacity hitSlop={Units.s16} onPress={onViewAll}>
           <Text style={styles.seeAllButtonText}>View All</Text>
         </TouchableOpacity>
@@ -24,13 +26,10 @@ function MostRecentSection({
         contentContainerStyle={styles.horizontalScrollContent}
       >
         {posts.map((post) => (
-          <PreviewPostCard
-            key={post.timestamp}
-            url={post.url}
-            title={post.title}
-            thumbnail={post.thumbnail}
-            tags={post.tags}
-            onPress={() => onPostPress(post.timestamp)}
+          <Element
+            {...post}
+            key={post.id}
+            onPress={() => onPostPress(post.id)}
           />
         ))}
       </ScrollView>
@@ -38,4 +37,4 @@ function MostRecentSection({
   );
 }
 
-export default MostRecentSection;
+export default HorizontalScrollViewPosts;
