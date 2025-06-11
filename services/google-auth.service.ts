@@ -3,7 +3,7 @@ import {
   GoogleSignin,
   isNoSavedCredentialFoundResponse
 } from "@react-native-google-signin/google-signin";
-import { createUser, getUser } from './users.service';
+import { createUser } from './users.service';
 
 export type GoogleAuthResponseType = {
   user: any;
@@ -22,18 +22,14 @@ const handleUserCreation = async (firebaseUser: any) => {
   try {
     // Create new user in Firestore
     console.log('[Google Auth] Creating new user in Firestore:', firebaseUser.uid);
-    await createUser({
+    const user = {
       id: firebaseUser.uid,
       displayName: firebaseUser.displayName,
       email: firebaseUser.email,
-    });
-
-    // Fetch and return the newly created user
-    const newUser = await getUser(firebaseUser.uid);
-    if (!newUser) {
-      throw new Error('Failed to fetch newly created user');
     }
-    return newUser;
+    await createUser(user);
+
+    return user;
   } catch (error) {
     console.error('[Google Auth] Error in handleUserCreation:', error);
     throw error;

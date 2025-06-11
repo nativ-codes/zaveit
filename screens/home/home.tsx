@@ -8,6 +8,7 @@ import { SafeAreaEdges } from "@/common/constants/safe-area";
 import { Units } from "@/common/constants/units";
 import { useAuth } from "@/config/contexts/auth.context";
 import { getShareIntents } from "@/config/storage/persistent";
+import { useSyncLists } from "@/config/use-sync-lists";
 import { signOut } from "@/services/google-auth.service";
 import { StoredShareIntent } from "@/types";
 import { useRouter } from "expo-router";
@@ -27,12 +28,19 @@ export default function HomeScreen() {
   const router = useRouter();
   const [shareIntents, setShareIntents] = useState<StoredShareIntent[]>([]);
   const { user, isLoading, isAuthenticated } = useAuth();
+  const { syncLists } = useSyncLists();
 
   useEffect(() => {
     if (hasShareIntent) {
       router.replace("/share-intent");
     }
   }, [hasShareIntent]);
+
+  useEffect(() => {
+    if (user) {
+      syncLists();
+    }
+  }, [user]);
 
   useEffect(() => {
     const intents = getShareIntents();

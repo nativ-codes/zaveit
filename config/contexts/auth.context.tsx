@@ -1,6 +1,6 @@
+import { UserType } from '@/services/users.service';
+import auth from '@react-native-firebase/auth';
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
-import { getUser, UserType } from '@/services/users.service';
 
 type AuthContextType = {
   user: UserType | null;
@@ -25,9 +25,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const unsubscribe = auth().onAuthStateChanged(async (firebaseUser) => {
       try {
         if (firebaseUser) {
-          console.log('[Auth Context] Firebase user authenticated:', firebaseUser.uid);
-          const userData = await getUser(firebaseUser.uid);
-          setUser(userData);
+          console.log('[Auth Context] Firebase user authenticated:', firebaseUser);
+          setUser(firebaseUser);
           setIsAuthenticated(true);
         } else {
           console.log('[Auth Context] No Firebase user');

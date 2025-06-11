@@ -35,4 +35,8 @@ export function removeShareIntent(timestamp: number): void {
   const intents = getShareIntents();
   const updatedIntents = intents.filter(intent => intent.timestamp !== timestamp);
   storage.set('share_intents', JSON.stringify(updatedIntents));
+}
+
+export function saveShareIntents(intents: StoredShareIntent[]): void {
+  storage.set('share_intents', JSON.stringify(intents));
 } 

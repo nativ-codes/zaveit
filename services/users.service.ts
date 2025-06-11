@@ -35,31 +35,3 @@ export const createUser = async (user: UserType): Promise<void> => {
     };
   }
 };
-
-export const getUser = async (userId: string): Promise<UserType | null> => {
-  try {
-    console.log('[Users Service] Fetching user:', userId);
-    
-    const userRef = firestore().collection('users').doc(userId);
-    const userDoc = await userRef.get();
-
-    if (!userDoc.exists) {
-      console.log('[Users Service] User not found:', userId);
-      return null;
-    }
-
-    const userData = {
-      id: userDoc.id,
-      ...userDoc.data(),
-    } as UserType;
-    
-    console.log('[Users Service] User fetched successfully:', { userId: userData.id, displayName: userData.displayName });
-    return userData;
-  } catch (error: any) {
-    console.error('[Users Service] Error fetching user:', { userId, error: error.message });
-    throw {
-      code: error.code,
-      message: error.message,
-    };
-  }
-}; 
