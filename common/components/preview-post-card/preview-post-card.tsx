@@ -1,5 +1,5 @@
 import { MAX_TAGS_LENGTH } from "@/common/constants";
-import { ACTIVITY_OPACITY } from "@/common/constants/ui";
+import { ACTIVE_OPACITY } from "@/common/constants/ui";
 import { Units } from "@/common/constants/units";
 import { GeneralStyles } from "@/common/styles";
 import { getDomainFromUrl } from "@/common/utils";
@@ -16,12 +16,13 @@ function PreviewPostCard({
   tags,
   onPress,
 }: PreviewPostCardPropsType) {
-    
+  const domain = getDomainFromUrl(url);
+
   return (
     <TouchableOpacity
       style={StyleSheet.compose(styles.container, GeneralStyles.shadow)}
       onPress={onPress}
-      activeOpacity={ACTIVITY_OPACITY}
+      activeOpacity={ACTIVE_OPACITY}
       accessibilityRole="button"
       accessibilityLabel={`View details for ${title || url}`}
     >
@@ -47,9 +48,9 @@ function PreviewPostCard({
 
         {tags?.length > 0 && (
           <View style={styles.tagsContainer} accessibilityLabel="Tags">
-            {tags.slice(0, MAX_TAGS_LENGTH).map((tag, index) => (
+            {tags.slice(0, MAX_TAGS_LENGTH).map((tag) => (
               <View
-                key={index}
+                key={tag}
                 style={styles.tag}
                 accessibilityLabel={`Tag: ${tag}`}
               >
@@ -77,10 +78,10 @@ function PreviewPostCard({
       <View style={styles.urlContainer}>
         <Text
           style={styles.url}
-          numberOfLines={3}
-          accessibilityLabel={`URL: ${url}`}
+          numberOfLines={1}
+          accessibilityLabel={`URL: ${domain}`}
         >
-          {getDomainFromUrl(url)}
+          {domain}
         </Text>
       </View>
     </TouchableOpacity>

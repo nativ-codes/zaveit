@@ -1,5 +1,5 @@
 import { MAX_TAGS_LENGTH } from "@/common/constants";
-import { ACTIVITY_OPACITY } from "@/common/constants/ui";
+import { ACTIVE_OPACITY } from "@/common/constants/ui";
 import { Units } from "@/common/constants/units";
 import { getDomainFromUrl } from "@/common/utils/formatters";
 import { Image } from "expo-image";
@@ -19,7 +19,7 @@ function PreviewPost({
     <TouchableOpacity
       style={styles.container}
       onPress={onPress}
-      activeOpacity={ACTIVITY_OPACITY}
+      activeOpacity={ACTIVE_OPACITY}
       accessibilityRole="button"
       accessibilityLabel={`View details for ${title || url}`}
     >

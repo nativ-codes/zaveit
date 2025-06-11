@@ -1,4 +1,4 @@
-import { ACTIVITY_OPACITY } from "@/common/constants/ui";
+import { ACTIVE_OPACITY } from "@/common/constants/ui";
 import { GeneralStyles } from "@/common/styles";
 import { getDomainFromUrl } from "@/common/utils";
 import { Image } from "expo-image";
@@ -13,11 +13,13 @@ function PreviewPostTile({
   thumbnail,
   onPress,
 }: PreviewPostTilePropsType) {
+  const domain = getDomainFromUrl(url);
+
   return (
     <TouchableOpacity
       style={StyleSheet.compose(styles.container, GeneralStyles.shadow)}
       onPress={onPress}
-      activeOpacity={ACTIVITY_OPACITY}
+      activeOpacity={ACTIVE_OPACITY}
       accessibilityRole="button"
       accessibilityLabel={`View details for ${title || url}`}
     >
@@ -44,9 +46,9 @@ function PreviewPostTile({
         <Text
           style={styles.url}
           numberOfLines={1}
-          accessibilityLabel={`URL: ${getDomainFromUrl(url)}`}
+          accessibilityLabel={`URL: ${domain}`}
         >
-          {getDomainFromUrl(url)}
+          {domain}
         </Text>
       </View>
     </TouchableOpacity>

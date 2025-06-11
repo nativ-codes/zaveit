@@ -6,3 +6,7 @@ export const getDomainFromUrl = (url: string): string => {
     return url;
   }
 };
+
+export const toTitleCase = (str: string): string => {
+  return str.replace(/_/g, " ").replace(/\b\w/g, char => char.toUpperCase());
+};

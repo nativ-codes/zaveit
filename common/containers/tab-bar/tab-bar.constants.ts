@@ -6,10 +6,16 @@ export const TAB_BAR_ITEMS = [
     iconUnfocused: "home-outline",
   },
   {
-    name: "explore",
-    label: "EXPLORE",
-    iconFocused: "tag",
-    iconUnfocused: "tag-outline",
+    name: "search",
+    label: "SEARCH",
+    iconFocused: "search",
+    iconUnfocused: "search-outline",
+  },
+  {
+    name: "categories",
+    label: "CATEGORIES",
+    iconFocused: "list",
+    iconUnfocused: "list-outline",
   },
   {
     name: "settings",

@@ -2,7 +2,7 @@ import Ionicons from "@expo/vector-icons/MaterialCommunityIcons";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import React from "react";
 
-import { ACTIVITY_OPACITY, Colors, Units } from "@/common/constants";
+import { ACTIVE_OPACITY, Colors, Units } from "@/common/constants";
 import { GeneralStyles } from "@/common/styles";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { TAB_BAR_ITEMS } from "./tab-bar.constants";
@@ -28,7 +28,7 @@ function TabBar({ state, navigation, insets }: BottomTabBarProps) {
           <TouchableOpacity
             key={tab.name}
             onPress={handleOnPress}
-            activeOpacity={ACTIVITY_OPACITY}
+            activeOpacity={ACTIVE_OPACITY}
             style={StyleSheet.compose(
               styles.tabBarItem,
               isFocused && styles.tabBarItemFocused

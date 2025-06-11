@@ -1,12 +1,12 @@
 import { Colors } from "@/common/constants/colors";
-import { ACTIVITY_OPACITY } from "@/common/constants/ui";
+import { ACTIVE_OPACITY } from "@/common/constants/ui";
 import React from "react";
 import {
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from "react-native";
 import { styles } from "./filters.style";
 import { FiltersType } from "./filters.type";
@@ -74,7 +74,7 @@ export const Filters: React.FC<FiltersType> = ({
           return (
             <TouchableOpacity
               key={tag}
-              activeOpacity={ACTIVITY_OPACITY}
+              activeOpacity={ACTIVE_OPACITY}
               style={[
                 styles.tagButton,
                 isSelected && styles.selectedTagButton,

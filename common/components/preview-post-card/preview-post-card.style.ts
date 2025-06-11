@@ -4,15 +4,15 @@ import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   container: {
-    width: Units.s304,
+    width: Units.s256,
     backgroundColor: Colors.white,
-    borderRadius: Units.s24
+    borderRadius: Units.s24,
   },
   image: {
     borderTopLeftRadius: Units.s24,
     borderTopRightRadius: Units.s24,
     width: "100%",
-    height: Units.s160,
+    height: Units.s96,
   },
   content: {
     padding: Units.s16,
@@ -35,7 +35,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: Units.s12,
     paddingVertical: Units.s8,
     borderRadius: Units.s16,
-
+    opacity: 0.9,
   },
   tagsContainer: {
     flexDirection: "row",

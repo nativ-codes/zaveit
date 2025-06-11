@@ -1,47 +1,43 @@
-import { HorizontalScrollViewPosts, PreviewPostCard, PreviewPostTile } from "@/common/components";
+import {
+  HorizontalScrollViewPosts,
+  PreviewPostCard,
+  TopBar
+} from "@/common/components";
 import { Colors } from "@/common/constants/colors";
+import { SafeAreaEdges } from "@/common/constants/safe-area";
 import { Units } from "@/common/constants/units";
 import { useAuth } from "@/config/contexts/auth.context";
-import { removeShareIntent, storage } from "@/config/storage/persistent";
+import { getShareIntents } from "@/config/storage/persistent";
 import { signOut } from "@/services/google-auth.service";
 import { StoredShareIntent } from "@/types";
-import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useShareIntentContext } from "expo-share-intent";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import FilterResults from "./components/filter-results/filter-results";
-import { Filters } from "./components/filters/filters";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const { hasShareIntent } = useShareIntentContext();
   const router = useRouter();
-  const [refreshing, setRefreshing] = useState(false);
   const [shareIntents, setShareIntents] = useState<StoredShareIntent[]>([]);
   const { user, isLoading, isAuthenticated } = useAuth();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState("all");
-  const insets = useSafeAreaInsets();
 
-  const loadShareIntents = () => {
-    const storedIntents = storage.getString("share_intents");
-    if (storedIntents) {
-      setShareIntents(JSON.parse(storedIntents));
+  useEffect(() => {
+    if (hasShareIntent) {
+      router.replace("/share-intent");
     }
-  };
+  }, [hasShareIntent]);
 
-  const onRefresh = () => {
-    setRefreshing(true);
-    loadShareIntents();
-    setRefreshing(false);
-  };
+  useEffect(() => {
+    const intents = getShareIntents();
+    setShareIntents(intents);
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -52,36 +48,16 @@ export default function HomeScreen() {
     }
   };
 
-  useEffect(() => {
-    if (hasShareIntent) {
-      router.replace("/share-intent");
-    }
-  }, [hasShareIntent]);
+  const randomPost = useMemo(() => {
+    if (shareIntents.length === 0) return null;
+    const randomIndex = Math.floor(Math.random() * shareIntents.length);
+    return shareIntents[randomIndex];
+  }, [shareIntents]);
 
-  useEffect(() => {
-    loadShareIntents();
-  }, []);
-
-  const handleDelete = (timestamp: number) => {
-    removeShareIntent(timestamp);
-    loadShareIntents();
-  };
-
-  const handleTagSelect = (tag: string) => {
-    setSelectedTags((prevTags) => {
-      if (prevTags.includes(tag)) {
-        return prevTags.filter((t) => t !== tag);
-      }
-      return [...prevTags, tag];
-    });
-  };
-
-  return (
-    <View style={styles.container}>
-      <View style={styles.backgroundOverlay} />
-      {!isAuthenticated ? (
+  if (!isAuthenticated) {
+    return (
+      <SafeAreaView edges={SafeAreaEdges.noBottom} style={styles.container}>
         <View style={styles.loginContainer}>
-          <Ionicons name="lock-closed" size={64} color="#666" />
           <Text style={styles.loginTitle}>
             Sign in to view your saved content
           </Text>
@@ -92,24 +68,22 @@ export default function HomeScreen() {
             style={styles.loginButton}
             onPress={() => router.push("/login")}
           >
-            <Ionicons
-              name="logo-google"
-              size={24}
-              color="#4285F4"
-              style={styles.googleIcon}
-            />
             <Text style={styles.loginButtonText}>Sign in with Google</Text>
           </TouchableOpacity>
         </View>
-      ) : (
-        <View style={{ paddingTop: insets.top, flex: 1 }}>
-          <Filters
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            onTagSelect={handleTagSelect}
-            selectedTags={selectedTags}
-          />
-          <View style={styles.tilesContainer}>
+      </SafeAreaView>
+    );
+  }
+
+  return (
+    <SafeAreaView edges={SafeAreaEdges.noBottom} style={styles.container}>
+      <TopBar left={<Text>ZaveIt</Text>} right={<Text>Add Post</Text>} />
+      <View style={styles.backgroundOverlay} />
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <View style={styles.tilesContainer}>
           <HorizontalScrollViewPosts
             Element={PreviewPostCard}
             title="Recently Added"
@@ -127,7 +101,7 @@ export default function HomeScreen() {
           />
 
           <HorizontalScrollViewPosts
-            Element={PreviewPostTile}
+            Element={PreviewPostCard}
             title="Frequently Accessed"
             posts={shareIntents}
             onPostPress={(timestamp) =>
@@ -141,36 +115,34 @@ export default function HomeScreen() {
               console.log("View all clicked");
             }}
           />
-          </View>
 
-          <FilterResults
-          
-            searchQuery={searchQuery}
-            selectedTags={selectedTags}
-            shareIntents={shareIntents}
-            onPostPress={(timestamp) =>
-              router.push({
-                pathname: "/share-intent/[id]",
-                params: { id: timestamp.toString() },
-              })
-            }
-          />
-
-          <TouchableOpacity
-            style={styles.logoutListButton}
-            onPress={handleLogout}
-          >
-            <Ionicons
-              name="log-out-outline"
-              size={24}
-              color="#666"
-              style={styles.logoutListIcon}
-            />
-            <Text style={styles.logoutListButtonText}>Log out</Text>
-          </TouchableOpacity>
+          {randomPost && (
+            <View style={styles.randomPickContainer}>
+              <Text style={styles.sectionTitle}>Random Pick</Text>
+              <PreviewPostCard
+                url={randomPost.url}
+                title={randomPost.title}
+                thumbnail={randomPost.thumbnail}
+                tags={randomPost.tags}
+                onPress={() =>
+                  router.push({
+                    pathname: "/share-intent/[id]",
+                    params: { id: randomPost.timestamp.toString() },
+                  })
+                }
+              />
+            </View>
+          )}
         </View>
-      )}
-    </View>
+
+        <TouchableOpacity
+          style={styles.logoutListButton}
+          onPress={handleLogout}
+        >
+          <Text style={styles.logoutListButtonText}>Log out</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -178,6 +150,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background.primary,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
   backgroundImage: {
     flex: 1,
@@ -229,9 +207,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
-  googleIcon: {
-    marginRight: 12,
-  },
   loginButtonText: {
     fontSize: 16,
     color: "#333",
@@ -258,9 +233,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
-  logoutListIcon: {
-    marginRight: 12,
-  },
   logoutListButtonText: {
     fontSize: 16,
     color: "#333",
@@ -268,31 +240,6 @@ const styles = StyleSheet.create({
   },
   mainContent: {
     flex: 1,
-  },
-  tabsContainer: {
-    maxHeight: 50,
-    marginBottom: 8,
-  },
-  tabsContent: {
-    paddingHorizontal: 16,
-  },
-  tabButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    marginRight: 8,
-    borderRadius: 20,
-    backgroundColor: "#f0f0f0",
-  },
-  activeTabButton: {
-    backgroundColor: "#4285F4",
-  },
-  tabText: {
-    fontSize: 14,
-    color: "#666",
-    fontWeight: "500",
-  },
-  activeTabText: {
-    color: "#fff",
   },
   tilesContainer: {
     gap: Units.s16,
@@ -303,6 +250,15 @@ const styles = StyleSheet.create({
   },
   tileWrapper: {
     marginRight: Units.s16,
+  },
+  randomPickContainer: {
+    paddingHorizontal: Units.s16,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: Colors.text.primary,
+    marginBottom: Units.s8,
   },
 });
 
