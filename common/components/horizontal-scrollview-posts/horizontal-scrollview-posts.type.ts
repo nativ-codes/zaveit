@@ -1,9 +1,15 @@
-import { StoredShareIntent } from "@/types";
+import { StoredPost } from "@/types";
+
+export interface HorizontalScrollviewPostsProps {
+  posts: StoredPost[];
+  title: string;
+  onPostPress: (timestamp: number) => void;
+}
 
 export type HorizontalScrollViewPostsType = {
   title: string;
-  posts: StoredShareIntent[];
+  posts: StoredPost[];
   onViewAll: () => void;
   Element: React.ComponentType<any>;
-  onPostPress: (id: string) => void;
+  onPostPress: (timestamp: number) => void;
 }; 

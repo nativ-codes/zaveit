@@ -7,10 +7,10 @@ import { Colors } from "@/common/constants/colors";
 import { SafeAreaEdges } from "@/common/constants/safe-area";
 import { Units } from "@/common/constants/units";
 import { useAuth } from "@/config/contexts/auth.context";
-import { getShareIntents } from "@/config/storage/persistent";
+import { getPosts } from "@/config/storage/persistent";
 import { useSyncLists } from "@/config/use-sync-lists";
 import { signOut } from "@/services/google-auth.service";
-import { StoredShareIntent } from "@/types";
+import { StoredPost } from "@/types";
 import { useRouter } from "expo-router";
 import { useShareIntentContext } from "expo-share-intent";
 import React, { useEffect, useMemo, useState } from "react";
@@ -26,7 +26,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function HomeScreen() {
   const { hasShareIntent } = useShareIntentContext();
   const router = useRouter();
-  const [shareIntents, setShareIntents] = useState<StoredShareIntent[]>([]);
+  const [posts, setPosts] = useState<StoredPost[]>([]);
   const { user, isLoading, isAuthenticated } = useAuth();
   const { syncLists } = useSyncLists();
 
@@ -43,8 +43,8 @@ export default function HomeScreen() {
   }, [user]);
 
   useEffect(() => {
-    const intents = getShareIntents();
-    setShareIntents(intents);
+    const storedPosts = getPosts();
+    setPosts(storedPosts);
   }, []);
 
   const handleLogout = async () => {
@@ -57,10 +57,10 @@ export default function HomeScreen() {
   };
 
   const randomPost = useMemo(() => {
-    if (shareIntents.length === 0) return null;
-    const randomIndex = Math.floor(Math.random() * shareIntents.length);
-    return shareIntents[randomIndex];
-  }, [shareIntents]);
+    if (posts.length === 0) return null;
+    const randomIndex = Math.floor(Math.random() * posts.length);
+    return posts[randomIndex];
+  }, [posts]);
 
   if (!isAuthenticated) {
     return (
@@ -95,11 +95,11 @@ export default function HomeScreen() {
           <HorizontalScrollViewPosts
             Element={PreviewPostCard}
             title="Recently Added"
-            posts={shareIntents}
-            onPostPress={(timestamp) =>
+            posts={posts}
+            onPostPress={(postId) =>
               router.push({
                 pathname: "/share-intent/[id]",
-                params: { id: timestamp.toString() },
+                params: { id: postId },
               })
             }
             onViewAll={() => {
@@ -111,11 +111,11 @@ export default function HomeScreen() {
           <HorizontalScrollViewPosts
             Element={PreviewPostCard}
             title="Frequently Accessed"
-            posts={shareIntents}
-            onPostPress={(timestamp) =>
+            posts={posts}
+            onPostPress={(postId) =>
               router.push({
                 pathname: "/share-intent/[id]",
-                params: { id: timestamp.toString() },
+                params: { id: postId },
               })
             }
             onViewAll={() => {
@@ -135,7 +135,7 @@ export default function HomeScreen() {
                 onPress={() =>
                   router.push({
                     pathname: "/share-intent/[id]",
-                    params: { id: randomPost.timestamp.toString() },
+                    params: { id: randomPost.id },
                   })
                 }
               />

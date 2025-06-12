@@ -4,8 +4,8 @@ import { SafeAreaEdges } from "@/common/constants/safe-area";
 import { ACTIVE_OPACITY } from "@/common/constants/ui";
 import { Units } from "@/common/constants/units";
 import { useAuth } from "@/config/contexts/auth.context";
-import { getShareIntents } from "@/config/storage/persistent";
-import { StoredShareIntent } from "@/types";
+import { getPosts } from "@/config/storage/persistent";
+import { StoredPost } from "@/types";
 import { useRouter } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import {
@@ -23,11 +23,11 @@ export default function SearchScreen() {
   const { isAuthenticated } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [shareIntents, setShareIntents] = useState<StoredShareIntent[]>([]);
+  const [posts, setPosts] = useState<StoredPost[]>([]);
 
   useEffect(() => {
-    const intents = getShareIntents();
-    setShareIntents(intents);
+    const storedPosts = getPosts();
+    setPosts(storedPosts);
   }, []);
 
   const handleTagSelect = (tag: string) => {
@@ -43,8 +43,8 @@ export default function SearchScreen() {
     const tagCounts = new Map<string, number>();
     
     // Count posts for each tag
-    shareIntents.forEach((intent: StoredShareIntent) => {
-      intent.tags.forEach((tag: string) => {
+    posts.forEach((post: StoredPost) => {
+      post.tags.forEach((tag: string) => {
         tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
       });
     });
@@ -53,26 +53,26 @@ export default function SearchScreen() {
     return Array.from(tagCounts.entries())
       .sort(([, countA], [, countB]) => countB - countA)
       .map(([tag]) => tag);
-  }, [shareIntents]);
+  }, [posts]);
 
   const getTagCount = (tag: string) => {
-    return shareIntents.filter((intent: StoredShareIntent) => intent.tags.includes(tag)).length;
+    return posts.filter((post: StoredPost) => post.tags.includes(tag)).length;
   };
 
-  const filteredIntents = useMemo(() => {
-    return shareIntents.filter((intent: StoredShareIntent) => {
+  const filteredPosts = useMemo(() => {
+    return posts.filter((post: StoredPost) => {
       const matchesSearch = searchQuery
-        ? (intent.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-           intent.url.toLowerCase().includes(searchQuery.toLowerCase()))
+        ? (post.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+           post.url.toLowerCase().includes(searchQuery.toLowerCase()))
         : true;
 
       const matchesTags =
         selectedTags.length === 0 ||
-        selectedTags.every((tag) => intent.tags.includes(tag));
+        selectedTags.every((tag) => post.tags.includes(tag));
 
       return matchesSearch && matchesTags;
     });
-  }, [searchQuery, selectedTags, shareIntents]);
+  }, [searchQuery, selectedTags, posts]);
 
   if (!isAuthenticated) {
     return (
@@ -138,7 +138,7 @@ export default function SearchScreen() {
         </ScrollView>
       </View>
 
-      {filteredIntents.length === 0 ? (
+      {filteredPosts.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>
             {searchQuery || selectedTags.length > 0
@@ -148,17 +148,17 @@ export default function SearchScreen() {
         </View>
       ) : (
         <ScrollView style={styles.resultsContainer}>
-          {filteredIntents.map((intent) => (
+          {filteredPosts.map((post) => (
             <PreviewPost
-              key={intent.timestamp}
-              url={intent.url}
-              title={intent.title}
-              thumbnail={intent.thumbnail}
-              tags={intent.tags}
+              key={post.timestamp}
+              url={post.url}
+              title={post.title}
+              thumbnail={post.thumbnail}
+              tags={post.tags}
               onPress={() =>
                 router.push({
                   pathname: "/share-intent/[id]",
-                  params: { id: intent.timestamp.toString() },
+                  params: { id: post.timestamp.toString() },
                 })
               }
             />

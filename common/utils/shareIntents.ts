@@ -1,13 +1,13 @@
-import { getShareIntents } from '@/config/storage/persistent';
-import { StoredShareIntent } from '@/types/share-intents';
+import { getPosts } from '@/config/storage/persistent';
+import { StoredPost } from '@/types/share-intents';
 
-export function getShareIntent(timestamp: number): StoredShareIntent {
-  const shareIntents = getShareIntents();
-  const shareIntent = shareIntents.find((intent: StoredShareIntent) => intent.timestamp === timestamp);
+export function getPost(timestamp: number): StoredPost {
+  const posts = getPosts();
+  const post = posts.find((post: StoredPost) => post.timestamp === timestamp);
   
-  if (!shareIntent) {
-    throw new Error('Share intent not found');
+  if (!post) {
+    throw new Error('Post not found');
   }
 
-  return shareIntent;
+  return post;
 } 

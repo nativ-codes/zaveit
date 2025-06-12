@@ -1,8 +1,7 @@
 import { PreviewPost } from '@/common/components';
 import { IMAGE_PLACEHOLDER } from '@/common/constants';
 import { useAuth } from '@/config/contexts/auth.context';
-import { saveShareIntent } from '@/config/storage/persistent';
-import { savePost } from '@/services/posts.service';
+import { savePost } from '@/config/storage/persistent';
 import { OEmbedData, PlatformConfig, SocialPlatform } from '@/types';
 import { Stack, useRouter } from 'expo-router';
 import { useShareIntentContext } from 'expo-share-intent';
@@ -116,23 +115,20 @@ console.log(">> metadata", JSON.stringify(metadata));
   const handleSave = async () => {
     if (shareIntent?.webUrl) {
       // Save to local storage
-      saveShareIntent({
+      const post = {
         id: uuid(),
         url: shareIntent.webUrl,
         title: metadata?.title,
         author: metadata?.author_name,
         thumbnail: metadata?.thumbnail_url,
         timestamp: Date.now()
-      });
+      }
+      savePost(post);
 
       // Save to Firestore
       try {
         if (user) {
-          await savePost(user.id, {
-            url: shareIntent.webUrl,
-            title: metadata?.title,
-            thumbnail: metadata?.thumbnail_url
-          });
+          await savePost(post);
         }
       } catch (err) {
         console.error('Failed to save post to Firestore:', err);

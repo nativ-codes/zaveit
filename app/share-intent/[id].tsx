@@ -1,5 +1,5 @@
-import { getShareIntent } from '@/common/utils/shareIntents';
-import { StoredShareIntent } from '@/types/share-intents';
+import { getPost } from '@/common/utils/shareIntents';
+import { StoredPost } from '@/types/share-intents';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import React from 'react';
@@ -8,13 +8,13 @@ import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 export default function ShareIntentDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const navigation = useNavigation();
-  const [shareIntent, setShareIntent] = React.useState<StoredShareIntent | null>(null);
+  const [post, setPost] = React.useState<StoredPost | null>(null);
   const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     try {
-      const data = getShareIntent(parseInt(id));
-      setShareIntent(data);
+      const data = getPost(parseInt(id));
+      setPost(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load share intent');
     }
@@ -37,7 +37,7 @@ export default function ShareIntentDetailScreen() {
     );
   }
 
-  if (!shareIntent) {
+  if (!post) {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorText}>Share intent not found</Text>
@@ -47,28 +47,28 @@ export default function ShareIntentDetailScreen() {
 
   return (
     <ScrollView style={styles.container}>
-      {shareIntent.thumbnail && (
+      {post.thumbnail && (
         <Image
-          source={{ uri: shareIntent.thumbnail }}
+          source={{ uri: post.thumbnail }}
           style={styles.image}
           resizeMode="cover"
         />
       )}
 
       <View style={styles.content}>
-        {shareIntent.title && (
-          <Text style={styles.title}>{shareIntent.title}</Text>
+        {post.title && (
+          <Text style={styles.title}>{post.title}</Text>
         )}
 
-        {shareIntent.author && (
-          <Text style={styles.author}>by {shareIntent.author}</Text>
+        {post.author && (
+          <Text style={styles.author}>by {post.author}</Text>
         )}
 
-        <Text style={styles.url}>{shareIntent.url}</Text>
+        <Text style={styles.url}>{post.url}</Text>
 
-        {shareIntent.tags?.length > 0 && (
+        {post.tags?.length > 0 && (
           <View style={styles.tagsContainer}>
-            {shareIntent.tags.map((tag, index) => (
+            {post.tags.map((tag, index) => (
               <View key={index} style={styles.tag}>
                 <Text style={styles.tagText}>#{tag}</Text>
               </View>

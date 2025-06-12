@@ -29,7 +29,7 @@ function HorizontalScrollViewPosts({
           <Element
             {...post}
             key={post.id}
-            onPress={() => onPostPress(post.id)}
+            onPress={() => onPostPress(post)}
           />
         ))}
       </ScrollView>

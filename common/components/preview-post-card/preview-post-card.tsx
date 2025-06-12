@@ -1,4 +1,4 @@
-import { MAX_TAGS_LENGTH } from "@/common/constants";
+import { IMAGE_PLACEHOLDER, MAX_TAGS_LENGTH } from "@/common/constants";
 import { ACTIVE_OPACITY } from "@/common/constants/ui";
 import { Units } from "@/common/constants/units";
 import { GeneralStyles } from "@/common/styles";
@@ -26,14 +26,13 @@ function PreviewPostCard({
       accessibilityRole="button"
       accessibilityLabel={`View details for ${title || url}`}
     >
-      {thumbnail && (
-        <Image
-          source={{ uri: thumbnail }}
-          style={styles.image}
-          contentFit="cover"
-          accessibilityLabel="Thumbnail image"
-        />
-      )}
+      <Image
+        source={{ uri: thumbnail }}
+        placeholder={IMAGE_PLACEHOLDER}
+        style={styles.image}
+        contentFit="cover"
+        accessibilityLabel="Thumbnail image"
+      />
 
       <View style={styles.content}>
         {title && (

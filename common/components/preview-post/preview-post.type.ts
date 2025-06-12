@@ -1,5 +1,5 @@
-import { StoredShareIntent } from '@/types/share-intents';
+import { StoredPost } from '@/types/share-intents';
 
-export type PreviewPostPropsType = Omit<StoredShareIntent, 'metadata' | 'author' | 'timestamp' | 'id' > & {
-  onPress: () => void;
+export type PreviewPostPropsType = Omit<StoredPost, 'metadata' | 'author' | 'timestamp' | 'id' > & {
+  onPress?: () => void;
 }; 

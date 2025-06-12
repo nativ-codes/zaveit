@@ -24,7 +24,7 @@ export interface OEmbedData {
   cache_age?: number;
 }
 
-export interface StoredShareIntent {
+export interface StoredPost {
   id: string;
   url: string;
   title?: string;
@@ -35,17 +35,17 @@ export interface StoredShareIntent {
   tags: string[];
 }
 
-export type ShareIntentMetadata = {
+export type PostMetadata = {
   title?: string;
   'og:image'?: string;
 };
 
-export interface ShareIntentResponse {
+export interface PostResponse {
   type: string;
   text?: string;
   webUrl?: string;
   files?: string[];
-  metadata?: ShareIntentMetadata;
+  metadata?: PostMetadata;
 }
 
 // Platform-specific types
