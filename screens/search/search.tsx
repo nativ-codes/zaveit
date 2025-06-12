@@ -1,5 +1,4 @@
 import { PreviewPostTile } from "@/common/components";
-import HorizontalScrollViewPosts from "@/common/components/horizontal-scrollview-posts/horizontal-scrollview-posts";
 import { Colors } from "@/common/constants/colors";
 import { SafeAreaEdges } from "@/common/constants/safe-area";
 import { ACTIVE_OPACITY } from "@/common/constants/ui";
@@ -18,6 +17,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import TagPostsList from "./components/tag-posts-list/tag-posts-list";
 
 export default function SearchScreen() {
   const router = useRouter();
@@ -47,12 +47,40 @@ export default function SearchScreen() {
     });
   };
 
+  const getTagCount = (tag: string) => {
+    if (!posts || posts.length === 0) return 0;
+    return posts.filter((post: StoredPost) => post.tags && post.tags.includes(tag)).length;
+  };
+
+  const filteredPosts = useMemo(() => {
+    let filtered = posts;
+    
+    // Filter by search query if it exists
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(post => 
+        (post.title?.toLowerCase().includes(query) ?? false) ||
+        post.url.toLowerCase().includes(query)
+      );
+    }
+    
+    // Filter by selected tags if any
+    if (selectedTags.length > 0) {
+      filtered = filtered.filter(post => 
+        selectedTags.every(tag => post.tags && post.tags.includes(tag))
+      );
+    }
+    
+    return filtered;
+  }, [posts, selectedTags, searchQuery]);
+
   const availableTags = useMemo(() => {
     if (!posts || posts.length === 0) return [];
     
     const tagCounts = new Map<string, number>();
+    const postsToConsider = filteredPosts;
     
-    posts.forEach((post: StoredPost) => {
+    postsToConsider.forEach((post: StoredPost) => {
       if (post.tags && Array.isArray(post.tags)) {
         post.tags.forEach((tag: string) => {
           tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
@@ -63,37 +91,21 @@ export default function SearchScreen() {
     return Array.from(tagCounts.entries())
       .sort(([, countA], [, countB]) => countB - countA)
       .map(([tag]) => tag);
-  }, [posts]);
+  }, [posts, filteredPosts]);
 
-  const getTagCount = (tag: string) => {
-    if (!posts || posts.length === 0) return 0;
-    return posts.filter((post: StoredPost) => post.tags && post.tags.includes(tag)).length;
-  };
-
-  const getPostsForTag = (tag: string) => {
-    if (!posts || posts.length === 0) return [];
-    return posts.filter((post: StoredPost) => post.tags && post.tags.includes(tag));
-  };
-
-  const renderTagSection = ({ item: tag }: { item: string }) => {
-    const tagPosts = getPostsForTag(tag);
-    if (tagPosts.length === 0) return null;
-
-    return (
-      <HorizontalScrollViewPosts
-        title={`#${tag.toLowerCase()}`}
-        posts={tagPosts}
-        Element={PreviewPostTile}
-        onViewAll={() => handleTagSelect(tag)}
-        onPostPress={(timestamp) => {
-          router.push({
-            pathname: "/share-intent/[id]",
-            params: { id: timestamp.toString() },
-          });
-        }}
-      />
-    );
-  };
+  const renderFilteredPost = ({ item: post }: { item: StoredPost }) => (
+    <PreviewPostTile
+      url={post.url}
+      title={post.title}
+      thumbnail={post.thumbnail}
+      onPress={() => {
+        router.push({
+          pathname: "/share-intent/[id]",
+          params: { id: post.id },
+        });
+      }}
+    />
+  );
 
   return (
     <SafeAreaView edges={SafeAreaEdges.noBottom} style={styles.container}>
@@ -138,19 +150,31 @@ export default function SearchScreen() {
         </ScrollView>
       </View>
 
-      {availableTags.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>
-            No tags found. Start adding content to see tags.
+      {selectedTags.length > 0 || searchQuery.trim() ? (
+        <View style={styles.filteredSection}>
+          <Text style={styles.filteredTitle}>
+            {selectedTags.length > 0 
+              ? `Posts with ${selectedTags.map(tag => `#${tag.toLowerCase()}`).join(" & ")}`
+              : `Search results for "${searchQuery}"`}
           </Text>
+          <FlatList
+            data={filteredPosts}
+            renderItem={renderFilteredPost}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.filteredContent}
+            ItemSeparatorComponent={() => <View style={{ height: Units.s16 }} />}
+          />
         </View>
       ) : (
-        <FlatList
-          data={availableTags}
-          renderItem={renderTagSection}
-          keyExtractor={(tag) => tag}
-          contentContainerStyle={styles.resultsContainer}
-        />
+        availableTags.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>
+              No tags found. Start adding content to see tags.
+            </Text>
+          </View>
+        ) : (
+          <TagPostsList />
+        )
       )}
     </SafeAreaView>
   );
@@ -194,10 +218,18 @@ const styles = StyleSheet.create({
   selectedTagText: {
     color: Colors.text.primary,
   },
-  resultsContainer: {
+  filteredSection: {
     flex: 1,
     paddingHorizontal: Units.s16,
-    gap: Units.s24,
+  },
+  filteredTitle: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: Colors.text.primary,
+    marginBottom: Units.s16,
+  },
+  filteredContent: {
+    paddingBottom: Units.s16,
   },
   emptyContainer: {
     flex: 1,
@@ -209,40 +241,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.text.secondary,
     textAlign: "center",
-  },
-  loginContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: Units.s20,
-  },
-  loginTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: Colors.text.primary,
-    marginTop: Units.s24,
-    textAlign: "center",
-  },
-  loginSubtitle: {
-    fontSize: 16,
-    color: Colors.text.secondary,
-    marginTop: Units.s8,
-    textAlign: "center",
-    marginBottom: Units.s32,
-  },
-  loginButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: Colors.surface.primary,
-    paddingHorizontal: Units.s24,
-    paddingVertical: Units.s12,
-    borderRadius: Units.s8,
-    borderWidth: 1,
-    borderColor: Colors.text.secondary,
-  },
-  loginButtonText: {
-    fontSize: 16,
-    color: Colors.text.primary,
-    fontWeight: "500",
   },
 });
