@@ -5,13 +5,13 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    backgroundColor: Colors.background.primary,
-    borderRadius: Units.s16,
-    alignItems: 'center',
-    overflow: 'hidden',
-    marginBottom: Units.s16,
+    backgroundColor: Colors.surface.primary,
+    borderRadius: Units.s20,
+    alignItems: 'center'
   },
   image: {
+    borderTopLeftRadius: Units.s20,
+    borderBottomLeftRadius: Units.s20,
     width: Units.s128,
     height: '100%',
   },

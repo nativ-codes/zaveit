@@ -1,10 +1,11 @@
 import { MAX_TAGS_LENGTH } from "@/common/constants";
 import { ACTIVE_OPACITY } from "@/common/constants/ui";
 import { Units } from "@/common/constants/units";
+import { GeneralStyles } from "@/common/styles";
 import { getDomainFromUrl } from "@/common/utils/formatters";
 import { Image } from "expo-image";
 import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { styles } from "./preview-post.style";
 import { PreviewPostPropsType } from "./preview-post.type";
 
@@ -17,7 +18,7 @@ function PreviewPost({
 }: PreviewPostPropsType) {
   return (
     <TouchableOpacity
-      style={styles.container}
+      style={StyleSheet.compose(styles.container, GeneralStyles.shadow)}
       onPress={onPress}
       activeOpacity={ACTIVE_OPACITY}
       accessibilityRole="button"

@@ -1,8 +1,9 @@
-import { PreviewPostTile } from "@/common/components";
+import { PreviewPost } from "@/common/components";
 import { Colors } from "@/common/constants/colors";
 import { SafeAreaEdges } from "@/common/constants/safe-area";
 import { ACTIVE_OPACITY } from "@/common/constants/ui";
 import { Units } from "@/common/constants/units";
+import { GeneralStyles } from "@/common/styles";
 import { getPosts } from "@/config/storage/persistent";
 import { StoredPost } from "@/types";
 import { useRouter } from "expo-router";
@@ -94,10 +95,8 @@ export default function SearchScreen() {
   }, [posts, filteredPosts]);
 
   const renderFilteredPost = ({ item: post }: { item: StoredPost }) => (
-    <PreviewPostTile
-      url={post.url}
-      title={post.title}
-      thumbnail={post.thumbnail}
+    <PreviewPost
+      {...post}
       onPress={() => {
         router.push({
           pathname: "/share-intent/[id]",
@@ -111,13 +110,13 @@ export default function SearchScreen() {
     <SafeAreaView edges={SafeAreaEdges.noBottom} style={styles.container}>
       <View style={styles.searchContainer}>
         <TextInput
-          style={styles.searchInput}
+          style={StyleSheet.compose(styles.searchInput, GeneralStyles.shadow)}
           placeholder="Search your saved content..."
           value={searchQuery}
           placeholderTextColor={Colors.text.placeholder}
           onChangeText={setSearchQuery}
         />
-
+      
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -125,7 +124,6 @@ export default function SearchScreen() {
         >
           {availableTags.map((tag) => {
             const isSelected = selectedTags.includes(tag);
-            const count = getTagCount(tag);
             return (
               <TouchableOpacity
                 key={tag}
@@ -137,12 +135,9 @@ export default function SearchScreen() {
                 onPress={() => handleTagSelect(tag)}
               >
                 <Text
-                  style={[
-                    styles.tagText,
-                    isSelected && styles.selectedTagText,
-                  ]}
+                  style={[styles.tagText, isSelected && styles.selectedTagText]}
                 >
-                  #{tag.toLowerCase()} ({count})
+                  #{tag.toLowerCase()}
                 </Text>
               </TouchableOpacity>
             );
@@ -153,8 +148,10 @@ export default function SearchScreen() {
       {selectedTags.length > 0 || searchQuery.trim() ? (
         <View style={styles.filteredSection}>
           <Text style={styles.filteredTitle}>
-            {selectedTags.length > 0 
-              ? `Posts with ${selectedTags.map(tag => `#${tag.toLowerCase()}`).join(" & ")}`
+            {selectedTags.length > 0
+              ? `Posts with ${selectedTags
+                  .map((tag) => `#${tag.toLowerCase()}`)
+                  .join(" & ")}`
               : `Search results for "${searchQuery}"`}
           </Text>
           <FlatList
@@ -162,19 +159,19 @@ export default function SearchScreen() {
             renderItem={renderFilteredPost}
             keyExtractor={(item) => item.id}
             contentContainerStyle={styles.filteredContent}
-            ItemSeparatorComponent={() => <View style={{ height: Units.s16 }} />}
+            ItemSeparatorComponent={() => (
+              <View style={{ height: Units.s16 }} />
+            )}
           />
         </View>
+      ) : availableTags.length === 0 ? (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>
+            No tags found. Start adding content to see tags.
+          </Text>
+        </View>
       ) : (
-        availableTags.length === 0 ? (
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>
-              No tags found. Start adding content to see tags.
-            </Text>
-          </View>
-        ) : (
-          <TagPostsList />
-        )
+        <TagPostsList />
       )}
     </SafeAreaView>
   );
@@ -203,12 +200,13 @@ const styles = StyleSheet.create({
     gap: Units.s8,
   },
   tagButton: {
-    padding: Units.s8,
+    paddingHorizontal: Units.s12,
+    paddingVertical: Units.s8,
     borderRadius: Units.s16,
-    backgroundColor: Colors.surface.primary,
+    // backgroundColor: Colors.surface.primary,
   },
   selectedTagButton: {
-    backgroundColor: Colors.primary,
+    backgroundColor: Colors.surface.tertiary,
   },
   tagText: {
     fontSize: 16,
@@ -216,7 +214,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   selectedTagText: {
-    color: Colors.text.primary,
+    color: Colors.text.onSurface,
   },
   filteredSection: {
     flex: 1,

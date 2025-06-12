@@ -7,7 +7,7 @@ export const styles = StyleSheet.create({
     width: Units.s256,
     borderRadius: Units.s24,
     flexDirection: "row",
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.white
   },
   image: {
     width: Units.s88,
