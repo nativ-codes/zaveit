@@ -24,7 +24,7 @@ export const useSyncLists = () => {
 
       const lists = userListsQuery.docs.map(doc => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }));
 
       console.log('[Sync Lists] Found lists:', lists);

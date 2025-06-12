@@ -46,6 +46,7 @@ export default function RootLayout() {
                 name="(tabs)"
               />
               <Stack.Screen name="+not-found" />
+              <Stack.Screen name="view-posts" />
               <Stack.Screen
                 name="login"
                 options={{

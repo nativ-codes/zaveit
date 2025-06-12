@@ -22,6 +22,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { ViewPostsTypeEnum } from "../view-posts/view-posts.type";
 
 export default function HomeScreen() {
   const { hasShareIntent } = useShareIntentContext();
@@ -103,8 +104,10 @@ export default function HomeScreen() {
               })
             }
             onViewAll={() => {
-              // TODO: Implement view all functionality
-              console.log("View all clicked");
+              router.push({
+                pathname: "/view-posts",
+                params: { type: ViewPostsTypeEnum.RECENTLY_ADDED },
+              });
             }}
           />
 
@@ -119,8 +122,10 @@ export default function HomeScreen() {
               })
             }
             onViewAll={() => {
-              // TODO: Implement view all functionality
-              console.log("View all clicked");
+              router.push({
+                pathname: "/view-posts",
+                params: { type: ViewPostsTypeEnum.FREQUENTLY_ACCESSED },
+              });
             }}
           />
 

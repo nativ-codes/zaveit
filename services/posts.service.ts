@@ -1,13 +1,10 @@
+import { PostType } from "@/types";
+import auth from "@react-native-firebase/auth";
 import firestore from '@react-native-firebase/firestore';
 
-export type PostType = {
-  url: string;
-  title: string | undefined;
-  thumbnail: string | undefined;
-};
-
-export const savePost = async (userId: string, post: PostType): Promise<void> => {
+export const savePostService = async (post: PostType): Promise<void> => {
   try {
+    const userId = auth().currentUser?.uid;
     console.log('[Posts Service] Saving post:', { userId, post });
     
     // Find the user's list
@@ -24,16 +21,18 @@ export const savePost = async (userId: string, post: PostType): Promise<void> =>
     await userList.ref.update({
       userId: userId,
       posts: firestore.FieldValue.arrayUnion({
+        id: post.id,
         title: post.title || '',
         thumbnail: post.thumbnail || '',
         url: post.url || '',
+        tags: post.tags || [],
         createdAt: new Date().toISOString(),
       })
     });
       
     console.log('[Posts Service] Post saved successfully');
   } catch (error: any) {
-    console.error('[Posts Service] Error saving post:', { userId, error: error.message });
+    console.error('[Posts Service] Error saving post:', { error: error.message });
     throw {
       code: error.code,
       message: error.message,

@@ -47,7 +47,7 @@ function PreviewPostCard({
 
         {tags?.length > 0 && (
           <View style={styles.tagsContainer} accessibilityLabel="Tags">
-            {tags.slice(0, MAX_TAGS_LENGTH).map((tag) => (
+            {tags?.slice(0, MAX_TAGS_LENGTH).map((tag) => (
               <View
                 key={tag}
                 style={styles.tag}

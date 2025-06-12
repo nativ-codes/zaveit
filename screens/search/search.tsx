@@ -1,14 +1,15 @@
-import { PreviewPost } from "@/common/components";
+import { PreviewPostTile } from "@/common/components";
+import HorizontalScrollViewPosts from "@/common/components/horizontal-scrollview-posts/horizontal-scrollview-posts";
 import { Colors } from "@/common/constants/colors";
 import { SafeAreaEdges } from "@/common/constants/safe-area";
 import { ACTIVE_OPACITY } from "@/common/constants/ui";
 import { Units } from "@/common/constants/units";
-import { useAuth } from "@/config/contexts/auth.context";
 import { getPosts } from "@/config/storage/persistent";
 import { StoredPost } from "@/types";
 import { useRouter } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import {
+  FlatList,
   ScrollView,
   StyleSheet,
   Text,
@@ -20,14 +21,21 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SearchScreen() {
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [posts, setPosts] = useState<StoredPost[]>([]);
 
   useEffect(() => {
-    const storedPosts = getPosts();
-    setPosts(storedPosts);
+    const loadPosts = async () => {
+      try {
+        const storedPosts = getPosts();
+        setPosts(storedPosts || []);
+      } catch (error) {
+        console.error("Error loading posts:", error);
+        setPosts([]);
+      }
+    };
+    loadPosts();
   }, []);
 
   const handleTagSelect = (tag: string) => {
@@ -40,60 +48,52 @@ export default function SearchScreen() {
   };
 
   const availableTags = useMemo(() => {
+    if (!posts || posts.length === 0) return [];
+    
     const tagCounts = new Map<string, number>();
     
-    // Count posts for each tag
     posts.forEach((post: StoredPost) => {
-      post.tags.forEach((tag: string) => {
-        tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
-      });
+      if (post.tags && Array.isArray(post.tags)) {
+        post.tags.forEach((tag: string) => {
+          tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+        });
+      }
     });
 
-    // Convert to array and sort by count (descending)
     return Array.from(tagCounts.entries())
       .sort(([, countA], [, countB]) => countB - countA)
       .map(([tag]) => tag);
   }, [posts]);
 
   const getTagCount = (tag: string) => {
-    return posts.filter((post: StoredPost) => post.tags.includes(tag)).length;
+    if (!posts || posts.length === 0) return 0;
+    return posts.filter((post: StoredPost) => post.tags && post.tags.includes(tag)).length;
   };
 
-  const filteredPosts = useMemo(() => {
-    return posts.filter((post: StoredPost) => {
-      const matchesSearch = searchQuery
-        ? (post.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-           post.url.toLowerCase().includes(searchQuery.toLowerCase()))
-        : true;
+  const getPostsForTag = (tag: string) => {
+    if (!posts || posts.length === 0) return [];
+    return posts.filter((post: StoredPost) => post.tags && post.tags.includes(tag));
+  };
 
-      const matchesTags =
-        selectedTags.length === 0 ||
-        selectedTags.every((tag) => post.tags.includes(tag));
+  const renderTagSection = ({ item: tag }: { item: string }) => {
+    const tagPosts = getPostsForTag(tag);
+    if (tagPosts.length === 0) return null;
 
-      return matchesSearch && matchesTags;
-    });
-  }, [searchQuery, selectedTags, posts]);
-
-  if (!isAuthenticated) {
     return (
-      <SafeAreaView edges={SafeAreaEdges.noBottom} style={styles.container}>
-        <View style={styles.loginContainer}>
-          <Text style={styles.loginTitle}>
-            Sign in to search your saved content
-          </Text>
-          <Text style={styles.loginSubtitle}>
-            Your saved content will be synced across devices
-          </Text>
-          <TouchableOpacity
-            style={styles.loginButton}
-            onPress={() => router.push("/login")}
-          >
-            <Text style={styles.loginButtonText}>Sign in with Google</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+      <HorizontalScrollViewPosts
+        title={`#${tag.toLowerCase()}`}
+        posts={tagPosts}
+        Element={PreviewPostTile}
+        onViewAll={() => handleTagSelect(tag)}
+        onPostPress={(timestamp) => {
+          router.push({
+            pathname: "/share-intent/[id]",
+            params: { id: timestamp.toString() },
+          });
+        }}
+      />
     );
-  }
+  };
 
   return (
     <SafeAreaView edges={SafeAreaEdges.noBottom} style={styles.container}>
@@ -138,32 +138,19 @@ export default function SearchScreen() {
         </ScrollView>
       </View>
 
-      {filteredPosts.length === 0 ? (
+      {availableTags.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>
-            {searchQuery || selectedTags.length > 0
-              ? "No results found for your search criteria"
-              : "Start searching or select tags to filter your content"}
+            No tags found. Start adding content to see tags.
           </Text>
         </View>
       ) : (
-        <ScrollView style={styles.resultsContainer}>
-          {filteredPosts.map((post) => (
-            <PreviewPost
-              key={post.timestamp}
-              url={post.url}
-              title={post.title}
-              thumbnail={post.thumbnail}
-              tags={post.tags}
-              onPress={() =>
-                router.push({
-                  pathname: "/share-intent/[id]",
-                  params: { id: post.timestamp.toString() },
-                })
-              }
-            />
-          ))}
-        </ScrollView>
+        <FlatList
+          data={availableTags}
+          renderItem={renderTagSection}
+          keyExtractor={(tag) => tag}
+          contentContainerStyle={styles.resultsContainer}
+        />
       )}
     </SafeAreaView>
   );
@@ -210,6 +197,7 @@ const styles = StyleSheet.create({
   resultsContainer: {
     flex: 1,
     paddingHorizontal: Units.s16,
+    gap: Units.s24,
   },
   emptyContainer: {
     flex: 1,

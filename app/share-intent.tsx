@@ -2,7 +2,7 @@ import { PreviewPost } from '@/common/components';
 import { IMAGE_PLACEHOLDER } from '@/common/constants';
 import { useAuth } from '@/config/contexts/auth.context';
 import { savePost } from '@/config/storage/persistent';
-import { OEmbedData, PlatformConfig, SocialPlatform } from '@/types';
+import { OEmbedData, PlatformConfig, PostType, SocialPlatform } from '@/types';
 import { Stack, useRouter } from 'expo-router';
 import { useShareIntentContext } from 'expo-share-intent';
 import React, { useEffect, useState } from 'react';
@@ -115,25 +115,15 @@ console.log(">> metadata", JSON.stringify(metadata));
   const handleSave = async () => {
     if (shareIntent?.webUrl) {
       // Save to local storage
-      const post = {
+      const post: Partial<PostType> = {
         id: uuid(),
         url: shareIntent.webUrl,
-        title: metadata?.title,
-        author: metadata?.author_name,
-        thumbnail: metadata?.thumbnail_url,
+        title: metadata?.title || '',
+        author: metadata?.author_name || '',
+        thumbnail: metadata?.thumbnail_url || '',
         timestamp: Date.now()
       }
-      savePost(post);
-
-      // Save to Firestore
-      try {
-        if (user) {
-          await savePost(post);
-        }
-      } catch (err) {
-        console.error('Failed to save post to Firestore:', err);
-        // Continue with the flow even if Firestore save fails
-      }
+      await savePost(post);
     }
     resetShareIntent();
     router.replace('/');

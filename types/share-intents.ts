@@ -24,6 +24,16 @@ export interface OEmbedData {
   cache_age?: number;
 }
 
+export type PostType = {
+  id: string;
+  url: string;
+  title: string;
+  author: string;
+  thumbnail: string;
+  timestamp: number;
+  tags: string[];
+};
+
 export interface StoredPost {
   id: string;
   url: string;

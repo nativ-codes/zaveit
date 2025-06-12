@@ -1,6 +1,7 @@
 import { MAX_CONTENT_LENGTH } from '@/common/constants';
 import { generateTags } from '@/services/llm';
-import { StoredPost } from '@/types/share-intents';
+import { savePostService } from '@/services/posts.service';
+import { PostType, StoredPost } from '@/types/share-intents';
 import { MMKV } from 'react-native-mmkv';
 
 export const storage = new MMKV({
@@ -13,7 +14,7 @@ export function getPosts(): StoredPost[] {
   return posts ? JSON.parse(posts) : [];
 }
 
-export async function savePost(post: Omit<StoredPost, 'tags'>): Promise<void> {
+export async function savePost(post: Omit<PostType, 'tags'>): Promise<void> {
   const posts = getPosts();
   
   // Generate tags for the content
@@ -22,13 +23,15 @@ export async function savePost(post: Omit<StoredPost, 'tags'>): Promise<void> {
   const tags = await generateTags(content);
   console.log(">> tags", JSON.stringify(tags));
   
-  const newPost: StoredPost = {
+  const newPost = {
     ...post,
     tags,
   };
 
   posts.unshift(newPost);
   storage.set('posts', JSON.stringify(posts));
+  console.log(">> newPost", JSON.stringify(newPost));
+  await savePostService(newPost);
 }
 
 export function removePost(timestamp: number): void {
