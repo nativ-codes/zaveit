@@ -22,6 +22,7 @@ function TabBar({ state, navigation, insets }: BottomTabBarProps) {
       {TAB_BAR_ITEMS.map((tab, index) => {
         const isFocused = state.index === index;
         const iconName = isFocused ? tab.iconFocused : tab.iconUnfocused;
+        const iconColor = isFocused ? Colors.primary : Colors.text.secondary;
         const handleOnPress = () => navigation.navigate(tab.name);
 
         return (
@@ -29,15 +30,12 @@ function TabBar({ state, navigation, insets }: BottomTabBarProps) {
             key={tab.name}
             onPress={handleOnPress}
             activeOpacity={ACTIVE_OPACITY}
-            style={StyleSheet.compose(
-              styles.tabBarItem,
-              isFocused && styles.tabBarItemFocused
-            )}
+            style={styles.tabBarItem}
           >
             <Ionicons
               name={iconName as keyof typeof Ionicons.glyphMap}
               size={24}
-              color={Colors.text.primary}
+              color={iconColor}
             />
           </TouchableOpacity>
         );

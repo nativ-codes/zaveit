@@ -20,8 +20,5 @@ export default StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: Units.s32,
-  },
-  tabBarItemFocused: {
-    backgroundColor: Colors.surface.secondary,
-  },
+  }
 });
