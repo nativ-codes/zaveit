@@ -7,7 +7,6 @@ export const styles = StyleSheet.create({
   },
   resultsContainer: {
     flex: 1,
-    paddingHorizontal: Units.s16,
-    gap: Units.s24,
+    gap: Units.s16,
   },
 }); 

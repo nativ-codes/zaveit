@@ -106,16 +106,22 @@ export default function SearchScreen() {
     />
   );
 
+  const clearSearch = () => {
+    setSearchQuery("");
+  };
+
   return (
     <SafeAreaView edges={SafeAreaEdges.noBottom} style={styles.container}>
       <View style={styles.searchContainer}>
-        <TextInput
-          style={StyleSheet.compose(styles.searchInput, GeneralStyles.shadow)}
-          placeholder="Search your saved content..."
-          value={searchQuery}
-          placeholderTextColor={Colors.text.placeholder}
-          onChangeText={setSearchQuery}
-        />
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search your saved content..."
+            value={searchQuery}
+            placeholderTextColor={Colors.text.placeholder}
+            onChangeText={setSearchQuery}
+          />
+        </View>
       
         <ScrollView
           horizontal
@@ -147,13 +153,7 @@ export default function SearchScreen() {
 
       {selectedTags.length > 0 || searchQuery.trim() ? (
         <View style={styles.filteredSection}>
-          <Text style={styles.filteredTitle}>
-            {selectedTags.length > 0
-              ? `Posts with ${selectedTags
-                  .map((tag) => `#${tag.toLowerCase()}`)
-                  .join(" & ")}`
-              : `Search results for "${searchQuery}"`}
-          </Text>
+
           <FlatList
             data={filteredPosts}
             renderItem={renderFilteredPost}
@@ -185,15 +185,37 @@ const styles = StyleSheet.create({
   searchContainer: {
     gap: Units.s16,
     paddingTop: Units.s16,
+    marginBottom: Units.s32,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: Units.s16,
+    borderRadius: Units.s24,
+    backgroundColor: Colors.surface.primary,
+    ...GeneralStyles.shadow,
   },
   searchInput: {
+    flex: 1,
     fontSize: 16,
     color: Colors.text.primary,
-    backgroundColor: Colors.surface.primary,
     paddingVertical: Units.s20,
     paddingHorizontal: Units.s16,
+    borderRadius: Units.s24
+  },
+  clearButton: {
+    height: 60,
+    width: 60,
+    backgroundColor: Colors.primary,
     borderRadius: Units.s24,
-    marginHorizontal: Units.s16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    // marginRight: Units.s8,
+  },
+  clearButtonText: {
+    color: Colors.text.onSurface,
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   tagsContent: {
     paddingHorizontal: Units.s16,
@@ -203,10 +225,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: Units.s12,
     paddingVertical: Units.s8,
     borderRadius: Units.s16,
-    // backgroundColor: Colors.surface.primary,
   },
   selectedTagButton: {
-    backgroundColor: Colors.surface.tertiary,
+    backgroundColor: Colors.primary
   },
   tagText: {
     fontSize: 16,
