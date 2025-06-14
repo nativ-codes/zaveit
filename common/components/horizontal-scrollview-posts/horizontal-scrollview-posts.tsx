@@ -15,9 +15,9 @@ function HorizontalScrollViewPosts({
     <View>
       <View style={styles.titleContainer}>
         <Text style={styles.title}>{title}</Text>
-        <TouchableOpacity hitSlop={Units.s16} onPress={onViewAll}>
+        {onViewAll && <TouchableOpacity hitSlop={Units.s16} onPress={onViewAll}>
           <Text style={styles.seeAllButtonText}>View All</Text>
-        </TouchableOpacity>
+        </TouchableOpacity>}
       </View>
       <ScrollView
         horizontal
@@ -29,7 +29,7 @@ function HorizontalScrollViewPosts({
           <Element
             {...post}
             key={post.id}
-            onPress={() => onPostPress(post)}
+            onPress={() => onPostPress(post.id)}
           />
         ))}
       </ScrollView>

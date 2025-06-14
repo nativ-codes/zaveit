@@ -2,7 +2,8 @@ import { MAX_CONTENT_LENGTH } from '@/common/constants';
 import { generateTags } from '@/services/llm';
 import { savePostService } from '@/services/posts.service';
 import { PostType, StoredPost } from '@/types/share-intents';
-import { MMKV } from 'react-native-mmkv';
+import { useMemo } from 'react';
+import { MMKV, useMMKVString } from 'react-native-mmkv';
 
 export const storage = new MMKV({
   id: "zaveit-storage",
@@ -43,3 +44,9 @@ export function removePost(timestamp: number): void {
 export function savePosts(posts: StoredPost[]): void {
   storage.set('posts', JSON.stringify(posts));
 } 
+
+export const usePosts = (): StoredPost[] => {
+  const [posts] = useMMKVString("posts", storage);
+
+  return useMemo(() => JSON.parse(posts || "[]"), [posts]);
+};

@@ -12,4 +12,10 @@ export const GeneralStyles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 3,
   },
+  flex: {
+    flex: 1,
+  },
+  directionRow: {
+    flexDirection: "row",
+  },
 });

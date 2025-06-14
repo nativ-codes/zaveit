@@ -16,6 +16,7 @@ export default StyleSheet.create({
   },
   seeAllButtonText: {
     fontSize: 15,
+    fontWeight: "500",
     color: Colors.primary,
   },
   horizontalScroll: {
