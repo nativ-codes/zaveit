@@ -1,5 +1,5 @@
 import { getPosts } from '@/config/storage/persistent';
-import { StoredPost } from '@/types/share-intents';
+import { StoredPost } from '@/types/posts';
 
 export function getPost(timestamp: number): StoredPost {
   const posts = getPosts();

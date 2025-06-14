@@ -1,1 +1,1 @@
-export * from './share-intents';
+export * from './posts';

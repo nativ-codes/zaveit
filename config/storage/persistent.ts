@@ -1,7 +1,7 @@
 import { MAX_CONTENT_LENGTH } from '@/common/constants';
 import { generateTags } from '@/services/llm';
 import { savePostService } from '@/services/posts.service';
-import { PostType, StoredPost } from '@/types/share-intents';
+import { PostType, StoredPost } from '@/types/posts';
 import { useMemo } from 'react';
 import { MMKV, useMMKVString } from 'react-native-mmkv';
 

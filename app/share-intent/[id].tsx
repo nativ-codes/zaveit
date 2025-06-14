@@ -1,5 +1,5 @@
 import { getPost } from '@/common/utils/shareIntents';
-import { StoredPost } from '@/types/share-intents';
+import { StoredPost } from '@/types/posts';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import React from 'react';
