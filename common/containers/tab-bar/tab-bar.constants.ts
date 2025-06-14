@@ -8,14 +8,8 @@ export const TAB_BAR_ITEMS = [
   {
     name: "search",
     label: "SEARCH",
-    iconFocused: "search",
-    iconUnfocused: "search-outline",
-  },
-  {
-    name: "categories",
-    label: "CATEGORIES",
-    iconFocused: "list",
-    iconUnfocused: "list-outline",
+    iconFocused: "tag-multiple",
+    iconUnfocused: "tag-multiple-outline",
   },
   {
     name: "settings",

@@ -10,7 +10,6 @@ export default function TabLayout() {
     <Tabs screenOptions={SCREEN_OPTIONS} tabBar={TabBar}>
       <Tabs.Screen name="index" />
       <Tabs.Screen name="search" />
-      <Tabs.Screen name="categories" />
       <Tabs.Screen name="settings" />
     </Tabs>
   );
