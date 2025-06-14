@@ -19,6 +19,6 @@ export default StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: Units.s32,
+    borderRadius: Units.s32
   }
 });

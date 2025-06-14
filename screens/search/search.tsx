@@ -72,7 +72,9 @@ function SearchScreen() {
 
   return (
     <TabLayout>
+      <Spacer direction="bottom" size="s8">
       <TopBar left={<Text style={styles.title}>Search</Text>} />
+      </Spacer>
       <Spacer direction="bottom" gap="s16" size="s32">
         <Spacer direction="horizontal" size="s16">
           <TextInput

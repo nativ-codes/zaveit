@@ -49,10 +49,12 @@ function HomeScreen() {
 
   return (
     <TabLayout>
-      <TopBar
-        left={<Text style={styles.title}>Home</Text>}
-        right={<Text style={styles.addPostButton}>Add Post</Text>}
-      />
+      <Spacer direction="bottom" size="s8">
+        <TopBar
+          left={<Text style={styles.title}>Home</Text>}
+          right={<Text style={styles.addPostButton}>Add Post</Text>}
+        />
+      </Spacer>
 
       <Spacer gap="s16">
         <HorizontalScrollViewPosts
