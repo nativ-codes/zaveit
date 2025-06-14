@@ -4,6 +4,7 @@ import {
   TopBar,
 } from "@/common/components";
 import { Spacer, TabLayout } from "@/common/layouts";
+import { GeneralStyles } from "@/common/styles";
 import { usePosts } from "@/config/storage/persistent";
 import { useSyncLists } from "@/config/use-sync-lists";
 import { useRouter } from "expo-router";
@@ -11,7 +12,6 @@ import { useShareIntentContext } from "expo-share-intent";
 import React, { useEffect, useMemo } from "react";
 import { Text } from "react-native";
 import { getRandomPick } from "../search/search.util";
-import styles from "./home.style";
 
 function HomeScreen() {
   const { hasShareIntent } = useShareIntentContext();
@@ -51,8 +51,8 @@ function HomeScreen() {
     <TabLayout>
       <Spacer direction="bottom" size="s8">
         <TopBar
-          left={<Text style={styles.title}>Home</Text>}
-          right={<Text style={styles.addPostButton}>Add Post</Text>}
+          left={<Text style={GeneralStyles.textTitleScreen}>Home</Text>}
+          right={<Text style={GeneralStyles.textLink}>Add Post</Text>}
         />
       </Spacer>
 

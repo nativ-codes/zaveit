@@ -5,6 +5,7 @@ import {
 } from "@/common/components";
 import { Colors } from "@/common/constants/colors";
 import { Spacer, TabLayout } from "@/common/layouts";
+import { GeneralStyles } from "@/common/styles";
 import { usePosts } from "@/config/storage/persistent";
 import { StoredPost } from "@/types";
 import { useRouter } from "expo-router";
@@ -73,7 +74,7 @@ function SearchScreen() {
   return (
     <TabLayout>
       <Spacer direction="bottom" size="s8">
-      <TopBar left={<Text style={styles.title}>Search</Text>} />
+      <TopBar left={<Text style={GeneralStyles.textTitleScreen}>Search</Text>} />
       </Spacer>
       <Spacer direction="bottom" gap="s16" size="s32">
         <Spacer direction="horizontal" size="s16">
@@ -107,7 +108,7 @@ function SearchScreen() {
           </Text>
         </View>
       ) : (
-        <Spacer gap="s16">
+        <Spacer gap="s24">
           <TagPostsList tags={sortedTags} posts={posts} />
         </Spacer>
       )}

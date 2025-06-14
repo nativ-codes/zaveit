@@ -1,4 +1,4 @@
-import Ionicons from "@expo/vector-icons/MaterialCommunityIcons";
+import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import React from "react";
 
@@ -32,9 +32,9 @@ function TabBar({ state, navigation, insets }: BottomTabBarProps) {
             activeOpacity={ACTIVE_OPACITY}
             style={styles.tabBarItem}
           >
-            <Ionicons
-              name={iconName as keyof typeof Ionicons.glyphMap}
-              size={24}
+            <Icon
+              name={iconName as keyof typeof Icon.glyphMap}
+              size={Units.s24}
               color={iconColor}
             />
           </TouchableOpacity>

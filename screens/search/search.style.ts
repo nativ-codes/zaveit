@@ -23,10 +23,5 @@ export default StyleSheet.create({
     fontSize: 16,
     color: Colors.text.secondary,
     textAlign: "center",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: Colors.text.primary,
-  },
+  }
 });

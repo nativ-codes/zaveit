@@ -1,14 +1,16 @@
 import { TopBar } from "@/common/components";
 import { Spacer, TabLayout } from "@/common/layouts";
+import { GeneralStyles } from "@/common/styles";
 import React from "react";
 import { Text } from "react-native";
-import styles from "./settings.style";
 
 function SettingsScreen() {
   return (
     <TabLayout>
       <Spacer direction="bottom" size="s8">
-        <TopBar left={<Text style={styles.title}>Settings</Text>} />
+        <TopBar
+          left={<Text style={GeneralStyles.textTitleScreen}>Settings</Text>}
+        />
       </Spacer>
     </TabLayout>
   );

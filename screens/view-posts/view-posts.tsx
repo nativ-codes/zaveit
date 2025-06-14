@@ -1,45 +1,30 @@
-import { PreviewPost } from "@/common/components";
-import { SafeAreaEdges } from "@/common/constants/safe-area";
+import { PreviewPost, TopBar } from "@/common/components";
+import { ACTIVE_OPACITY } from "@/common/constants";
+import { Colors } from "@/common/constants/colors";
 import { Units } from "@/common/constants/units";
-import { getPosts } from "@/config/storage/persistent";
+import { Spacer, TabLayout } from "@/common/layouts";
+import { GeneralStyles } from "@/common/styles";
+import { usePosts } from "@/config/storage/persistent";
 import { StoredPost } from "@/types";
+import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect, useMemo, useState } from "react";
-import { FlatList, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { styles } from "./view-posts.style";
-import { ViewPostsTypeEnum } from "./view-posts.type";
+import React, { useMemo } from "react";
+import { Text, TouchableOpacity } from "react-native";
+import { getPostsForTag } from "../search/search.util";
+import { ViewPostsPropsType } from "./view-posts.type";
 
-export default function ViewPostsScreen() {
-  const { type, tag } = useLocalSearchParams<{ type: ViewPostsTypeEnum; tag?: string }>();
+function ViewPostsScreen() {
+  const { tag } = useLocalSearchParams<ViewPostsPropsType>();
   const router = useRouter();
-  const [posts, setPosts] = useState<StoredPost[]>([]);
 
-  useEffect(() => {
-    const storedPosts = getPosts();
-    setPosts(storedPosts);
-  }, []);
+  const posts = usePosts();
 
-  const filteredPosts = useMemo(() => {
-    if (!tag) return posts;
-    return posts.filter(post => post.tags.includes(tag));
-  }, [posts, tag]);
+  const filteredPosts = useMemo(
+    () => getPostsForTag({ posts, tag }),
+    [posts, tag]
+  );
 
-  const getTitle = () => {
-    if (tag) {
-      return `Posts tagged with "${tag}"`;
-    }
-    switch (type) {
-      case ViewPostsTypeEnum.RECENTLY_ADDED:
-        return "Recently Added Posts";
-      case ViewPostsTypeEnum.FREQUENTLY_ACCESSED:
-        return "Frequently Accessed Posts";
-      default:
-        return "All Posts";
-    }
-  };
-
-  const renderItem = ({ item: post }: { item: StoredPost }) => (
+  const renderItem = (post: StoredPost) => (
     <PreviewPost
       key={post.id}
       url={post.url}
@@ -56,19 +41,34 @@ export default function ViewPostsScreen() {
   );
 
   return (
-    <SafeAreaView edges={SafeAreaEdges.noBottom} style={styles.container}>
-      <Text style={styles.title}>{getTitle()}</Text>
-      <FlatList
-        data={filteredPosts}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.scrollContent}
-        ItemSeparatorComponent={() => <View style={{ height: Units.s16 }} />}
-      />
-    </SafeAreaView>
+    <TabLayout>
+      <Spacer direction="bottom" size="s8">
+        <TopBar
+          left={
+            <TouchableOpacity
+              activeOpacity={ACTIVE_OPACITY}
+              onPress={router.back}
+              hitSlop={Units.s16}
+              style={GeneralStyles.backTopBarButton}
+            >
+              <Icon
+                name={"chevron-left"}
+                size={Units.s24}
+                color={Colors.text.primary}
+              />
+            </TouchableOpacity>
+          }
+        />
+      </Spacer>
+      <Spacer direction={["left", "bottom"]} size={"s16"}>
+        <Text style={GeneralStyles.textTitleSection}>{`#${tag}`}</Text>
+      </Spacer>
+
+      <Spacer direction="horizontal" size="s16" gap="s16">
+        {filteredPosts.map(renderItem)}
+      </Spacer>
+    </TabLayout>
   );
 }
 
-export const options = {
-  headerShown: false,
-}; 
+export default ViewPostsScreen;
