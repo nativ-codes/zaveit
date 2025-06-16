@@ -1,3 +1,4 @@
+import { GeneralStyles } from "@/common/styles";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { styles } from "./tag-item.style";
@@ -15,7 +16,7 @@ function TagItem({ tag, isSelected, onPress }: TagItemPropsType) {
     >
       <Text
         style={StyleSheet.compose(
-          styles.tagText,
+          GeneralStyles.textBodyLargeSecondary,
           isSelected && styles.selectedTagText
         )}
       >

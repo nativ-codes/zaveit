@@ -10,11 +10,6 @@ export const styles = StyleSheet.create({
   selectedTagButton: {
     backgroundColor: Colors.primary,
   },
-  tagText: {
-    fontSize: 16,
-    color: Colors.text.secondary,
-    fontWeight: "500",
-  },
   selectedTagText: {
     color: Colors.text.onSurface,
   },

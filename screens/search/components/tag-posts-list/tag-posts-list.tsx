@@ -26,7 +26,7 @@ function TagPostsList({ tags, posts }: TagPostsListPropsType) {
         }}
         onPostPress={(id: string) => {
           router.push({
-            pathname: "/share-intent/[id]",
+            pathname: "/post-details/[id]",
             params: { id },
           });
         }}

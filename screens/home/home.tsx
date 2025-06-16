@@ -42,7 +42,7 @@ function HomeScreen() {
 
   const handleOnPostPress = (postId: string) => {
     router.push({
-      pathname: "/share-intent/[id]",
+      pathname: "/post-details/[id]",
       params: { id: postId },
     });
   };

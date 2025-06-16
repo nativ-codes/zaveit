@@ -82,3 +82,12 @@ export const getRandomPick = (posts: StoredPost[]) => {
 
   return posts[randomIndex];
 };
+
+type GetPostDetailsType = {
+  posts: StoredPost[];
+  id: string;
+};
+
+export const getPostDetails = ({ posts, id }: GetPostDetailsType) => {
+  return posts.find((post) => post.id === id);
+};

@@ -1,8 +1,8 @@
 export enum SocialPlatform {
-  TIKTOK = 'TIKTOK',
-  REDDIT = 'REDDIT',
-  YOUTUBE = 'YOUTUBE',
-  UNKNOWN = 'UNKNOWN'
+  TIKTOK = 'tiktok.com',
+  REDDIT = 'reddit.com',
+  YOUTUBE = 'youtube.com',
+  UNKNOWN = 'unknown'
 }
 
 export interface PlatformConfig {
@@ -33,6 +33,8 @@ export type PostType = {
   timestamp: number;
   tags: string[];
 };
+
+export type PostMetadataType = Omit<PostType, "id" | "timestamp" | "tags">;
 
 export interface StoredPost {
   id: string;

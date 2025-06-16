@@ -1,11 +1,13 @@
-import { useNavigation } from "@react-navigation/native";
-import React, { memo } from "react";
-import { View, StyleSheet } from "react-native";
-
-import Button from "@/common/components/button/button";
 import Text from "@/common/components/text/text";
 import { Row } from "@/common/layouts";
+import Icon from "@expo/vector-icons/Feather";
+import React, { memo } from "react";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 
+import { Colors } from "@/common/constants/colors";
+import { ACTIVE_OPACITY } from "@/common/constants/ui";
+import { Units } from "@/common/constants/units";
+import { router } from "expo-router";
 import styles from "./top-bar.style";
 import { TopBarPropsType } from "./top-bar.type";
 
@@ -16,17 +18,20 @@ function TopBar({
   right,
   testID,
 }: TopBarPropsType) {
-  const navigation = useNavigation();
-
   const renderLeftComponent = () => {
     if (hasBackButton) {
       return (
-        <Button.Icon
-          size="medium"
-          iconName="caret-left"
-          onPress={navigation.goBack}
-          testID={`${testID}_TopBar_BackButton`}
-        />
+        <TouchableOpacity
+          activeOpacity={ACTIVE_OPACITY}
+          onPress={router.back}
+          hitSlop={Units.s16}
+        >
+          <Icon
+            name="chevron-left"
+            size={Units.s24}
+            color={Colors.text.secondary}
+          />
+        </TouchableOpacity>
       );
     } else {
       return left;

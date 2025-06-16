@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { Colors, Units } from "../constants";
+import { Colors } from "../constants";
 
 export const GeneralStyles = StyleSheet.create({
   shadow: {
@@ -18,9 +18,6 @@ export const GeneralStyles = StyleSheet.create({
   directionRow: {
     flexDirection: "row",
   },
-  backTopBarButton: {
-    marginLeft: -Units.s8,
-  },
   textTitleScreen: {
     fontSize: 24,
     fontWeight: "bold",
@@ -35,5 +32,10 @@ export const GeneralStyles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "500",
     color: Colors.primary,
+  },
+  textBodyLargeSecondary: {
+    fontSize: 16,
+    color: Colors.text.secondary,
+    fontWeight: "500",
   },
 });

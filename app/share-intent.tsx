@@ -1,112 +1,132 @@
-import { PreviewPost } from '@/common/components';
-import { IMAGE_PLACEHOLDER } from '@/common/constants';
-import { useAuth } from '@/config/contexts/auth.context';
-import { savePost } from '@/config/storage/persistent';
-import { OEmbedData, PlatformConfig, PostType, SocialPlatform } from '@/types';
-import { Stack, useRouter } from 'expo-router';
-import { useShareIntentContext } from 'expo-share-intent';
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { v4 as uuid } from 'uuid';
+import { PostDetails, TopBar } from "@/common/components";
+import {
+  IMAGE_PLACEHOLDER,
+  MAX_CONTENT_LENGTH,
+  PLATFORM_CONFIGS,
+} from "@/common/constants";
+import { TabLayout } from "@/common/layouts";
+import { savePost } from "@/config/storage/persistent";
+import { generateTags } from "@/services/llm";
+import {
+  PlatformConfig,
+  PostMetadataType,
+  PostType,
+  SocialPlatform
+} from "@/types";
+import { useRouter } from "expo-router";
+import { ShareIntent, useShareIntentContext } from "expo-share-intent";
+import React, { useEffect, useState } from "react";
+import { v4 as uuid } from "uuid";
 
-const PLATFORM_CONFIGS: PlatformConfig[] = [
-  {
-    platform: SocialPlatform.TIKTOK,
-    domains: ['tiktok.com'],
-    oembedEndpoint: 'https://www.tiktok.com/oembed'
-  },
-  {
-    platform: SocialPlatform.REDDIT,
-    domains: ['reddit.com'],
-    oembedEndpoint: 'https://www.reddit.com/oembed'
-  },
-  {
-    platform: SocialPlatform.YOUTUBE,
-    domains: ['youtube.com', 'youtu.be'],
-    oembedEndpoint: 'https://www.youtube.com/oembed'
-  }
-];
-
-const checkSocialPlatform = (url: string): PlatformConfig | undefined => {
+export const checkSocialPlatform = (
+  url: string
+): PlatformConfig | undefined => {
   if (!url) return undefined;
-  
+
   try {
     const urlObj = new URL(url);
-    const domain = urlObj.hostname.toLowerCase().replace('www.', '');
-    
-    return PLATFORM_CONFIGS.find(config => 
-      config.domains.some(platformDomain => domain === platformDomain)
-    );
+    const domain = urlObj.hostname.toLowerCase().replace("www.", "");
+
+    return PLATFORM_CONFIGS[domain as SocialPlatform];
   } catch (error) {
     return undefined;
   }
 };
 
+const getTags = async (title: string): Promise<string[]> => {
+  const content = title.substring(0, MAX_CONTENT_LENGTH) || "";
 
+  return generateTags(content);
+};
 
+const getMetadataFromShareIntent = (
+  shareIntent: ShareIntent
+): Partial<PostType> => {
+  return {
+    url: shareIntent.webUrl,
+    title: shareIntent.meta.title || shareIntent.webUrl,
+    author: shareIntent.meta.author || "Unknown",
+    thumbnail: shareIntent.meta["og:image"] || IMAGE_PLACEHOLDER,
+  };
+};
 
 export default function ShareIntentScreen() {
   const { shareIntent, resetShareIntent } = useShareIntentContext();
   const router = useRouter();
-  const { user } = useAuth();
-  const [metadata, setMetadata] = useState<OEmbedData | null>(null);
+  const [metadata, setMetadata] = useState<PostMetadataType | undefined>();
+  const [tags, setTags] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-console.log(">> metadata", JSON.stringify(metadata));
-  const platformConfig = shareIntent?.webUrl ? checkSocialPlatform(shareIntent.webUrl) : undefined;
+  const platformConfig = shareIntent?.webUrl
+    ? checkSocialPlatform(shareIntent.webUrl)
+    : undefined;
 
-  console.log(">> shareIntent", JSON.stringify(shareIntent));
+  const handleOnSaveMetadata = async () => {
+    if (shareIntent.meta) {
+      setMetadata({
+        url: shareIntent.webUrl || "",
+        title: shareIntent.meta?.title || shareIntent.webUrl || "",
+        author: shareIntent.meta?.author || "Unknown",
+        thumbnail: shareIntent.meta?.["og:image"] || IMAGE_PLACEHOLDER,
+      });
+
+      if (shareIntent.meta?.title) {
+        const tags = await getTags(shareIntent.meta.title);
+        console.log(">> tags", JSON.stringify(tags));
+        setTags(tags);
+      }
+    } else {
+      setError("No metadata available for this URL");
+    }
+  };
+
+  const handleOnSaveOEmbedData = async () => {
+    try {
+      const response = await fetch(
+        `${
+          (platformConfig as PlatformConfig).oembedEndpoint
+        }?url=${encodeURIComponent(shareIntent.webUrl || "")}&format=json`
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch metadata");
+      }
+
+      const data = await response.json();
+      console.log(">> data", JSON.stringify(data));
+      console.log(">> shareIntent.webUrl", shareIntent.webUrl);
+
+      setMetadata({
+        author: data.author_name,
+        title: data.title,
+        thumbnail: data.thumbnail_url,
+        url: shareIntent.webUrl || "",
+      });
+
+      if (data.title) {
+        const tags = await getTags(data.title);
+        setTags(tags);
+      }
+    } catch (err) {
+      console.log(">> oEmbed failed, falling back to shareIntent metadata");
+      // Fallback to shareIntent metadata if available
+      handleOnSaveMetadata();
+    }
+  };
 
   useEffect(() => {
     const fetchOEmbedData = async () => {
       if (!shareIntent?.webUrl) return;
-
       setIsLoading(true);
       setError(null);
-      console.log(">> shareIntent", JSON.stringify(platformConfig));
-      // If no platform config is found, use shareIntent metadata directly
+
       if (!platformConfig) {
-        if (shareIntent.meta) {
-
-          setMetadata({
-            title: shareIntent.meta.title || shareIntent.webUrl,
-            author_name: shareIntent.meta.author || "Unknown",
-            thumbnail_url: shareIntent.meta["og:image"] || IMAGE_PLACEHOLDER
-          });
-        } else {
-          setError('No metadata available for this URL');
-        }
-        setIsLoading(false);
-        return;
+        await handleOnSaveMetadata();
+      } else {
+        await handleOnSaveOEmbedData();
       }
 
-      try {
-        const response = await fetch(
-          `${platformConfig.oembedEndpoint}?url=${encodeURIComponent(shareIntent.webUrl)}&format=json`
-        );
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch metadata');
-        }
-
-        const data = await response.json();
-        console.log(">> data", JSON.stringify(data));
-        setMetadata(data);
-      } catch (err) {
-        console.log(">> oEmbed failed, falling back to shareIntent metadata");
-        // Fallback to shareIntent metadata if available
-        if (shareIntent.meta) {
-          setMetadata({
-            title: shareIntent.meta.title || shareIntent.webUrl,
-            author_name: shareIntent.meta.author || "Unknown",
-            thumbnail_url: shareIntent.meta["og:image"] || IMAGE_PLACEHOLDER
-          });
-        } else {
-          setError(err instanceof Error ? err.message : 'Failed to fetch metadata');
-        }
-      } finally {
-        setIsLoading(false);
-      }
+      setIsLoading(false);
     };
 
     fetchOEmbedData();
@@ -118,82 +138,21 @@ console.log(">> metadata", JSON.stringify(metadata));
       const post: Partial<PostType> = {
         id: uuid(),
         url: shareIntent.webUrl,
-        title: metadata?.title || '',
-        author: metadata?.author_name || '',
-        thumbnail: metadata?.thumbnail_url || '',
-        timestamp: Date.now()
-      }
+        title: metadata?.title || "",
+        author: metadata?.author || "",
+        thumbnail: metadata?.thumbnail || "",
+        timestamp: Date.now(),
+      };
       await savePost(post);
     }
     resetShareIntent();
-    router.replace('/');
+    router.replace("/");
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Stack.Screen 
-        options={{
-          title: 'Shared Content',
-          headerShown: true,
-        }} 
-      />
-      
-      <View style={styles.content}>
-        {isLoading && (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#007AFF" />
-          </View>
-        )}
-
-        {error && (
-          <Text style={styles.errorText}>Error: {error}</Text>
-        )}
-
-        {metadata && shareIntent?.webUrl && (
-          <PreviewPost
-            url={shareIntent.webUrl}
-            title={metadata?.title}
-            thumbnail={metadata?.thumbnail_url}
-            tags={[]}
-            onPress={() => {}}
-          />
-        )}
-
-        <TouchableOpacity style={styles.button} onPress={handleSave}>
-          <Text style={styles.buttonText}>Save</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+    <TabLayout>
+      <TopBar hasBackButton />
+      {metadata && <PostDetails post={metadata as PostType} />}
+    </TabLayout>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  content: {
-    padding: 20,
-  },
-  loadingContainer: {
-    padding: 20,
-    alignItems: 'center',
-  },
-  errorText: {
-    color: 'red',
-    marginTop: 10,
-    marginBottom: 10,
-  },
-  button: {
-    backgroundColor: '#007AFF',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-}); 

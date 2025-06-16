@@ -34,6 +34,7 @@ export default function RootLayout() {
           <Stack screenOptions={SCREEN_OPTIONS}>
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="+not-found" />
+            <Stack.Screen name="post-details" />
             <Stack.Screen name="view-posts" />
             <Stack.Screen
               name="login"

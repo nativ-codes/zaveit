@@ -64,7 +64,7 @@ function SearchScreen() {
       {...post}
       onPress={() => {
         router.push({
-          pathname: "/share-intent/[id]",
+          pathname: "/post-details/[id]",
           params: { id: post.id },
         });
       }}
