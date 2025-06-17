@@ -2,8 +2,8 @@ import { Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import React from "react";
 import { ScrollView } from "react-native";
+import TagItem from "../tag-item/tag-item";
 import { HorizontalScrollviewTagsPropsType } from "./horizontal-scrollview-tags.type";
-import TagItem from "./tag-item/tag-item";
 
 const HorizontalScrollviewTags = ({
   primaryTags,

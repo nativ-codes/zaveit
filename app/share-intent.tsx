@@ -1,21 +1,19 @@
-import { PostDetails, TopBar } from "@/common/components";
-import {
-  IMAGE_PLACEHOLDER,
-  MAX_CONTENT_LENGTH,
-  PLATFORM_CONFIGS,
-} from "@/common/constants";
+import { TopBar, UpdatePostDetails } from "@/common/components";
+import { styles } from "@/common/components/tag-item/tag-item.style";
+import { IMAGE_PLACEHOLDER, PLATFORM_CONFIGS } from "@/common/constants";
 import { TabLayout } from "@/common/layouts";
-import { savePost } from "@/config/storage/persistent";
-import { generateTags } from "@/services/llm";
+import { getTags, savePost } from "@/config/storage/persistent";
+import { getSuggestedTags } from "@/services/llm";
 import {
   PlatformConfig,
   PostMetadataType,
   PostType,
-  SocialPlatform
+  SocialPlatform,
 } from "@/types";
 import { useRouter } from "expo-router";
-import { ShareIntent, useShareIntentContext } from "expo-share-intent";
+import { useShareIntentContext } from "expo-share-intent";
 import React, { useEffect, useState } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
 import { v4 as uuid } from "uuid";
 
 export const checkSocialPlatform = (
@@ -33,37 +31,41 @@ export const checkSocialPlatform = (
   }
 };
 
-const getTags = async (title: string): Promise<string[]> => {
-  const content = title.substring(0, MAX_CONTENT_LENGTH) || "";
-
-  return generateTags(content);
+type ParseTagsReturnType = {
+  availableTags: string[];
+  selectedTags: string[];
 };
 
-const getMetadataFromShareIntent = (
-  shareIntent: ShareIntent
-): Partial<PostType> => {
+const parseTags = async (title: string): Promise<ParseTagsReturnType> => {
+  const localTags = getTags();
+  const suggestedTags = await getSuggestedTags(title);
+
   return {
-    url: shareIntent.webUrl,
-    title: shareIntent.meta.title || shareIntent.webUrl,
-    author: shareIntent.meta.author || "Unknown",
-    thumbnail: shareIntent.meta["og:image"] || IMAGE_PLACEHOLDER,
+    selectedTags: suggestedTags,
+    availableTags: [...new Set([...suggestedTags, ...localTags])],
   };
 };
 
 export default function ShareIntentScreen() {
   const { shareIntent, resetShareIntent } = useShareIntentContext();
   const router = useRouter();
-  const [metadata, setMetadata] = useState<PostMetadataType | undefined>();
-  const [tags, setTags] = useState<string[]>([]);
+  const [postMetadata, setPostMetadata] = useState<
+    PostMetadataType | undefined
+  >();
+  const [tags, setTags] = useState<ParseTagsReturnType>({
+    availableTags: [],
+    selectedTags: [],
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
   const platformConfig = shareIntent?.webUrl
     ? checkSocialPlatform(shareIntent.webUrl)
     : undefined;
 
   const handleOnSaveMetadata = async () => {
     if (shareIntent.meta) {
-      setMetadata({
+      setPostMetadata({
         url: shareIntent.webUrl || "",
         title: shareIntent.meta?.title || shareIntent.webUrl || "",
         author: shareIntent.meta?.author || "Unknown",
@@ -71,9 +73,9 @@ export default function ShareIntentScreen() {
       });
 
       if (shareIntent.meta?.title) {
-        const tags = await getTags(shareIntent.meta.title);
-        console.log(">> tags", JSON.stringify(tags));
-        setTags(tags);
+        const response = await parseTags(shareIntent.meta.title);
+        console.log(">> tags", JSON.stringify(response));
+        setTags(response);
       }
     } else {
       setError("No metadata available for this URL");
@@ -96,7 +98,7 @@ export default function ShareIntentScreen() {
       console.log(">> data", JSON.stringify(data));
       console.log(">> shareIntent.webUrl", shareIntent.webUrl);
 
-      setMetadata({
+      setPostMetadata({
         author: data.author_name,
         title: data.title,
         thumbnail: data.thumbnail_url,
@@ -104,8 +106,9 @@ export default function ShareIntentScreen() {
       });
 
       if (data.title) {
-        const tags = await getTags(data.title);
-        setTags(tags);
+        const response = await parseTags(data.title);
+        console.log(">> tags", JSON.stringify(response));
+        setTags(response);
       }
     } catch (err) {
       console.log(">> oEmbed failed, falling back to shareIntent metadata");
@@ -135,12 +138,13 @@ export default function ShareIntentScreen() {
   const handleSave = async () => {
     if (shareIntent?.webUrl) {
       // Save to local storage
-      const post: Partial<PostType> = {
+      const post: PostType = {
         id: uuid(),
         url: shareIntent.webUrl,
-        title: metadata?.title || "",
-        author: metadata?.author || "",
-        thumbnail: metadata?.thumbnail || "",
+        title: postMetadata?.title || "",
+        author: postMetadata?.author || "",
+        thumbnail: postMetadata?.thumbnail || "",
+        tags: tags.selectedTags,
         timestamp: Date.now(),
       };
       await savePost(post);
@@ -149,10 +153,34 @@ export default function ShareIntentScreen() {
     router.replace("/");
   };
 
+  const handleOnTagPress = (tag: string) => {
+    setTags((prevTags) => ({
+      ...prevTags,
+      selectedTags: prevTags.selectedTags?.includes(tag)
+        ? prevTags.selectedTags.filter((t) => t !== tag)
+        : [...(prevTags.selectedTags || []), tag],
+    }));
+  };
+
   return (
     <TabLayout>
       <TopBar hasBackButton />
-      {metadata && <PostDetails post={metadata as PostType} />}
+      {postMetadata && (
+        <UpdatePostDetails
+          title={postMetadata.title}
+          author={postMetadata.author}
+          url={postMetadata.url}
+          thumbnail={postMetadata.thumbnail}
+          availableTags={tags.availableTags}
+          selectedTags={tags.selectedTags}
+          onTagPress={handleOnTagPress}
+        />
+      )}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={handleSave}>
+          <Text style={styles.buttonText}>Save Post</Text>
+        </TouchableOpacity>
+      </View>
     </TabLayout>
   );
 }

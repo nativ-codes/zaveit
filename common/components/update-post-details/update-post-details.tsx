@@ -5,27 +5,21 @@ import { GeneralStyles } from "@/common/styles";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import * as Burnt from "burnt";
 import * as Clipboard from "expo-clipboard";
-import { router } from "expo-router";
 import React from "react";
 import { Image, Text, TouchableOpacity } from "react-native";
 import TagItem from "../tag-item/tag-item";
-import styles from "./post-details.style";
-import { PostDetailsPropsType } from "./post-details.type";
+import styles from "./update-post-details.style";
+import { UpdatePostDetailsPropsType } from "./update-post-details.type";
 
-function PostDetails({
+function UpdatePostDetails({
   title,
   author,
   url,
   thumbnail,
-  tags,
-}: PostDetailsPropsType) {
-  const handleOnTagPress = (tag: string) => {
-    router.push({
-      pathname: "/view-posts",
-      params: { tag },
-    });
-  };
-
+  availableTags,
+  selectedTags,
+  onTagPress,
+}: UpdatePostDetailsPropsType) {
   const handleOnCopyToClipboard = async () => {
     try {
       await Clipboard.setStringAsync(url);
@@ -71,21 +65,24 @@ function PostDetails({
           />
         </TouchableOpacity>
 
-        {tags && tags.length > 0 && (
-          <Spacer gap="s8" style={styles.tagsContainer}>
-            {tags.map((tag) => (
-              <TagItem
-                key={tag}
-                tag={tag}
-                isSelected={false}
-                onPress={() => handleOnTagPress(tag)}
-              />
-            ))}
-          </Spacer>
-        )}
+        <Spacer gap="s16" direction="top" size="s16">
+          <Text style={GeneralStyles.textTitleBody}>Select tags:</Text>
+          {availableTags && availableTags.length > 0 && (
+            <Spacer gap="s8" style={styles.tagsContainer}>
+              {availableTags.map((tag) => (
+                <TagItem
+                  key={tag}
+                  tag={tag}
+                  isSelected={selectedTags?.includes(tag)}
+                  onPress={() => onTagPress(tag)}
+                />
+              ))}
+            </Spacer>
+          )}
+        </Spacer>
       </Spacer>
     </Spacer>
   );
 }
 
-export default PostDetails;
+export default UpdatePostDetails;

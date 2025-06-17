@@ -1,13 +1,18 @@
+import { ACTIVE_OPACITY } from "@/common/constants";
 import { GeneralStyles } from "@/common/styles";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { styles } from "./tag-item.style";
 import { TagItemPropsType } from "./tag-item.type";
 
-function TagItem({ tag, isSelected, onPress }: TagItemPropsType) {
+function TagItem({ tag, isSelected, isReadOnly, onPress }: TagItemPropsType) {
+  const Wrapper = isReadOnly ? View : TouchableOpacity;
+  const onPressHandler = isReadOnly ? undefined : onPress;
+
   return (
-    <TouchableOpacity
-      onPress={onPress}
+    <Wrapper
+      onPress={onPressHandler}
+      activeOpacity={ACTIVE_OPACITY}
       style={StyleSheet.compose(
         styles.tagButton,
         isSelected && styles.selectedTagButton
@@ -22,7 +27,7 @@ function TagItem({ tag, isSelected, onPress }: TagItemPropsType) {
       >
         #{tag}
       </Text>
-    </TouchableOpacity>
+    </Wrapper>
   );
 }
 

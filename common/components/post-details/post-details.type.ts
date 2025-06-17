@@ -1,5 +1,9 @@
-import { PostType } from "@/config/storage/persistent";
 
 export type PostDetailsPropsType = {
-  post: PostType;
+  id?: string;
+  title: string;
+  author?: string;
+  url: string;
+  thumbnail?: string;
+  tags?: string[];
 }; 

@@ -1,3 +1,4 @@
+import { getSortedTags } from '@/screens/search/search.util';
 import { savePostService } from '@/services/posts.service';
 import { PostType, StoredPost } from '@/types/posts';
 import { useMemo } from 'react';
@@ -8,12 +9,17 @@ export const storage = new MMKV({
   encryptionKey: process.env.EXPO_PUBLIC_MMKV_ENCRYPTON_KEY,
 });
 
-export function getPosts(): StoredPost[] {
+export const getPosts = (): StoredPost[] => {
   const posts = storage.getString('posts');
   return posts ? JSON.parse(posts) : [];
 }
 
-export async function savePost(post: PostType): Promise<void> {
+export const getTags = (): string[] => {
+  const posts = getPosts();
+  return getSortedTags(posts);
+}
+
+export const savePost = async (post: PostType): Promise<void> => {
   const posts = getPosts();
 
   posts.unshift(post);
@@ -22,13 +28,13 @@ export async function savePost(post: PostType): Promise<void> {
   await savePostService(post);
 }
 
-export function removePost(timestamp: number): void {
+export const removePost = (timestamp: number): void => {
   const posts = getPosts();
   const updatedPosts = posts.filter(post => post.timestamp !== timestamp);
   storage.set('posts', JSON.stringify(updatedPosts));
 }
 
-export function savePosts(posts: StoredPost[]): void {
+export const savePosts = (posts: StoredPost[]): void => {
   storage.set('posts', JSON.stringify(posts));
 } 
 
@@ -36,13 +42,4 @@ export const usePosts = (): StoredPost[] => {
   const [posts] = useMMKVString("posts", storage);
 
   return useMemo(() => JSON.parse(posts || "[]"), [posts]);
-};
-
-export type PostType = {
-  id: string;
-  title?: string;
-  author?: string;
-  url: string;
-  thumbnail?: string;
-  tags?: string[];
 };

@@ -28,6 +28,11 @@ export const GeneralStyles = StyleSheet.create({
     fontWeight: "bold",
     color: Colors.text.primary,
   },
+  textTitleBody: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: Colors.text.primary,
+  },
   textLink: {
     fontSize: 15,
     fontWeight: "500",
@@ -35,6 +40,11 @@ export const GeneralStyles = StyleSheet.create({
   },
   textBodyLargeSecondary: {
     fontSize: 16,
+    color: Colors.text.secondary,
+    fontWeight: "500",
+  },
+  textBodyMediumSecondary: {
+    fontSize: 14,
     color: Colors.text.secondary,
     fontWeight: "500",
   },
