@@ -66,7 +66,7 @@ function UpdatePostDetails({
         </TouchableOpacity>
 
         <Spacer gap="s16" direction="top" size="s16">
-          <Text style={GeneralStyles.textTitleBody}>Select tags:</Text>
+          <Text style={GeneralStyles.textTitleBody}>Select at least one main tag:</Text>
           {availableTags && availableTags.length > 0 && (
             <Spacer gap="s8" style={styles.tagsContainer}>
               {availableTags.map((tag) => (

@@ -4,4 +4,5 @@ export type TabLayoutPropsType = {
   children: React.ReactNode;
   style?: ViewStyle;
   testID?: string;
+  footer?: React.ReactNode;
 };

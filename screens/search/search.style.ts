@@ -8,9 +8,7 @@ export default StyleSheet.create({
     fontSize: 16,
     backgroundColor: Colors.surface.primary,
     color: Colors.text.primary,
-    paddingVertical: Units.s20,
-    paddingHorizontal: Units.s16,
-    borderRadius: Units.s24,
+    ...GeneralStyles.actionableContent,
     ...GeneralStyles.shadow,
   },
   emptyContainer: {

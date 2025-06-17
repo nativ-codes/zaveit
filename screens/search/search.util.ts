@@ -14,6 +14,10 @@ export const getSortedTags = (posts: StoredPost[]) => {
     .map(([tag]) => tag);
 };
 
+export const getSortedMainTags = (tags: string[]) => {
+  return tags.filter((tag) => CATEGORIES.includes(tag));
+};
+
 export const getPrimaryTags = (tags: string[]) => {
   return tags.filter((tag) => CATEGORIES.includes(tag));
 };

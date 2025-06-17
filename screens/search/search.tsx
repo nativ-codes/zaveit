@@ -17,6 +17,7 @@ import {
   getFilteredPosts,
   getPrimaryTags,
   getSecondaryTags,
+  getSortedMainTags,
   getSortedTags,
 } from "./search.util";
 
@@ -49,6 +50,11 @@ function SearchScreen() {
   const sortedTags = useMemo(
     () => getSortedTags(filteredPosts || []),
     [filteredPosts]
+  );
+
+  const sortedMainTags = useMemo(
+    () => getSortedMainTags(sortedTags),
+    [sortedTags]
   );
 
   const primaryTags = useMemo(() => getPrimaryTags(sortedTags), [sortedTags]);
@@ -109,7 +115,7 @@ function SearchScreen() {
         </View>
       ) : (
         <Spacer gap="s24">
-          <TagPostsList tags={sortedTags} posts={posts} />
+          <TagPostsList tags={sortedMainTags} posts={posts} />
         </Spacer>
       )}
     </TabLayout>

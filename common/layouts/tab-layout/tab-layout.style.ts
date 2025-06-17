@@ -6,4 +6,9 @@ export default StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background.primary,
   },
+  footer: {
+    position: "absolute",
+    left: 0,
+    right: 0
+  }
 });

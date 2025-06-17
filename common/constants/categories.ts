@@ -13,4 +13,5 @@ export const CATEGORIES = [
   "finance",
   "vlog",
   "art",
+  "other",
 ];

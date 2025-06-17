@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { Colors } from "../constants";
+import { Colors, Units } from "../constants";
 
 export const GeneralStyles = StyleSheet.create({
   shadow: {
@@ -43,9 +43,19 @@ export const GeneralStyles = StyleSheet.create({
     color: Colors.text.secondary,
     fontWeight: "500",
   },
+  textBodyLargeOnSurface: {
+    fontSize: 16,
+    color: Colors.text.onSurface,
+    fontWeight: "600",
+  },
   textBodyMediumSecondary: {
     fontSize: 14,
     color: Colors.text.secondary,
     fontWeight: "500",
+  },
+  actionableContent: {
+    paddingVertical: Units.s20,
+    paddingHorizontal: Units.s16,
+    borderRadius: Units.s24,
   },
 });
