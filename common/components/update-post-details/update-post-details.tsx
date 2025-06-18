@@ -45,7 +45,7 @@ function UpdatePostDetails({
     const skeletonTags = Array.from({ length: count }, (_, index) => (
       <SkeletonLoader
         key={`skeleton-${index}`}
-        width={Units.s40 + Math.random() * Units.s40}
+        width={Units.s64 + Math.random() * Units.s40}
         height={Units.s32}
         borderRadius={Units.s16}
       />

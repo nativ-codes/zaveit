@@ -183,22 +183,13 @@ export default function ShareIntentScreen() {
         title: postMetadata?.title || "",
         author: postMetadata?.author || "",
         thumbnail: postMetadata?.thumbnail || "",
-        tags: tags.selectedAdditionalTags,
+        tags: [...tags.selectedMainTags, ...tags.selectedAdditionalTags],
         timestamp: Date.now(),
       };
       await savePost(post);
     }
     resetShareIntent();
     router.replace("/");
-  };
-
-  const handleOnTagPress = (tag: string) => {
-    setTags((prevTags) => ({
-      ...prevTags,
-      selectedAdditionalTags: prevTags.selectedAdditionalTags?.includes(tag)
-        ? prevTags.selectedAdditionalTags.filter((t) => t !== tag)
-        : [...(prevTags.selectedAdditionalTags || []), tag],
-    }));
   };
 
   const handleOnMainTagPress = (tag: string) => {
@@ -219,6 +210,7 @@ export default function ShareIntentScreen() {
     }));
   };
 
+   // TODO: disable button
   return (
     <TabLayout
       footer={
