@@ -1,3 +1,4 @@
+import { Units } from "@/common/constants";
 import { Colors } from "@/common/constants/colors";
 import { StyleSheet } from "react-native";
 
@@ -29,4 +30,7 @@ export default StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
+  mainTagsContainer: {
+    marginHorizontal: -Units.s16,
+  }
 }); 

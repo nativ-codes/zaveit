@@ -1,6 +1,7 @@
 import { TopBar, UpdatePostDetails } from "@/common/components";
 import {
   ACTIVE_OPACITY,
+  CATEGORIES,
   IMAGE_PLACEHOLDER,
   PLATFORM_CONFIGS,
 } from "@/common/constants";
@@ -37,17 +38,48 @@ export const checkSocialPlatform = (
 };
 
 type ParseTagsReturnType = {
-  availableTags: string[];
-  selectedTags: string[];
+  additionalTags: string[];
+  selectedAdditionalTags: string[];
+  selectedMainTags: string[];
+  mainTags: string[];
 };
 
 const parseTags = async (title: string): Promise<ParseTagsReturnType> => {
   const localTags = getTags();
   const suggestedTags = await getSuggestedTags(title);
 
+  // Filter suggested tags that are also in CATEGORIES
+  const selectedMainTags = suggestedTags.filter(tag => 
+    CATEGORIES.includes(tag.toLowerCase())
+  );
+
+  // Filter suggested tags that are NOT in CATEGORIES
+  const selectedAdditionalTags = suggestedTags.filter(tag => 
+    !CATEGORIES.includes(tag.toLowerCase())
+  );
+
+  // Filter local tags that are NOT in CATEGORIES and make them unique
+  const localAdditionalTags = [...new Set(
+    localTags.filter(tag => !CATEGORIES.includes(tag.toLowerCase()))
+  )];
+
+  // Create mainTags list with selectedMainTags at the beginning
+  const mainTags = [
+    ...selectedMainTags,
+    ...CATEGORIES.filter(tag => !selectedMainTags.includes(tag))
+  ];
+
+  // Create additionalTags list with selectedAdditionalTags at the beginning
+  const additionalTags = [
+    ...selectedAdditionalTags,
+    ...localAdditionalTags.filter(tag => !selectedAdditionalTags.includes(tag))
+  ];
+
   return {
-    selectedTags: suggestedTags,
-    availableTags: [...new Set([...suggestedTags, ...localTags])],
+    selectedAdditionalTags,
+    selectedMainTags,
+    additionalTags,
+    mainTags,
   };
 };
 
@@ -58,8 +90,10 @@ export default function ShareIntentScreen() {
     PostMetadataType | undefined
   >();
   const [tags, setTags] = useState<ParseTagsReturnType>({
-    availableTags: [],
-    selectedTags: [],
+    additionalTags: [],
+    selectedAdditionalTags: [],
+    selectedMainTags: [],
+    mainTags: [],
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -149,7 +183,7 @@ export default function ShareIntentScreen() {
         title: postMetadata?.title || "",
         author: postMetadata?.author || "",
         thumbnail: postMetadata?.thumbnail || "",
-        tags: tags.selectedTags,
+        tags: tags.selectedAdditionalTags,
         timestamp: Date.now(),
       };
       await savePost(post);
@@ -161,9 +195,27 @@ export default function ShareIntentScreen() {
   const handleOnTagPress = (tag: string) => {
     setTags((prevTags) => ({
       ...prevTags,
-      selectedTags: prevTags.selectedTags?.includes(tag)
-        ? prevTags.selectedTags.filter((t) => t !== tag)
-        : [...(prevTags.selectedTags || []), tag],
+      selectedAdditionalTags: prevTags.selectedAdditionalTags?.includes(tag)
+        ? prevTags.selectedAdditionalTags.filter((t) => t !== tag)
+        : [...(prevTags.selectedAdditionalTags || []), tag],
+    }));
+  };
+
+  const handleOnMainTagPress = (tag: string) => {
+    setTags((prevTags) => ({
+      ...prevTags,
+      selectedMainTags: prevTags.selectedMainTags?.includes(tag)
+        ? prevTags.selectedMainTags.filter((t) => t !== tag)
+        : [...(prevTags.selectedMainTags || []), tag],
+    }));
+  };
+
+  const handleOnAdditionalTagPress = (tag: string) => {
+    setTags((prevTags) => ({
+      ...prevTags,
+      selectedAdditionalTags: prevTags.selectedAdditionalTags?.includes(tag)
+        ? prevTags.selectedAdditionalTags.filter((t) => t !== tag)
+        : [...(prevTags.selectedAdditionalTags || []), tag],
     }));
   };
 
@@ -191,9 +243,13 @@ export default function ShareIntentScreen() {
           author={postMetadata.author}
           url={postMetadata.url}
           thumbnail={postMetadata.thumbnail}
-          availableTags={tags.availableTags}
-          selectedTags={tags.selectedTags}
-          onTagPress={handleOnTagPress}
+          additionalTags={tags.additionalTags}
+          selectedAdditionalTags={tags.selectedAdditionalTags}
+          mainTags={tags.mainTags}
+          selectedMainTags={tags.selectedMainTags}
+          onMainTagPress={handleOnMainTagPress}
+          onAdditionalTagPress={handleOnAdditionalTagPress}
+          isLoading={!Boolean(tags.mainTags.length)}
         />
       )}
     </TabLayout>
