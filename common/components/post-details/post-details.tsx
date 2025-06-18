@@ -2,12 +2,13 @@ import { ACTIVE_OPACITY } from "@/common/constants";
 import { Colors } from "@/common/constants/colors";
 import { Row, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
+import { formatTimestampToDateString } from "@/common/utils";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import * as Burnt from "burnt";
 import * as Clipboard from "expo-clipboard";
 import { router } from "expo-router";
 import React from "react";
-import { Image, Text, TouchableOpacity } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity } from "react-native";
 import TagItem from "../tag-item/tag-item";
 import styles from "./post-details.style";
 import { PostDetailsPropsType } from "./post-details.type";
@@ -18,6 +19,7 @@ function PostDetails({
   url,
   thumbnail,
   tags,
+  timestamp,
 }: PostDetailsPropsType) {
   const handleOnTagPress = (tag: string) => {
     router.push({
@@ -72,7 +74,7 @@ function PostDetails({
         </TouchableOpacity>
 
         {tags && tags.length > 0 && (
-          <Spacer gap="s8" style={styles.tagsContainer}>
+          <Spacer style={styles.tagsContainer}>
             {tags.map((tag) => (
               <TagItem
                 key={tag}
@@ -83,6 +85,17 @@ function PostDetails({
             ))}
           </Spacer>
         )}
+
+        {timestamp && <Spacer direction="top" size="s32">
+          <Text
+            style={StyleSheet.compose(
+              GeneralStyles.textBodyMediumSecondary,
+              GeneralStyles.textRight
+            )}
+          >
+            Added on {formatTimestampToDateString(timestamp)}
+          </Text>
+        </Spacer>}
       </Spacer>
     </Spacer>
   );

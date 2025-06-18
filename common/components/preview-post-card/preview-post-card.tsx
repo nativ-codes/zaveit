@@ -1,11 +1,12 @@
 import { IMAGE_PLACEHOLDER, MAX_TAGS_LENGTH } from "@/common/constants";
 import { ACTIVE_OPACITY } from "@/common/constants/ui";
-import { Units } from "@/common/constants/units";
+import { Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { getDomainFromUrl } from "@/common/utils";
 import { Image } from "expo-image";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import TagItem from "../tag-item/tag-item";
 import { styles } from "./preview-post-card.style";
 import { PreviewPostCardPropsType } from "./preview-post-card.type";
 
@@ -34,49 +35,35 @@ function PreviewPostCard({
         accessibilityLabel="Thumbnail image"
       />
 
-      <View style={styles.content}>
+      <Spacer direction="full" size="s8" gap="s4">
         {title && (
           <Text
             numberOfLines={3}
-            style={styles.title}
+            style={GeneralStyles.textBodyLargePrimary}
             accessibilityRole="header"
           >
             {title}
           </Text>
         )}
 
-        {tags?.length > 0 && (
+        {tags && tags.length > 0 && (
           <View style={styles.tagsContainer} accessibilityLabel="Tags">
-            {tags?.slice(0, MAX_TAGS_LENGTH).map((tag) => (
-              <View
-                key={tag}
-                style={styles.tag}
-                accessibilityLabel={`Tag: ${tag}`}
-              >
-                <Text style={styles.tagText}>#{tag}</Text>
-              </View>
+            {tags.slice(0, MAX_TAGS_LENGTH).map((tag, index) => (
+              <TagItem key={index} tag={tag} size="small" />
             ))}
             {tags.length > MAX_TAGS_LENGTH && (
-              <View
-                style={{
-                  paddingHorizontal: Units.s8,
-                  paddingVertical: Units.s4,
-                }}
-                accessibilityLabel={`Tag: +${
-                  tags.length - MAX_TAGS_LENGTH
-                } more`}
-              >
-                <Text style={styles.tagText}>
-                  +{tags.length - MAX_TAGS_LENGTH} more
-                </Text>
-              </View>
+              <TagItem
+                tag={`+${tags.length - MAX_TAGS_LENGTH} more`}
+                size="small"
+                shouldUsePrefixedTag={false}
+              />
             )}
           </View>
         )}
-      </View>
+      </Spacer>
       <View style={styles.urlContainer}>
         <Text
-          style={styles.url}
+          style={GeneralStyles.textBodySmallSecondary}
           numberOfLines={1}
           accessibilityLabel={`URL: ${domain}`}
         >

@@ -1,3 +1,4 @@
+import { ACTIVE_OPACITY } from "@/common/constants/ui";
 import { Units } from "@/common/constants/units";
 import { Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
@@ -18,7 +19,11 @@ function HorizontalScrollViewPosts({
       <Spacer style={styles.titleContainer} direction="horizontal" size="s16">
         <Text style={GeneralStyles.textTitleSection}>{title}</Text>
         {onViewAll && (
-          <TouchableOpacity hitSlop={Units.s16} onPress={onViewAll}>
+          <TouchableOpacity
+            activeOpacity={ACTIVE_OPACITY}
+            hitSlop={Units.s16}
+            onPress={onViewAll}
+          >
             <Text style={GeneralStyles.textLink}>View All</Text>
           </TouchableOpacity>
         )}

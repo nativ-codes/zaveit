@@ -48,14 +48,26 @@ export const GeneralStyles = StyleSheet.create({
     color: Colors.text.onSurface,
     fontWeight: "600",
   },
+  textBodyLargePrimary: {
+    fontSize: 16,
+    color: Colors.text.primary,
+    fontWeight: "bold",
+  },
   textBodyMediumSecondary: {
     fontSize: 14,
     color: Colors.text.secondary,
     fontWeight: "500",
+  },
+  textBodySmallSecondary: {
+    fontSize: 11,
+    color: Colors.text.secondary,
   },
   actionableContent: {
     paddingVertical: Units.s20,
     paddingHorizontal: Units.s16,
     borderRadius: Units.s24,
   },
+  textRight: {
+    textAlign: "right",
+  }
 });

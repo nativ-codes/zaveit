@@ -2,31 +2,38 @@ import { ACTIVE_OPACITY } from "@/common/constants";
 import { GeneralStyles } from "@/common/styles";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { styles } from "./tag-item.style";
-import { TagItemPropsType } from "./tag-item.type";
+import styles from "./tag-item.style";
+import { TagItemPropsType, TagItemSizeEnum } from "./tag-item.type";
 
-function TagItem({ tag, isSelected, isReadOnly, onPress }: TagItemPropsType) {
+function TagItem({
+  tag,
+  isSelected,
+  isReadOnly,
+  onPress,
+  size = TagItemSizeEnum.medium,
+  shouldUsePrefixedTag = true,
+}: TagItemPropsType) {
   const Wrapper = isReadOnly ? View : TouchableOpacity;
   const onPressHandler = isReadOnly ? undefined : onPress;
+  const textStyle = StyleSheet.flatten([
+    size === TagItemSizeEnum.small
+      ? GeneralStyles.textBodySmallSecondary
+      : GeneralStyles.textBodyLargeSecondary,
+    isSelected && styles.selectedTagText,
+  ]);
+  const containerStyle = StyleSheet.flatten([
+    styles[`tagButtonSize_${size}`],
+    isSelected && styles.selectedTagButton,
+  ]);
 
   return (
     <Wrapper
       onPress={onPressHandler}
       activeOpacity={ACTIVE_OPACITY}
-      style={StyleSheet.compose(
-        styles.tagButton,
-        isSelected && styles.selectedTagButton
-      )}
+      style={containerStyle}
       testID={`Components_TagItem_${tag}`}
     >
-      <Text
-        style={StyleSheet.compose(
-          GeneralStyles.textBodyLargeSecondary,
-          isSelected && styles.selectedTagText
-        )}
-      >
-        #{tag}
-      </Text>
+      <Text style={textStyle}>{shouldUsePrefixedTag ? `#${tag}` : tag}</Text>
     </Wrapper>
   );
 }

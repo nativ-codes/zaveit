@@ -1,12 +1,12 @@
-import Text from "@/common/components/text/text";
 import { Row } from "@/common/layouts";
 import Icon from "@expo/vector-icons/Feather";
 import React, { memo } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import { Colors } from "@/common/constants/colors";
 import { ACTIVE_OPACITY } from "@/common/constants/ui";
 import { Units } from "@/common/constants/units";
+import { GeneralStyles } from "@/common/styles";
 import { router } from "expo-router";
 import styles from "./top-bar.style";
 import { TopBarPropsType } from "./top-bar.type";
@@ -41,7 +41,7 @@ function TopBar({
   const renderCenterComponent = () => {
     if (title) {
       return (
-        <Text variant="title-section" fontWeight="bold">
+        <Text style={GeneralStyles.textTitleSection}>
           {title}
         </Text>
       );

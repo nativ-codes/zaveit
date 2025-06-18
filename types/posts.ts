@@ -42,7 +42,7 @@ export interface StoredPost {
   title: string;
   author?: string;
   thumbnail?: string;
-  timestamp: number;
+  timestamp?: number;
   metadata?: OEmbedData;
   tags: string[];
 }

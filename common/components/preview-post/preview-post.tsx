@@ -1,12 +1,13 @@
 import { MAX_TAGS_LENGTH } from "@/common/constants";
 import { ACTIVE_OPACITY } from "@/common/constants/ui";
-import { Units } from "@/common/constants/units";
+import { Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { getDomainFromUrl } from "@/common/utils/formatters";
 import { Image } from "expo-image";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { styles } from "./preview-post.style";
+import TagItem from "../tag-item/tag-item";
+import styles from "./preview-post.style";
 import { PreviewPostPropsType } from "./preview-post.type";
 
 function PreviewPost({
@@ -16,6 +17,8 @@ function PreviewPost({
   tags,
   onPress,
 }: PreviewPostPropsType) {
+  const domain = getDomainFromUrl(url);
+
   return (
     <TouchableOpacity
       style={StyleSheet.compose(styles.container, GeneralStyles.shadow)}
@@ -33,11 +36,11 @@ function PreviewPost({
         />
       )}
 
-      <View style={styles.content}>
+      <Spacer direction="full" size="s8" gap="s4" style={styles.content}>
         {title && (
           <Text
             numberOfLines={3}
-            style={styles.title}
+            style={GeneralStyles.textBodyLargePrimary}
             accessibilityRole="header"
           >
             {title}
@@ -45,42 +48,28 @@ function PreviewPost({
         )}
 
         <Text
-          style={styles.url}
+          style={GeneralStyles.textBodyMediumSecondary}
           numberOfLines={3}
-          accessibilityLabel={`URL: ${getDomainFromUrl(url)}`}
+          accessibilityLabel={`URL: ${domain}`}
         >
-          {getDomainFromUrl(url)}
+          {domain}
         </Text>
 
         {tags?.length > 0 && (
           <View style={styles.tagsContainer} accessibilityLabel="Tags">
             {tags.slice(0, MAX_TAGS_LENGTH).map((tag, index) => (
-              <View
-                key={index}
-                style={styles.tag}
-                accessibilityLabel={`Tag: ${tag}`}
-              >
-                <Text style={styles.tagText}>#{tag}</Text>
-              </View>
+              <TagItem key={index} tag={tag} size="small" />
             ))}
             {tags.length > MAX_TAGS_LENGTH && (
-              <View
-                style={{
-                  paddingHorizontal: Units.s8,
-                  paddingVertical: Units.s4,
-                }}
-                accessibilityLabel={`Tag: +${
-                  tags.length - MAX_TAGS_LENGTH
-                } more`}
-              >
-                <Text style={styles.tagText}>
-                  +{tags.length - MAX_TAGS_LENGTH} more
-                </Text>
-              </View>
+              <TagItem
+                tag={`+${tags.length - MAX_TAGS_LENGTH} more`}
+                size="small"
+                shouldUsePrefixedTag={false}
+              />
             )}
           </View>
         )}
-      </View>
+      </Spacer>
     </TouchableOpacity>
   );
 }
