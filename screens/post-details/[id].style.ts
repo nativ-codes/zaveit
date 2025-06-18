@@ -1,4 +1,3 @@
-import { Colors } from "@/common/constants";
 import { StyleSheet } from "react-native";
 
 export default StyleSheet.create({
@@ -11,9 +10,5 @@ export default StyleSheet.create({
   errorText: {
     fontSize: 16,
     color: "#666",
-  },
-  button: {
-    backgroundColor: Colors.primary,
-    alignItems: "center"
-  },
+  }
 });

@@ -91,7 +91,7 @@ function UpdatePostDetails({
           {title && <Text style={GeneralStyles.textTitleSection}>{title}</Text>}
           {author && (
             <Text style={GeneralStyles.textBodyMediumSecondary}>
-              Author: {author}
+              by {author}
             </Text>
           )}
         </Spacer>

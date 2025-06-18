@@ -1,12 +1,10 @@
-import { TopBar, UpdatePostDetails } from "@/common/components";
+import { Button, TopBar, UpdatePostDetails } from "@/common/components";
 import {
-  ACTIVE_OPACITY,
   CATEGORIES,
   IMAGE_PLACEHOLDER,
   PLATFORM_CONFIGS,
 } from "@/common/constants";
 import { Spacer, TabLayout } from "@/common/layouts";
-import { GeneralStyles } from "@/common/styles";
 import { getTags, savePost } from "@/config/storage/persistent";
 import { getSuggestedTags } from "@/services/llm";
 import {
@@ -18,9 +16,7 @@ import {
 import { useRouter } from "expo-router";
 import { useShareIntentContext } from "expo-share-intent";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { v4 as uuid } from "uuid";
-import styles from "./share-intent.style";
 
 export const checkSocialPlatform = (
   url: string
@@ -215,16 +211,11 @@ export default function ShareIntentScreen() {
     <TabLayout
       footer={
         <Spacer gap="s16" direction="horizontal" size="s16">
-          <TouchableOpacity
-            activeOpacity={ACTIVE_OPACITY}
-            style={StyleSheet.compose(
-              GeneralStyles.actionableContent,
-              styles.button
-            )}
+          <Button
+            label="Zave It"
             onPress={handleSave}
-          >
-            <Text style={GeneralStyles.textBodyLargeOnSurface}>Zave It</Text>
-          </TouchableOpacity>
+            isDisabled={!Boolean(tags.mainTags.length)}
+          />
         </Spacer>
       }
     >

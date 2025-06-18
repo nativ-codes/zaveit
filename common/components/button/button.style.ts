@@ -6,4 +6,7 @@ export default StyleSheet.create({
     backgroundColor: Colors.primary,
     alignItems: "center",
   },
-});
+  disabled: {
+    opacity: 0.7,
+  },
+}); 

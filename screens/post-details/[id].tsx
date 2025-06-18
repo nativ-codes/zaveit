@@ -1,12 +1,10 @@
-import { PostDetails, TopBar } from "@/common/components";
-import { ACTIVE_OPACITY } from "@/common/constants";
+import { Button, PostDetails, TopBar } from "@/common/components";
 import { Spacer, TabLayout } from "@/common/layouts";
-import { GeneralStyles } from "@/common/styles";
 import { usePosts } from "@/config/storage/persistent";
 import * as Linking from "expo-linking";
 import { useLocalSearchParams } from "expo-router";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Text, View } from "react-native";
 import { getPostDetails } from "../search/search.util";
 import styles from "./[id].style";
 import { PostDetailsPropsType } from "./[id].type";
@@ -36,16 +34,7 @@ function PostDetailsScreen() {
     <TabLayout
       footer={
         <Spacer gap="s16" direction="horizontal" size="s16">
-          <TouchableOpacity
-            activeOpacity={ACTIVE_OPACITY}
-            style={StyleSheet.compose(
-              GeneralStyles.actionableContent,
-              styles.button
-            )}
-            onPress={handleOpenInBrowser}
-          >
-            <Text style={GeneralStyles.textBodyLargeOnSurface}>Open Post</Text>
-          </TouchableOpacity>
+          <Button label="Open Post" onPress={handleOpenInBrowser} />
         </Spacer>
       }
     >
