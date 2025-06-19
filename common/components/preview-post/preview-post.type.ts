@@ -1,5 +1,5 @@
-import { StoredPost } from '@/types/posts';
+import { PostType } from '@/types/posts';
 
-export type PreviewPostPropsType = Omit<StoredPost, 'metadata' | 'author' | 'timestamp' | 'id' > & {
+export type PreviewPostPropsType = Omit<PostType, 'author' | 'timestamp' | 'id' > & {
   onPress?: () => void;
 }; 

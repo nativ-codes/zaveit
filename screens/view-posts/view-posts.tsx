@@ -2,7 +2,7 @@ import { PreviewPost, TopBar } from "@/common/components";
 import { Spacer, TabLayout } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { usePosts } from "@/config/storage/persistent";
-import { StoredPost } from "@/types";
+import { PostType } from "@/types";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useMemo } from "react";
 import { Text } from "react-native";
@@ -20,7 +20,7 @@ function ViewPostsScreen() {
     [posts, tag]
   );
 
-  const renderItem = (post: StoredPost) => (
+  const renderItem = (post: PostType) => (
     <PreviewPost
       key={post.id}
       url={post.url}

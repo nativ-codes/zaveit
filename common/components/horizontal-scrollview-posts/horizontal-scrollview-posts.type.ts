@@ -1,8 +1,8 @@
-import { StoredPost } from "@/types";
+import { PostType } from "@/types";
 
 export type HorizontalScrollViewPostsType = {
   title: string;
-  posts: StoredPost[];
+  posts: PostType[];
   Element: React.ComponentType<any>;
   onViewAll?: () => void;
   onPostPress: (id: string) => void;

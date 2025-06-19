@@ -1,12 +1,12 @@
-import { StoredPost } from "@/types";
+import { PostType } from "@/types";
 
 export interface FilterResultsProps {
-  posts: StoredPost[];
+  posts: PostType[];
 }
 
 export type FilterResultsType = {
   searchQuery: string;
   selectedTags: string[];
-  shareIntents: StoredPost[];
+  shareIntents: PostType[];
   onPostPress: (timestamp: number) => void;
 }; 

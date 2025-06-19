@@ -1,4 +1,4 @@
-import { StoredPost } from '@/types';
+import { PostType } from '@/types';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { savePosts } from './storage/persistent';
@@ -31,7 +31,7 @@ export const useSyncLists = () => {
       
       // Extract posts from the first list and save them as share intents
       if (lists.length > 0 && 'posts' in lists[0]) {
-        const posts = lists[0].posts as StoredPost[];
+        const posts = lists[0].posts as PostType[];
         savePosts(posts);
         console.log('[Sync Lists] Saved posts:', posts.length);
       }

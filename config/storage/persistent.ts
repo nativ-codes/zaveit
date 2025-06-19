@@ -1,6 +1,6 @@
 import { getRandomPick, getSortedTags } from "@/screens/search/search.util";
 import { savePostService } from "@/services/posts.service";
-import { PostType, StoredPost } from "@/types/posts";
+import { PostType } from "@/types/posts";
 import { useMemo } from "react";
 import { MMKV, useMMKVString } from "react-native-mmkv";
 
@@ -9,24 +9,31 @@ export const storage = new MMKV({
   encryptionKey: process.env.EXPO_PUBLIC_MMKV_ENCRYPTON_KEY,
 });
 
-type FrequentlyAccessedPosts = Record<string, number>;
+type FrequentlyAccessedPostsType = Record<string, number>;
 
-export const getPosts = (): StoredPost[] => {
+export const getPosts = (): PostType[] => {
   const posts = storage.getString("posts");
   return posts ? JSON.parse(posts) : [];
 };
 
 export const increasePostAccessCount = (postId: string): void => {
-  const frequentlyAccessedPostsRaw = storage.getString("frequentlyAccessedPosts");
-  const frequentlyAccessedPostsObject: FrequentlyAccessedPosts = frequentlyAccessedPostsRaw
-    ? JSON.parse(frequentlyAccessedPostsRaw)
-    : {} as FrequentlyAccessedPosts;
+  const frequentlyAccessedPostsRaw = storage.getString(
+    "frequentlyAccessedPosts"
+  );
+  const frequentlyAccessedPostsObject: FrequentlyAccessedPostsType =
+    frequentlyAccessedPostsRaw
+      ? JSON.parse(frequentlyAccessedPostsRaw)
+      : ({} as FrequentlyAccessedPostsType);
 
-  frequentlyAccessedPostsObject[postId] = (frequentlyAccessedPostsObject[postId] || 0) + 1;
-  storage.set("frequentlyAccessedPosts", JSON.stringify(frequentlyAccessedPostsObject));
+  frequentlyAccessedPostsObject[postId] =
+    (frequentlyAccessedPostsObject[postId] || 0) + 1;
+  storage.set(
+    "frequentlyAccessedPosts",
+    JSON.stringify(frequentlyAccessedPostsObject)
+  );
 };
 
-export const useFrequentlyAccessedPosts = (): StoredPost[] => {
+export const useFrequentlyAccessedPosts = (): PostType[] => {
   const [frequentlyAccessedPostsRaw] = useMMKVString(
     "frequentlyAccessedPosts",
     storage
@@ -35,7 +42,7 @@ export const useFrequentlyAccessedPosts = (): StoredPost[] => {
   return useMemo(() => {
     const frequentlyAccessedPosts = JSON.parse(
       frequentlyAccessedPostsRaw || "{}"
-    ) as FrequentlyAccessedPosts;
+    ) as FrequentlyAccessedPostsType;
 
     const posts = getPosts();
     const frequentlyAccessedPostsIds = Object.entries(frequentlyAccessedPosts)
@@ -43,11 +50,11 @@ export const useFrequentlyAccessedPosts = (): StoredPost[] => {
       .slice(0, 10)
       .map(([id]) => id);
 
-    const filteredPosts = posts.filter((post: StoredPost) =>
+    const filteredPosts = posts.filter((post: PostType) =>
       frequentlyAccessedPostsIds.includes(post.id)
     );
 
-    return filteredPosts.sort((a: StoredPost, b: StoredPost) => {
+    return filteredPosts.sort((a: PostType, b: PostType) => {
       const aCount = frequentlyAccessedPosts[a.id] || 0;
       const bCount = frequentlyAccessedPosts[b.id] || 0;
       return bCount - aCount;
@@ -55,7 +62,7 @@ export const useFrequentlyAccessedPosts = (): StoredPost[] => {
   }, [frequentlyAccessedPostsRaw]);
 };
 
-export const useRecentlyAddedPosts = (): StoredPost[] => {
+export const useRecentlyAddedPosts = (): PostType[] => {
   const [postsRaw] = useMMKVString("posts", storage);
 
   return useMemo(() => {
@@ -65,7 +72,7 @@ export const useRecentlyAddedPosts = (): StoredPost[] => {
   }, [postsRaw]);
 };
 
-export const useRandomPickPost = (): StoredPost | null => {
+export const useRandomPickPost = (): PostType | null => {
   const posts = usePosts();
 
   return useMemo(() => getRandomPick(posts), []);
@@ -91,11 +98,11 @@ export const removePost = (timestamp: number): void => {
   storage.set("posts", JSON.stringify(updatedPosts));
 };
 
-export const savePosts = (posts: StoredPost[]): void => {
+export const savePosts = (posts: PostType[]): void => {
   storage.set("posts", JSON.stringify(posts));
 };
 
-export const usePosts = (): StoredPost[] => {
+export const usePosts = (): PostType[] => {
   const [posts] = useMMKVString("posts", storage);
 
   return useMemo(() => JSON.parse(posts || "[]"), [posts]);

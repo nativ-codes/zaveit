@@ -1,3 +1,3 @@
-import { StoredPost } from "@/types";
+import { PostType } from "@/types";
 
-export type PostDetailsPropsType = StoredPost;
+export type PostDetailsPropsType = PostType;

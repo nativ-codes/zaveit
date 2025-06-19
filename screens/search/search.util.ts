@@ -1,7 +1,7 @@
 import { CATEGORIES } from "@/common/constants/categories";
-import { StoredPost } from "@/types";
+import { PostType } from "@/types";
 
-export const getSortedTags = (posts: StoredPost[]) => {
+export const getSortedTags = (posts: PostType[]) => {
   const mappedTags = posts.reduce((tags, post) => {
     post.tags?.forEach((tag) => {
       tags[tag] = (tags[tag] || 0) + 1;
@@ -35,7 +35,7 @@ export const getSecondaryTags = ({
 };
 
 type GetFilteredPostsType = {
-  posts: StoredPost[];
+  posts: PostType[];
   selectedTags: string[];
   searchQuery: string;
 };
@@ -44,7 +44,7 @@ export const getFilteredPosts = ({
   posts,
   selectedTags,
   searchQuery,
-}: GetFilteredPostsType): StoredPost[] => {
+}: GetFilteredPostsType): PostType[] => {
   const query = searchQuery.toLowerCase().trim();
   const hasQuery = query.length > 0;
   const hasTags = selectedTags.length > 0;
@@ -68,7 +68,7 @@ export const getFilteredPosts = ({
 };
 
 type GetPostsForTagType = {
-  posts: StoredPost[];
+  posts: PostType[];
   tag: string;
 };
 
@@ -76,11 +76,11 @@ export const getPostsForTag = ({ posts, tag }: GetPostsForTagType) => {
   if (!posts || posts.length === 0) return [];
 
   return posts.filter(
-    (post: StoredPost) => post.tags && post.tags.includes(tag)
+    (post: PostType) => post.tags && post.tags.includes(tag)
   );
 };
 
-export const getRandomPick = (posts: StoredPost[]) => {
+export const getRandomPick = (posts: PostType[]) => {
   if (posts.length === 0) return null;
   const randomIndex = Math.floor(Math.random() * posts.length);
 
@@ -88,7 +88,7 @@ export const getRandomPick = (posts: StoredPost[]) => {
 };
 
 type GetPostDetailsType = {
-  posts: StoredPost[];
+  posts: PostType[];
   id: string;
 };
 

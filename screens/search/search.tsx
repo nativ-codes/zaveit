@@ -7,7 +7,7 @@ import { Colors } from "@/common/constants/colors";
 import { Spacer, TabLayout } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { usePosts } from "@/config/storage/persistent";
-import { StoredPost } from "@/types";
+import { PostType } from "@/types";
 import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
 import { Text, TextInput, View } from "react-native";
@@ -64,7 +64,7 @@ function SearchScreen() {
     [sortedTags, selectedPrimaryTag]
   );
 
-  const renderFilteredPost = (post: StoredPost) => (
+  const renderFilteredPost = (post: PostType) => (
     <PreviewPost
       key={post.id}
       {...post}

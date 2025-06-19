@@ -36,17 +36,6 @@ export type PostType = {
 
 export type PostMetadataType = Omit<PostType, "id" | "timestamp" | "tags">;
 
-export interface StoredPost {
-  id: string;
-  url: string;
-  title: string;
-  author?: string;
-  thumbnail?: string;
-  timestamp?: number;
-  metadata?: OEmbedData;
-  tags: string[];
-}
-
 export type PostMetadata = {
   title?: string;
   'og:image'?: string;
