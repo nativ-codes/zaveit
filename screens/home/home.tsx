@@ -12,6 +12,8 @@ import { useShareIntentContext } from "expo-share-intent";
 import React, { useEffect, useMemo } from "react";
 import { Text } from "react-native";
 import { getRandomPick } from "../search/search.util";
+import FrequentlyAccessedSection from "./components/frequently-accessed-section/frequently-accessed-section";
+import RecentlyAddedSection from "./components/recently-added-section/recently-added-section";
 
 function HomeScreen() {
   const { hasShareIntent } = useShareIntentContext();
@@ -57,20 +59,8 @@ function HomeScreen() {
       </Spacer>
 
       <Spacer gap="s16">
-        <HorizontalScrollViewPosts
-          Element={PreviewPostCard}
-          title="Recently Added"
-          posts={posts}
-          onPostPress={handleOnPostPress}
-        />
-
-        <HorizontalScrollViewPosts
-          Element={PreviewPostCard}
-          title="Frequently Accessed"
-          posts={posts}
-          onPostPress={handleOnPostPress}
-        />
-
+        <RecentlyAddedSection onPostPress={handleOnPostPress} />
+        <FrequentlyAccessedSection onPostPress={handleOnPostPress} />
         {randomPost && (
           <HorizontalScrollViewPosts
             Element={PreviewPostCard}

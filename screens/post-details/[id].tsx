@@ -1,9 +1,9 @@
 import { Button, PostDetails, TopBar } from "@/common/components";
 import { Spacer, TabLayout } from "@/common/layouts";
-import { usePosts } from "@/config/storage/persistent";
+import { increasePostAccessCount, usePosts } from "@/config/storage/persistent";
 import * as Linking from "expo-linking";
 import { useLocalSearchParams } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import { Text, View } from "react-native";
 import { getPostDetails } from "../search/search.util";
 import styles from "./[id].style";
@@ -13,6 +13,12 @@ function PostDetailsScreen() {
   const { id } = useLocalSearchParams<PostDetailsPropsType>();
   const posts = usePosts();
   const post = getPostDetails({ posts, id });
+
+  useEffect(() => {
+    if (post) {
+      increasePostAccessCount(post.id);
+    }
+  }, [post]);
 
   if (!post) {
     return (
