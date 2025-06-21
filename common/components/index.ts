@@ -1,4 +1,5 @@
 export { default as Button } from "./button/button";
+export { default as EmptyPlaceholder } from "./empty-placeholder/empty-placeholder";
 export { default as HorizontalScrollViewPosts } from "./horizontal-scrollview-posts/horizontal-scrollview-posts";
 export { default as HorizontalScrollviewTags } from "./horizontal-scrollview-tags/horizontal-scrollview-tags";
 export { default as Menu } from "./menu/menu";

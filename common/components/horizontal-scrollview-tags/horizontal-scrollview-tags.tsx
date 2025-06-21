@@ -1,5 +1,6 @@
 import { Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
+import { toggleTag } from "@/common/utils/misc";
 import React from "react";
 import { ScrollView } from "react-native";
 import TagItem from "../tag-item/tag-item";
@@ -25,13 +26,12 @@ const HorizontalScrollviewTags = ({
   };
 
   const handleOnSecondaryTagSelect = (tag: string) => {
-    onSecondaryTagSelect((prevSecondaryTags) => {
-      if (prevSecondaryTags.includes(tag)) {
-        return prevSecondaryTags.filter((t) => t !== tag);
-      } else {
-        return [...prevSecondaryTags, tag];
-      }
-    });
+    onSecondaryTagSelect((prevSecondaryTags) =>
+      toggleTag({
+        tags: prevSecondaryTags,
+        tag,
+      })
+    );
   };
 
   return (

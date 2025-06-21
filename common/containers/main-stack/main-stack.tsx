@@ -1,18 +1,25 @@
 import { SCREEN_OPTIONS } from "@/common/constants";
 import { useAuth } from "@/config/contexts/auth.context";
 import { router, Stack } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 function MainStack() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      router.replace("/");
-    } else {
-      router.replace("/login");
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isMounted && !isLoading) {
+      if (isAuthenticated) {
+        router.replace("/");
+      } else {
+        router.replace("/login");
+      }
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, isLoading, isMounted]);
 
   return (
     <Stack screenOptions={SCREEN_OPTIONS}>

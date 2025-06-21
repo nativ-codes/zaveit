@@ -1,5 +1,6 @@
 import {
   Button,
+  EmptyPlaceholder,
   HorizontalScrollviewTags,
   PreviewPost,
   TopBar,
@@ -128,11 +129,10 @@ function SearchScreen() {
           {filteredPosts.map(renderFilteredPost)}
         </Spacer>
       ) : sortedTags.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>
-            No tags found. Start adding content to see tags.
-          </Text>
-        </View>
+        <EmptyPlaceholder
+          message="No tags found."
+          instruction="Start adding content to see tags."
+        />
       ) : (
         <Spacer gap="s24">
           <TagPostsList tags={sortedMainTags} posts={posts} />

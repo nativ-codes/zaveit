@@ -1,4 +1,4 @@
-import { CATEGORIES } from "@/common/constants/categories";
+import { MAIN_TAGS } from "@/common/constants";
 import { PostType } from "@/types";
 
 export const getSortedTags = (posts: PostType[]) => {
@@ -15,11 +15,11 @@ export const getSortedTags = (posts: PostType[]) => {
 };
 
 export const getSortedMainTags = (tags: string[]) => {
-  return tags.filter((tag) => CATEGORIES.includes(tag));
+  return tags.filter((tag) => MAIN_TAGS.includes(tag));
 };
 
 export const getPrimaryTags = (tags: string[]) => {
-  return tags.filter((tag) => CATEGORIES.includes(tag));
+  return tags.filter((tag) => MAIN_TAGS.includes(tag));
 };
 
 type GetSecondaryTagsType = {

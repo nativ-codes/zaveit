@@ -1,87 +1,21 @@
 import { Button, TopBar, UpdatePostDetails } from "@/common/components";
-import {
-  CATEGORIES,
-  IMAGE_PLACEHOLDER,
-  PLATFORM_CONFIGS,
-} from "@/common/constants";
+import { IMAGE_PLACEHOLDER } from "@/common/constants";
 import { ScreenLayout, Spacer } from "@/common/layouts";
-import { getTags, savePost } from "@/config/storage/persistent";
-import { getSuggestedTags } from "@/services/llm";
-import {
-  PlatformConfig,
-  PostMetadataType,
-  PostType,
-  SocialPlatform,
-} from "@/types";
+import { safelyPrintError, toggleTag } from "@/common/utils/misc";
+import { savePost } from "@/config/storage/persistent";
+import { PlatformConfig, PostMetadataType, PostType } from "@/types";
+import * as Burnt from "burnt";
+
 import { useRouter } from "expo-router";
 import { useShareIntentContext } from "expo-share-intent";
 import React, { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
-
-export const checkSocialPlatform = (
-  url: string
-): PlatformConfig | undefined => {
-  if (!url) return undefined;
-
-  try {
-    const urlObj = new URL(url);
-    const domain = urlObj.hostname.toLowerCase().replace("www.", "");
-
-    return PLATFORM_CONFIGS[domain as SocialPlatform];
-  } catch (error) {
-    return undefined;
-  }
-};
-
-type ParseTagsReturnType = {
-  additionalTags: string[];
-  selectedAdditionalTags: string[];
-  selectedMainTags: string[];
-  mainTags: string[];
-};
-
-const parseTags = async (title: string): Promise<ParseTagsReturnType> => {
-  const localTags = getTags();
-  const suggestedTags = await getSuggestedTags(title);
-
-  // Filter suggested tags that are also in CATEGORIES
-  const selectedMainTags = suggestedTags.filter((tag) =>
-    CATEGORIES.includes(tag.toLowerCase())
-  );
-
-  // Filter suggested tags that are NOT in CATEGORIES
-  const selectedAdditionalTags = suggestedTags.filter(
-    (tag) => !CATEGORIES.includes(tag.toLowerCase())
-  );
-
-  // Filter local tags that are NOT in CATEGORIES and make them unique
-  const localAdditionalTags = [
-    ...new Set(
-      localTags.filter((tag) => !CATEGORIES.includes(tag.toLowerCase()))
-    ),
-  ];
-
-  // Create mainTags list with selectedMainTags at the beginning
-  const mainTags = [
-    ...selectedMainTags,
-    ...CATEGORIES.filter((tag) => !selectedMainTags.includes(tag)),
-  ];
-
-  // Create additionalTags list with selectedAdditionalTags at the beginning
-  const additionalTags = [
-    ...selectedAdditionalTags,
-    ...localAdditionalTags.filter(
-      (tag) => !selectedAdditionalTags.includes(tag)
-    ),
-  ];
-
-  return {
-    selectedAdditionalTags,
-    selectedMainTags,
-    additionalTags,
-    mainTags,
-  };
-};
+import { getOEmbedMetadata } from "./share-intent.service";
+import {
+  checkSocialPlatform,
+  parseTags,
+  ParseTagsReturnType,
+} from "./share-intent.utils";
 
 function ShareIntentScreen() {
   const { shareIntent, resetShareIntent } = useShareIntentContext();
@@ -95,9 +29,6 @@ function ShareIntentScreen() {
     selectedMainTags: [],
     mainTags: [],
   });
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
 
   useEffect(() => {
     return () => resetShareIntent();
@@ -118,102 +49,108 @@ function ShareIntentScreen() {
 
       if (shareIntent.meta?.title) {
         const response = await parseTags(shareIntent.meta.title);
-        console.log(">> tags", JSON.stringify(response));
         setTags(response);
       }
     } else {
-      setError("No metadata available for this URL");
+      handleOnError(new Error("No metadata provided"));
     }
+  };
+
+  const handleOnError = (error: Error) => {
+    console.error(safelyPrintError(error));
+    Burnt.toast({
+      title: "Unable to fetch metadata",
+      message: "Please try again later.",
+      preset: "error",
+      duration: 5,
+      haptic: "error",
+    });
+    resetShareIntent();
+    router.replace("/");
+    // TODO: Add error logging
   };
 
   const handleOnSaveOEmbedData = async () => {
     try {
-      const response = await fetch(
-        `${
-          (platformConfig as PlatformConfig).oembedEndpoint
-        }?url=${encodeURIComponent(shareIntent.webUrl || "")}&format=json`
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch metadata");
-      }
-
-      const data = await response.json();
-      console.log(">> data", JSON.stringify(data));
-      console.log(">> shareIntent.webUrl", shareIntent.webUrl);
-
-      setPostMetadata({
-        author: data.author_name,
-        title: data.title,
-        thumbnail: data.thumbnail_url,
+      const data = await getOEmbedMetadata({
+        platformConfig: platformConfig as PlatformConfig,
         url: shareIntent.webUrl || "",
       });
 
+      setPostMetadata(data);
+
       if (data.title) {
         const response = await parseTags(data.title);
-        console.log(">> tags", JSON.stringify(response));
         setTags(response);
       }
-    } catch (err) {
-      console.log(">> oEmbed failed, falling back to shareIntent metadata");
-      // Fallback to shareIntent metadata if available
+    } catch (_) {
       handleOnSaveMetadata();
     }
   };
 
   useEffect(() => {
     const fetchOEmbedData = async () => {
-      if (!shareIntent?.webUrl) return;
-      setIsLoading(true);
-      setError(null);
+      if (!shareIntent?.webUrl) {
+        return;
+      }
 
       if (!platformConfig) {
         await handleOnSaveMetadata();
       } else {
         await handleOnSaveOEmbedData();
       }
-
-      setIsLoading(false);
     };
 
     fetchOEmbedData();
   }, [platformConfig, shareIntent?.webUrl]);
 
   const handleSave = async () => {
-    if (shareIntent?.webUrl) {
-      // Save to local storage
-      const post: PostType = {
-        id: uuid(),
-        url: shareIntent.webUrl,
-        title: postMetadata?.title || "",
-        author: postMetadata?.author || "",
-        thumbnail: postMetadata?.thumbnail || "",
-        tags: [...tags.selectedMainTags, ...tags.selectedAdditionalTags],
-        timestamp: Date.now(),
-      };
-      await savePost(post);
+    try {
+      if (postMetadata?.url) {
+        const post: PostType = {
+          id: uuid(),
+          url: postMetadata?.url || "",
+          title: postMetadata?.title || "",
+          author: postMetadata?.author || "",
+          thumbnail: postMetadata?.thumbnail || "",
+          tags: [...tags.selectedMainTags, ...tags.selectedAdditionalTags],
+          timestamp: Date.now(),
+        };
+        await savePost(post);
+      }
+
+      resetShareIntent();
+      router.replace("/");
+      Burnt.toast({
+        title: "Zaved successfully!",
+        preset: "done",
+        duration: 2,
+        haptic: "success",
+      });
+    } catch (error) {
+      handleOnError(error as Error);
     }
-    router.replace("/");
   };
 
   const handleOnMainTagPress = (tag: string) => {
     setTags((prevTags) => ({
       ...prevTags,
-      selectedMainTags: prevTags.selectedMainTags?.includes(tag)
-        ? prevTags.selectedMainTags.filter((t) => t !== tag)
-        : [...(prevTags.selectedMainTags || []), tag],
+      selectedMainTags: toggleTag({
+        tags: prevTags.selectedMainTags,
+        tag,
+      }),
     }));
   };
 
   const handleOnAdditionalTagPress = (tag: string) => {
     setTags((prevTags) => ({
       ...prevTags,
-      selectedAdditionalTags: prevTags.selectedAdditionalTags?.includes(tag)
-        ? prevTags.selectedAdditionalTags.filter((t) => t !== tag)
-        : [...(prevTags.selectedAdditionalTags || []), tag],
+      selectedAdditionalTags: toggleTag({
+        tags: prevTags.selectedAdditionalTags,
+        tag,
+      }),
     }));
   };
-
 
   return (
     <ScreenLayout

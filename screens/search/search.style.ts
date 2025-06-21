@@ -13,17 +13,6 @@ export default StyleSheet.create({
     paddingRight: Units.s64,
     height: Units.s64,
   },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: Units.s16,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: Colors.text.secondary,
-    textAlign: "center",
-  },
   clearSearchButton: {
     position: "absolute",
     right: 0,

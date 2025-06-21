@@ -1,8 +1,7 @@
-import {
-  TopBar
-} from "@/common/components";
+import { EmptyPlaceholder, TopBar } from "@/common/components";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
+import { useHasPosts } from "@/config/storage/persistent";
 import { useSyncLists } from "@/config/use-sync-lists";
 import { router, useRouter } from "expo-router";
 import { useShareIntentContext } from "expo-share-intent";
@@ -23,8 +22,8 @@ const useShareIntent = () => {
   }, [hasShareIntent, router]);
 };
 
-
 function HomeScreen() {
+  const hasPosts = useHasPosts();
   useShareIntent();
   const { syncLists } = useSyncLists();
 
@@ -48,9 +47,18 @@ function HomeScreen() {
       </Spacer>
 
       <Spacer gap="s16">
-        <RecentlyAddedSection onPostPress={handleOnPostPress} />
-        <FrequentlyAccessedSection onPostPress={handleOnPostPress} />
-        <RandomPickSection onPostPress={handleOnPostPress} />
+        {hasPosts ? (
+          <>
+            <RecentlyAddedSection onPostPress={handleOnPostPress} />
+            <FrequentlyAccessedSection onPostPress={handleOnPostPress} />
+            <RandomPickSection onPostPress={handleOnPostPress} />
+          </>
+        ) : (
+          <EmptyPlaceholder
+            message="You haven't zaved any posts yet."
+            instruction="Tap Share → Choose ZaveIT"
+          />
+        )}
       </Spacer>
     </ScreenLayout>
   );

@@ -70,14 +70,14 @@ export const useRecentlyAddedPosts = (): PostType[] => {
   return useMemo(() => {
     const posts = JSON.parse(postsRaw || "[]");
 
-    return posts.slice(-10).reverse();
+    return posts.slice(-HORIZONTAL_SCROLLVIEW_POSTS).reverse();
   }, [postsRaw]);
 };
 
 export const useRandomPickPost = (): PostType | null => {
   const posts = usePosts();
 
-  return useMemo(() => getRandomPick(posts), []);
+  return useMemo(() => getRandomPick(posts), [posts]);
 };
 
 export const getTags = (): string[] => {
@@ -133,4 +133,10 @@ export const removePostById = (post: PostType): void => {
 
 export const clearAllData = (): void => {
   storage.clearAll();
+};
+
+export const useHasPosts = (): boolean => {
+  const posts = usePosts();
+
+  return useMemo(() => Boolean(posts.length), [posts]);
 };

@@ -1,4 +1,4 @@
-export const CATEGORIES = [
+export const MAIN_TAGS = [
   "music",
   "comedy",
   "education",

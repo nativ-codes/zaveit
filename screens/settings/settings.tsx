@@ -4,14 +4,14 @@ import { GeneralStyles } from "@/common/styles";
 import { noop } from "@/common/utils";
 import { clearAllData } from "@/config/storage/persistent";
 import { signOut } from "@/services/google-auth.service";
+import { deleteUser } from "@/services/users.service";
 import { LegalEnum } from "@/types";
 import * as Application from "expo-application";
 import { router } from "expo-router";
 import React from "react";
-import { StyleSheet, Text } from "react-native";
+import { Alert, StyleSheet, Text } from "react-native";
 
 function SettingsScreen() {
-
   const handleOnTermsAndConditionsPress = () => {
     router.push({
       pathname: "/legal",
@@ -26,18 +26,54 @@ function SettingsScreen() {
     });
   };
 
-  const handleOnRemoveAccountPress = () => {
-    console.log("remove account");
+  const logOut = async () => {
+    try {
+      await signOut();
+      router.replace("/");
+      clearAllData();
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
   };
 
-  const handleOnLogOutPress = async () => {
-      try {
-        await signOut();
-        router.replace("/");
-        clearAllData()
-      } catch (error) {
-        console.error("Error signing out:", error);
-      }
+  const handleOnRemoveAccount = async () => {
+    Alert.alert(
+      "Delete Account",
+      "Are you sure you want to delete your account? This action cannot be undone.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteUser();
+            } catch (error) {
+              console.error("Error deleting user:", error);
+            } finally {
+              logOut();
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleOnLogOut = async () => {
+    Alert.alert("Log Out", "Are you sure you want to log out?", [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: "Log Out",
+        style: "destructive",
+        onPress: logOut,
+      },
+    ]);
   };
 
   return (
@@ -78,8 +114,11 @@ function SettingsScreen() {
           <Menu.Item onPress={() => {}} label="Send us your feedback" />
         </Menu>
         <Menu>
-          <Menu.Item onPress={handleOnRemoveAccountPress} label="Remove account" />
-          <Menu.Item onPress={handleOnLogOutPress} label="Log out" />
+          <Menu.Item
+            onPress={handleOnRemoveAccount}
+            label="Remove account"
+          />
+          <Menu.Item onPress={handleOnLogOut} label="Log out" />
         </Menu>
         <Text
           style={StyleSheet.compose(
