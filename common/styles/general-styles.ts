@@ -62,6 +62,14 @@ export const GeneralStyles = StyleSheet.create({
     fontSize: 11,
     color: Colors.text.secondary,
   },
+  textLabelLargePrimary: {
+    fontSize: 16,
+    color: Colors.text.primary,
+  },
+  textLabelMediumSecondary: {
+    fontSize: 14,
+    color: Colors.text.secondary,
+  },
   actionableContent: {
     paddingVertical: Units.s20,
     paddingHorizontal: Units.s16,
@@ -69,5 +77,8 @@ export const GeneralStyles = StyleSheet.create({
   },
   textRight: {
     textAlign: "right",
-  }
+  },
+  textCenter: {
+    textAlign: "center",
+  },
 });

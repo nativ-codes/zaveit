@@ -5,6 +5,7 @@ export const Colors = {
   transparent: "transparent",
   primary: "#5474FD", //"#F15946",
   shadow: "#9397A0",
+  border: "#EEEEEE",
 
   // Text colors
   text: {
