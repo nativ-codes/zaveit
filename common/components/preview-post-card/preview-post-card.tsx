@@ -39,7 +39,7 @@ function PreviewPostCard({
         {title && (
           <Text
             numberOfLines={3}
-            style={GeneralStyles.textBodyLargePrimary}
+            style={GeneralStyles.textTitlePostMediumPrimary}
             accessibilityRole="header"
           >
             {title}
@@ -49,12 +49,13 @@ function PreviewPostCard({
         {tags && tags.length > 0 && (
           <View style={styles.tagsContainer} accessibilityLabel="Tags">
             {tags.slice(0, MAX_TAGS_LENGTH).map((tag, index) => (
-              <TagItem key={index} tag={tag} size="small" />
+              <TagItem key={index} tag={tag} size="small" isReadOnly />
             ))}
             {tags.length > MAX_TAGS_LENGTH && (
               <TagItem
                 tag={`+${tags.length - MAX_TAGS_LENGTH} more`}
                 size="small"
+                isReadOnly
                 shouldUsePrefixedTag={false}
               />
             )}
@@ -63,7 +64,7 @@ function PreviewPostCard({
       </Spacer>
       <View style={styles.urlContainer}>
         <Text
-          style={GeneralStyles.textBodySmallSecondary}
+          style={GeneralStyles.textLabelSmallSecondary}
           numberOfLines={1}
           accessibilityLabel={`URL: ${domain}`}
         >

@@ -1,5 +1,5 @@
 import { PreviewPost, TopBar } from "@/common/components";
-import { Spacer, TabLayout } from "@/common/layouts";
+import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { usePosts } from "@/config/storage/persistent";
 import { PostType } from "@/types";
@@ -37,18 +37,18 @@ function ViewPostsScreen() {
   );
 
   return (
-    <TabLayout>
+    <ScreenLayout>
       <Spacer direction="bottom" size="s8">
         <TopBar hasBackButton />
       </Spacer>
       <Spacer direction={["left", "bottom"]} size={"s16"}>
-        <Text style={GeneralStyles.textTitleSection}>{`#${tag}`}</Text>
+        <Text style={GeneralStyles.textTitleScreenPrimary}>{`#${tag}`}</Text>
       </Spacer>
 
       <Spacer direction="horizontal" size="s16" gap="s16">
         {filteredPosts.map(renderItem)}
       </Spacer>
-    </TabLayout>
+    </ScreenLayout>
   );
 }
 

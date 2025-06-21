@@ -17,7 +17,7 @@ function Button({ label, onPress, isDisabled = false }: ButtonPropsType) {
       onPress={onPress}
       disabled={isDisabled}
     >
-      <Text style={GeneralStyles.textBodyLargeOnSurface}>{label}</Text>
+      <Text style={GeneralStyles.textTitlePostMediumOnPrimary}>{label}</Text>
     </TouchableOpacity>
   );
 }

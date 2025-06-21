@@ -1,9 +1,10 @@
 import { ACTIVE_OPACITY } from "@/common/constants/ui";
+import { Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { getDomainFromUrl } from "@/common/utils";
 import { Image } from "expo-image";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity } from "react-native";
 import { styles } from "./preview-post-tile.style";
 import { PreviewPostTilePropsType } from "./preview-post-tile.type";
 
@@ -17,7 +18,7 @@ function PreviewPostTile({
 
   return (
     <TouchableOpacity
-      style={StyleSheet.compose(styles.container, GeneralStyles.shadow)}
+      style={styles.container}
       onPress={onPress}
       activeOpacity={ACTIVE_OPACITY}
       accessibilityRole="button"
@@ -32,11 +33,11 @@ function PreviewPostTile({
         />
       )}
 
-      <View style={styles.content}>
+      <Spacer direction="full" size="s8" gap="s4" style={styles.content}>
         {title && (
           <Text
             numberOfLines={3}
-            style={styles.title}
+            style={GeneralStyles.textTitlePostSmallPrimary}
             accessibilityRole="header"
           >
             {title}
@@ -44,13 +45,13 @@ function PreviewPostTile({
         )}
 
         <Text
-          style={styles.url}
+          style={GeneralStyles.textLabelSmallSecondary}
           numberOfLines={1}
           accessibilityLabel={`URL: ${domain}`}
         >
           {domain}
         </Text>
-      </View>
+      </Spacer>
     </TouchableOpacity>
   );
 }

@@ -6,7 +6,7 @@ import React from "react";
 import { Text, TouchableOpacity } from "react-native";
 import { MenuItemPropsType } from "./menu-item.type";
 
-function MenuItem({ onPress, label }: MenuItemPropsType) {
+function MenuItem({ onPress, label, right }: MenuItemPropsType) {
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={ACTIVE_OPACITY}>
       <Spacer direction="full" size="s8">
@@ -15,11 +15,15 @@ function MenuItem({ onPress, label }: MenuItemPropsType) {
             <Text style={GeneralStyles.textLabelLargePrimary}>{label}</Text>
           }
           right={
-            <Icon
-              name="chevron-right"
-              size={Units.s24}
-              color={Colors.text.secondary}
-            />
+            right ? (
+              right
+            ) : (
+              <Icon
+                name="chevron-right"
+                size={Units.s24}
+                color={Colors.text.secondary}
+              />
+            )
           }
         />
       </Spacer>

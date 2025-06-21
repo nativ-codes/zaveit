@@ -40,7 +40,7 @@ function PreviewPost({
         {title && (
           <Text
             numberOfLines={3}
-            style={GeneralStyles.textBodyLargePrimary}
+            style={GeneralStyles.textTitlePostMediumPrimary}
             accessibilityRole="header"
           >
             {title}
@@ -48,7 +48,7 @@ function PreviewPost({
         )}
 
         <Text
-          style={GeneralStyles.textBodyMediumSecondary}
+          style={GeneralStyles.textLabelMediumSecondary}
           numberOfLines={3}
           accessibilityLabel={`URL: ${domain}`}
         >
@@ -58,12 +58,13 @@ function PreviewPost({
         {tags?.length > 0 && (
           <View style={styles.tagsContainer} accessibilityLabel="Tags">
             {tags.slice(0, MAX_TAGS_LENGTH).map((tag, index) => (
-              <TagItem key={index} tag={tag} size="small" />
+              <TagItem key={index} tag={tag} size="small" isReadOnly />
             ))}
             {tags.length > MAX_TAGS_LENGTH && (
               <TagItem
                 tag={`+${tags.length - MAX_TAGS_LENGTH} more`}
                 size="small"
+                isReadOnly
                 shouldUsePrefixedTag={false}
               />
             )}

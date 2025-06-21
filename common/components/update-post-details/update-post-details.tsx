@@ -88,9 +88,11 @@ function UpdatePostDetails({
       )}
       <Spacer direction="horizontal" size="s16" gap="s16">
         <Spacer gap="s8">
-          {title && <Text style={GeneralStyles.textTitleSection}>{title}</Text>}
+          {title && (
+            <Text style={GeneralStyles.textTitlePostLargePrimary}>{title}</Text>
+          )}
           {author && (
-            <Text style={GeneralStyles.textBodyMediumSecondary}>
+            <Text style={GeneralStyles.textLabelMediumSecondary}>
               by {author}
             </Text>
           )}
@@ -108,7 +110,7 @@ function UpdatePostDetails({
         </TouchableOpacity>
 
         <Spacer gap="s16" direction="top" size="s16">
-          <Text style={GeneralStyles.textTitleBody}>
+          <Text style={GeneralStyles.textLabelLargePrimary}>
             Select at least one main tag:
           </Text>
           {isLoading ? (
@@ -139,7 +141,9 @@ function UpdatePostDetails({
         </Spacer>
 
         <Spacer gap="s16" direction="top" size="s16">
-          <Text style={GeneralStyles.textTitleBody}>Additional tags:</Text>
+          <Text style={GeneralStyles.textLabelLargePrimary}>
+            Additional tags:
+          </Text>
           {isLoading
             ? renderSkeletonTags(5)
             : additionalTags &&

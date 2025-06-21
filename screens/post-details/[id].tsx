@@ -1,5 +1,5 @@
 import { Button, PostDetails, TopBar } from "@/common/components";
-import { Spacer, TabLayout } from "@/common/layouts";
+import { ScreenLayout, Spacer } from "@/common/layouts";
 import { increasePostAccessCount, usePosts } from "@/config/storage/persistent";
 import * as Linking from "expo-linking";
 import { useLocalSearchParams } from "expo-router";
@@ -37,7 +37,7 @@ function PostDetailsScreen() {
   };
 
   return (
-    <TabLayout
+    <ScreenLayout
       footer={
         <Spacer gap="s16" direction="horizontal" size="s16">
           <Button label="Open Post" onPress={handleOpenInBrowser} />
@@ -46,7 +46,7 @@ function PostDetailsScreen() {
     >
       <TopBar hasBackButton />
       <PostDetails {...post} />
-    </TabLayout>
+    </ScreenLayout>
   );
 }
 

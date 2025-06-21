@@ -3,7 +3,7 @@ import {
   PreviewPostCard,
   TopBar,
 } from "@/common/components";
-import { Spacer, TabLayout } from "@/common/layouts";
+import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { usePosts } from "@/config/storage/persistent";
 import { useSyncLists } from "@/config/use-sync-lists";
@@ -50,10 +50,10 @@ function HomeScreen() {
   };
 
   return (
-    <TabLayout>
+    <ScreenLayout>
       <Spacer direction="bottom" size="s8">
         <TopBar
-          left={<Text style={GeneralStyles.textTitleScreen}>Home</Text>}
+          left={<Text style={GeneralStyles.textTitleScreenPrimary}>Home</Text>}
           right={<Text style={GeneralStyles.textLink}>Add Post</Text>}
         />
       </Spacer>
@@ -70,7 +70,7 @@ function HomeScreen() {
           />
         )}
       </Spacer>
-    </TabLayout>
+    </ScreenLayout>
   );
 }
 

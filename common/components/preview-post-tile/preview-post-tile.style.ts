@@ -1,5 +1,6 @@
 import { Colors } from "@/common/constants/colors";
 import { Units } from "@/common/constants/units";
+import { GeneralStyles } from "@/common/styles";
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
@@ -7,7 +8,8 @@ export const styles = StyleSheet.create({
     width: Units.s256,
     borderRadius: Units.s24,
     flexDirection: "row",
-    backgroundColor: Colors.white
+    backgroundColor: Colors.surface.primary,
+    ...GeneralStyles.shadow,
   },
   image: {
     width: Units.s88,
@@ -18,16 +20,5 @@ export const styles = StyleSheet.create({
   content: {
     flexGrow: 1,
     flexShrink: 1,
-    padding: Units.s8,
-    gap: Units.s4,
-  },
-  title: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: Colors.text.primary,
-  },
-  url: {
-    fontSize: Units.s12,
-    color: Colors.text.secondary,
   },
 });

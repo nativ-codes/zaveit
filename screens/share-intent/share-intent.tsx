@@ -4,7 +4,7 @@ import {
   IMAGE_PLACEHOLDER,
   PLATFORM_CONFIGS,
 } from "@/common/constants";
-import { Spacer, TabLayout } from "@/common/layouts";
+import { ScreenLayout, Spacer } from "@/common/layouts";
 import { getTags, savePost } from "@/config/storage/persistent";
 import { getSuggestedTags } from "@/services/llm";
 import {
@@ -208,7 +208,7 @@ export default function ShareIntentScreen() {
 
    // TODO: disable button
   return (
-    <TabLayout
+    <ScreenLayout
       footer={
         <Spacer gap="s16" direction="horizontal" size="s16">
           <Button
@@ -235,6 +235,6 @@ export default function ShareIntentScreen() {
           isLoading={!Boolean(tags.mainTags.length)}
         />
       )}
-    </TabLayout>
+    </ScreenLayout>
   );
 }

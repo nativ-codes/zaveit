@@ -1,6 +1,7 @@
 export * from "./categories";
 export * from "./colors";
 export * from "./configs";
+export * from "./legal";
 export * from "./navigation";
 export * from "./placeholders";
 export * from "./platforms";

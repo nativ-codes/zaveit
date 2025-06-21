@@ -17,6 +17,6 @@ export default StyleSheet.create({
     backgroundColor: Colors.primary,
   },
   selectedTagText: {
-    color: Colors.text.onSurface,
+    color: Colors.text.onPrimary,
   },
 });

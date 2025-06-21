@@ -54,9 +54,11 @@ function PostDetails({
       )}
       <Spacer direction="horizontal" size="s16" gap="s16">
         <Spacer gap="s8">
-          {title && <Text style={GeneralStyles.textTitleSection}>{title}</Text>}
+          {title && (
+            <Text style={GeneralStyles.textTitlePostLargePrimary}>{title}</Text>
+          )}
           {author && (
-            <Text style={GeneralStyles.textBodyMediumSecondary}>
+            <Text style={GeneralStyles.textLabelMediumSecondary}>
               Author: {author}
             </Text>
           )}
@@ -86,16 +88,18 @@ function PostDetails({
           </Spacer>
         )}
 
-        {timestamp && <Spacer direction="top" size="s32">
-          <Text
-            style={StyleSheet.compose(
-              GeneralStyles.textBodyMediumSecondary,
-              GeneralStyles.textRight
-            )}
-          >
-            Added on {formatTimestampToDateString(timestamp)}
-          </Text>
-        </Spacer>}
+        {timestamp && (
+          <Spacer direction="top" size="s32">
+            <Text
+              style={StyleSheet.compose(
+                GeneralStyles.textLabelMediumSecondary,
+                GeneralStyles.textRight
+              )}
+            >
+              Added on {formatTimestampToDateString(timestamp)}
+            </Text>
+          </Spacer>
+        )}
       </Spacer>
     </Spacer>
   );

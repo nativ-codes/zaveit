@@ -12,7 +12,7 @@ export const Colors = {
     primary: "#19202D",
     secondary: "#9397A0",
     placeholder: "#A7A7A7",
-    onSurface: "#FFFFFF",
+    onPrimary: "#FFFFFF",
   },
 
   // Background colors

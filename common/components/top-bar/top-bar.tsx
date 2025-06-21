@@ -40,11 +40,7 @@ function TopBar({
 
   const renderCenterComponent = () => {
     if (title) {
-      return (
-        <Text style={GeneralStyles.textTitleSection}>
-          {title}
-        </Text>
-      );
+      return <Text style={GeneralStyles.textTitleScreenPrimary}>{title}</Text>;
     } else {
       return <View />;
     }

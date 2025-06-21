@@ -4,7 +4,7 @@ import {
   TopBar,
 } from "@/common/components";
 import { Colors } from "@/common/constants/colors";
-import { Spacer, TabLayout } from "@/common/layouts";
+import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { usePosts } from "@/config/storage/persistent";
 import { PostType } from "@/types";
@@ -78,9 +78,13 @@ function SearchScreen() {
   );
 
   return (
-    <TabLayout>
+    <ScreenLayout>
       <Spacer direction="bottom" size="s8">
-      <TopBar left={<Text style={GeneralStyles.textTitleScreen}>Search</Text>} />
+        <TopBar
+          left={
+            <Text style={GeneralStyles.textTitleScreenPrimary}>Search</Text>
+          }
+        />
       </Spacer>
       <Spacer direction="bottom" gap="s16" size="s32">
         <Spacer direction="horizontal" size="s16">
@@ -118,7 +122,7 @@ function SearchScreen() {
           <TagPostsList tags={sortedMainTags} posts={posts} />
         </Spacer>
       )}
-    </TabLayout>
+    </ScreenLayout>
   );
 }
 

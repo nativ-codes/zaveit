@@ -4,14 +4,14 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { TAB_BAR_HEIGHT, Units } from "@/common/constants";
 
-import styles from "./tab-layout.style";
-import { TabLayoutPropsType } from "./tab-layout.type";
+import styles from "./screen-layout.style";
+import { ScreenLayoutPropsType } from "./screen-layout.type";
 
-function TabLayout({ children, testID, style, footer }: TabLayoutPropsType) {
+function ScreenLayout({ children, testID, style, footer }: ScreenLayoutPropsType) {
   const insets = useSafeAreaInsets();
 
   return (
-    <View testID={`${testID}_TabLayout`} style={styles.wrapper}>
+    <View testID={`${testID}_ScreenLayout`} style={styles.wrapper}>
       <ScrollView
         testID={`${testID}_StaticScreenLayout_ScrollView`}
         contentContainerStyle={StyleSheet.compose(style, {
@@ -32,4 +32,4 @@ function TabLayout({ children, testID, style, footer }: TabLayoutPropsType) {
   );
 }
 
-export default memo(TabLayout);
+export default memo(ScreenLayout); 

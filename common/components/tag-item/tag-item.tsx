@@ -17,8 +17,8 @@ function TagItem({
   const onPressHandler = isReadOnly ? undefined : onPress;
   const textStyle = StyleSheet.flatten([
     size === TagItemSizeEnum.small
-      ? GeneralStyles.textBodySmallSecondary
-      : GeneralStyles.textBodyLargeSecondary,
+      ? GeneralStyles.textLabelSmallSecondary
+      : GeneralStyles.textLabelLargeSecondary,
     isSelected && styles.selectedTagText,
   ]);
   const containerStyle = StyleSheet.flatten([

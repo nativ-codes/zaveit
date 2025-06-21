@@ -18,67 +18,84 @@ export const GeneralStyles = StyleSheet.create({
   directionRow: {
     flexDirection: "row",
   },
-  textTitleScreen: {
+
+  /* Text Title Screen */
+  textTitleScreenPrimary: {
+    fontFamily: "GellixBold",
     fontSize: 24,
-    fontWeight: "bold",
     color: Colors.text.primary,
   },
-  textTitleSection: {
+
+  /* Text Title Section */
+  textTitleSectionPrimary: {
+    fontFamily: "Gellix",
     fontSize: 20,
-    fontWeight: "bold",
     color: Colors.text.primary,
   },
-  textTitleBody: {
-    fontSize: 16,
-    fontWeight: "bold",
+
+  /* Text Title Post */
+  textTitlePostLargePrimary: {
+    fontFamily: "GellixBold",
+    fontSize: 20,
     color: Colors.text.primary,
   },
-  textLink: {
-    fontSize: 15,
-    fontWeight: "500",
-    color: Colors.primary,
-  },
-  textBodyLargeSecondary: {
-    fontSize: 16,
-    color: Colors.text.secondary,
-    fontWeight: "500",
-  },
-  textBodyLargeOnSurface: {
-    fontSize: 16,
-    color: Colors.text.onSurface,
-    fontWeight: "600",
-  },
-  textBodyLargePrimary: {
+  textTitlePostMediumPrimary: {
+    fontFamily: "GellixBold",
     fontSize: 16,
     color: Colors.text.primary,
-    fontWeight: "bold",
   },
-  textBodyMediumSecondary: {
+  textTitlePostMediumOnPrimary: {
+    fontFamily: "GellixBold",
+    fontSize: 16,
+    color: Colors.text.onPrimary,
+  },
+  textTitlePostSmallPrimary: {
+    fontFamily: "GellixBold",
     fontSize: 14,
-    color: Colors.text.secondary,
-    fontWeight: "500",
+    color: Colors.text.primary,
   },
-  textBodySmallSecondary: {
-    fontSize: 11,
-    color: Colors.text.secondary,
-  },
+
+  /* Text Label */
   textLabelLargePrimary: {
+    fontFamily: "Gellix",
     fontSize: 16,
     color: Colors.text.primary,
+  },
+  textLabelLargeSecondary: {
+    fontFamily: "Gellix",
+    fontSize: 16,
+    color: Colors.text.secondary,
   },
   textLabelMediumSecondary: {
+    fontFamily: "Gellix",
     fontSize: 14,
     color: Colors.text.secondary,
   },
-  actionableContent: {
-    paddingVertical: Units.s20,
-    paddingHorizontal: Units.s16,
-    borderRadius: Units.s24,
+  textLabelSmallSecondary: {
+    fontFamily: "Gellix",
+    fontSize: 12,
+    color: Colors.text.secondary,
   },
+
+  /* Text Link */
+  textLink: {
+    fontFamily: "Gellix",
+    fontSize: 15,
+    color: Colors.primary,
+  },
+
+  /* Text Alignment */
   textRight: {
     textAlign: "right",
   },
   textCenter: {
     textAlign: "center",
+  },
+
+  /* Misc */
+  actionableContent: {
+    paddingVertical: Units.s20,
+    paddingHorizontal: Units.s16,
+    borderRadius: Units.s24,
   },
 });

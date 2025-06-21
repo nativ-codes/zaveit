@@ -15,9 +15,9 @@ function HorizontalScrollViewPosts({
   onPostPress,
 }: HorizontalScrollViewPostsType) {
   return (
-    <Spacer gap="s16">
+    <Spacer gap="s8">
       <Spacer style={styles.titleContainer} direction="horizontal" size="s16">
-        <Text style={GeneralStyles.textTitleSection}>{title}</Text>
+        <Text style={GeneralStyles.textTitleSectionPrimary}>{title}</Text>
         {onViewAll && (
           <TouchableOpacity
             activeOpacity={ACTIVE_OPACITY}
@@ -35,8 +35,8 @@ function HorizontalScrollViewPosts({
       >
         <Spacer
           style={GeneralStyles.directionRow}
-          direction="horizontal"
-          size="s16"
+          direction={["horizontal", "vertical"]}
+          size={["s16", "s8"]}
           gap="s16"
         >
           {posts.map((post) => (
