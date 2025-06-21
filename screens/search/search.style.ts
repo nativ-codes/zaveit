@@ -10,6 +10,7 @@ export default StyleSheet.create({
     color: Colors.text.primary,
     ...GeneralStyles.actionableContent,
     ...GeneralStyles.shadow,
+    paddingRight: Units.s64,
   },
   emptyContainer: {
     flex: 1,
@@ -21,5 +22,15 @@ export default StyleSheet.create({
     fontSize: 16,
     color: Colors.text.secondary,
     textAlign: "center",
-  }
+  },
+  clearSearchButton: {
+    position: "absolute",
+    right: 0,
+    top: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: Colors.primary,
+    ...GeneralStyles.actionableContent,
+  },
 });

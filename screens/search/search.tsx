@@ -3,14 +3,16 @@ import {
   PreviewPost,
   TopBar,
 } from "@/common/components";
+import { ACTIVE_OPACITY } from "@/common/constants";
 import { Colors } from "@/common/constants/colors";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { usePosts } from "@/config/storage/persistent";
 import { PostType } from "@/types";
+import Icon from "@expo/vector-icons/Feather";
 import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
-import { Text, TextInput, View } from "react-native";
+import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import TagPostsList from "./components/tag-posts-list/tag-posts-list";
 import styles from "./search.style";
 import {
@@ -60,7 +62,11 @@ function SearchScreen() {
   const primaryTags = useMemo(() => getPrimaryTags(sortedTags), [sortedTags]);
 
   const secondaryTags = useMemo(
-    () => getSecondaryTags({ tags: sortedTags, selectedPrimaryTag }),
+    () =>
+      getSecondaryTags({
+        tags: sortedTags,
+        selectedPrimaryTag: selectedPrimaryTag || "",
+      }),
     [sortedTags, selectedPrimaryTag]
   );
 
@@ -77,6 +83,10 @@ function SearchScreen() {
     />
   );
 
+  const handleOnClearSearch = () => {
+    setSearchQuery("");
+  };
+
   return (
     <ScreenLayout>
       <Spacer direction="bottom" size="s8">
@@ -88,13 +98,24 @@ function SearchScreen() {
       </Spacer>
       <Spacer direction="bottom" gap="s16" size="s32">
         <Spacer direction="horizontal" size="s16">
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search your saved content..."
-            value={searchQuery}
-            placeholderTextColor={Colors.text.placeholder}
-            onChangeText={setSearchQuery}
-          />
+          <View>
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search your saved content..."
+              value={searchQuery}
+              placeholderTextColor={Colors.text.placeholder}
+              onChangeText={setSearchQuery}
+            />
+            {Boolean(searchQuery.length) && (
+              <TouchableOpacity
+                activeOpacity={ACTIVE_OPACITY}
+                onPress={handleOnClearSearch}
+                style={styles.clearSearchButton}
+              >
+                <Icon name="x" size={24} color={Colors.text.onPrimary} />
+              </TouchableOpacity>
+            )}
+          </View>
         </Spacer>
 
         <HorizontalScrollviewTags

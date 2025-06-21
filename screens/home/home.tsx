@@ -54,7 +54,6 @@ function HomeScreen() {
       <Spacer direction="bottom" size="s8">
         <TopBar
           left={<Text style={GeneralStyles.textTitleScreenPrimary}>Home</Text>}
-          right={<Text style={GeneralStyles.textLink}>Add Post</Text>}
         />
       </Spacer>
 
