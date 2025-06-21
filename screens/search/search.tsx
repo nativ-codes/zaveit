@@ -1,18 +1,17 @@
 import {
+  Button,
   HorizontalScrollviewTags,
   PreviewPost,
   TopBar,
 } from "@/common/components";
-import { ACTIVE_OPACITY, Units } from "@/common/constants";
 import { Colors } from "@/common/constants/colors";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { usePosts } from "@/config/storage/persistent";
 import { PostType } from "@/types";
-import Icon from "@expo/vector-icons/Feather";
 import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Text, TextInput, View } from "react-native";
 import TagPostsList from "./components/tag-posts-list/tag-posts-list";
 import styles from "./search.style";
 import {
@@ -107,13 +106,9 @@ function SearchScreen() {
               onChangeText={setSearchQuery}
             />
             {Boolean(searchQuery.length) && (
-              <TouchableOpacity
-                activeOpacity={ACTIVE_OPACITY}
-                onPress={handleOnClearSearch}
-                style={styles.clearSearchButton}
-              >
-                <Icon name="x" size={Units.s24} color={Colors.text.onPrimary} />
-              </TouchableOpacity>
+              <View style={styles.clearSearchButton}>
+                <Button.Icon iconName="x" onPress={handleOnClearSearch} />
+              </View>
             )}
           </View>
         </Spacer>

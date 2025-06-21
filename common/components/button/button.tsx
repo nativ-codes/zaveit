@@ -2,6 +2,7 @@ import { ACTIVE_OPACITY } from "@/common/constants";
 import { GeneralStyles } from "@/common/styles";
 import React from "react";
 import { Text, TouchableOpacity } from "react-native";
+import ButtonIcon from "./button-icon/button-icon";
 import styles from "./button.style";
 import { ButtonPropsType } from "./button.type";
 
@@ -22,4 +23,5 @@ function Button({ label, onPress, isDisabled = false }: ButtonPropsType) {
   );
 }
 
+Button.Icon = ButtonIcon;
 export default Button;

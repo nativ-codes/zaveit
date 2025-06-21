@@ -11,6 +11,7 @@ export default StyleSheet.create({
     ...GeneralStyles.actionableContent,
     ...GeneralStyles.shadow,
     paddingRight: Units.s64,
+    height: Units.s64,
   },
   emptyContainer: {
     flex: 1,
@@ -27,10 +28,6 @@ export default StyleSheet.create({
     position: "absolute",
     right: 0,
     top: 0,
-    bottom: 0,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: Colors.primary,
-    ...GeneralStyles.actionableContent,
+    bottom: 0
   },
 });

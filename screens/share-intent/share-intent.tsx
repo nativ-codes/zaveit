@@ -212,7 +212,7 @@ export default function ShareIntentScreen() {
       footer={
         <Spacer gap="s16" direction="horizontal" size="s16">
           <Button
-            label="Zave It"
+            label="Zave IT"
             onPress={handleSave}
             isDisabled={!Boolean(tags.mainTags.length)}
           />

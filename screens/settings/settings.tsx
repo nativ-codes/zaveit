@@ -62,7 +62,7 @@ function SettingsScreen() {
           <Menu.Item onPress={() => {}} label="Send us your feedback" />
         </Menu>
         <Menu>
-          <Menu.Item onPress={() => {}} label="Remove all data" />
+          <Menu.Item onPress={() => {}} label="Remove account" />
           <Menu.Item onPress={() => {}} label="Log out" />
         </Menu>
         <Text

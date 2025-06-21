@@ -6,6 +6,6 @@ export default StyleSheet.create({
   card: {
     ...GeneralStyles.actionableContent,
     ...GeneralStyles.shadow,
-    backgroundColor: Colors.surface.primary,
+    backgroundColor: Colors.surface.primary
   },
 });

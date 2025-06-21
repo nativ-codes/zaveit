@@ -96,6 +96,6 @@ export const GeneralStyles = StyleSheet.create({
   actionableContent: {
     paddingVertical: Units.s20,
     paddingHorizontal: Units.s16,
-    borderRadius: Units.s24,
+    borderRadius: Units.s24
   },
 });

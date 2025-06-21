@@ -1,5 +1,4 @@
 import { Button, PostDetails, TopBar } from "@/common/components";
-import { ACTIVE_OPACITY, Colors, Units } from "@/common/constants";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import {
@@ -7,11 +6,10 @@ import {
   removePostById,
   usePosts,
 } from "@/config/storage/persistent";
-import Icon from "@expo/vector-icons/Feather";
 import * as Linking from "expo-linking";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect } from "react";
-import { Alert, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Text, View } from "react-native";
 import { getPostDetails } from "../search/search.util";
 import styles from "./[id].style";
 import { PostDetailsPropsType } from "./[id].type";
@@ -69,14 +67,8 @@ function PostDetailsScreen() {
           direction="horizontal"
           size="s16"
         >
+          <Button.Icon iconName="trash" onPress={handleOnRemovePost} theme="error" />
           <Button label="Open" onPress={handleOpenInBrowser} />
-          <TouchableOpacity
-            activeOpacity={ACTIVE_OPACITY}
-            onPress={handleOnRemovePost}
-            style={styles.removePostButton}
-          >
-            <Icon name="trash" size={Units.s24} color={Colors.text.onPrimary} />
-          </TouchableOpacity>
         </Spacer>
       }
     >

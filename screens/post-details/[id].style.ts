@@ -1,5 +1,3 @@
-import { Colors } from "@/common/constants";
-import { GeneralStyles } from "@/common/styles";
 import { StyleSheet } from "react-native";
 
 export default StyleSheet.create({
@@ -12,9 +10,5 @@ export default StyleSheet.create({
   errorText: {
     fontSize: 16,
     color: "#666",
-  },
-  removePostButton: {
-    backgroundColor: Colors.error,
-    ...GeneralStyles.actionableContent,
-  },
+  }
 });
