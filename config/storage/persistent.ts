@@ -16,14 +16,15 @@ export const getPosts = (): PostType[] => {
   return posts ? JSON.parse(posts) : [];
 };
 
-export const increasePostAccessCount = (postId: string): void => {
+export const getFrequentlyAccessedPosts = (): FrequentlyAccessedPostsType => {
   const frequentlyAccessedPostsRaw = storage.getString(
     "frequentlyAccessedPosts"
   );
-  const frequentlyAccessedPostsObject: FrequentlyAccessedPostsType =
-    frequentlyAccessedPostsRaw
-      ? JSON.parse(frequentlyAccessedPostsRaw)
-      : ({} as FrequentlyAccessedPostsType);
+  return frequentlyAccessedPostsRaw ? JSON.parse(frequentlyAccessedPostsRaw) : {};
+};
+
+export const increasePostAccessCount = (postId: string): void => {
+  const frequentlyAccessedPostsObject = getFrequentlyAccessedPosts();
 
   frequentlyAccessedPostsObject[postId] =
     (frequentlyAccessedPostsObject[postId] || 0) + 1;
@@ -106,4 +107,18 @@ export const usePosts = (): PostType[] => {
   const [posts] = useMMKVString("posts", storage);
 
   return useMemo(() => JSON.parse(posts || "[]"), [posts]);
+};
+
+export const removePostById = (id: string): void => {
+  const posts = getPosts();
+  const updatedPosts = posts.filter((post) => post.id !== id);
+
+  const frequentlyAccessedPosts = getFrequentlyAccessedPosts();
+  delete frequentlyAccessedPosts[id];
+  storage.set(
+    "frequentlyAccessedPosts",
+    JSON.stringify(frequentlyAccessedPosts)
+  );
+
+  storage.set("posts", JSON.stringify(updatedPosts));
 };

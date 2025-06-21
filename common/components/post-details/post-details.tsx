@@ -1,4 +1,4 @@
-import { ACTIVE_OPACITY } from "@/common/constants";
+import { ACTIVE_OPACITY, Units } from "@/common/constants";
 import { Colors } from "@/common/constants/colors";
 import { Row, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
@@ -70,7 +70,7 @@ function PostDetails({
           <Row
             center={<Text style={GeneralStyles.textLink}>{url}</Text>}
             right={
-              <Icon name="content-copy" size={24} color={Colors.primary} />
+              <Icon name="content-copy" size={Units.s24} color={Colors.primary} />
             }
           />
         </TouchableOpacity>

@@ -3,7 +3,7 @@ import {
   PreviewPost,
   TopBar,
 } from "@/common/components";
-import { ACTIVE_OPACITY } from "@/common/constants";
+import { ACTIVE_OPACITY, Units } from "@/common/constants";
 import { Colors } from "@/common/constants/colors";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
@@ -112,7 +112,7 @@ function SearchScreen() {
                 onPress={handleOnClearSearch}
                 style={styles.clearSearchButton}
               >
-                <Icon name="x" size={24} color={Colors.text.onPrimary} />
+                <Icon name="x" size={Units.s24} color={Colors.text.onPrimary} />
               </TouchableOpacity>
             )}
           </View>

@@ -1,10 +1,17 @@
 import { Button, PostDetails, TopBar } from "@/common/components";
+import { ACTIVE_OPACITY, Colors, Units } from "@/common/constants";
 import { ScreenLayout, Spacer } from "@/common/layouts";
-import { increasePostAccessCount, usePosts } from "@/config/storage/persistent";
+import { GeneralStyles } from "@/common/styles";
+import {
+  increasePostAccessCount,
+  removePostById,
+  usePosts,
+} from "@/config/storage/persistent";
+import Icon from "@expo/vector-icons/Feather";
 import * as Linking from "expo-linking";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect } from "react";
-import { Text, View } from "react-native";
+import { Alert, Text, TouchableOpacity, View } from "react-native";
 import { getPostDetails } from "../search/search.util";
 import styles from "./[id].style";
 import { PostDetailsPropsType } from "./[id].type";
@@ -36,11 +43,40 @@ function PostDetailsScreen() {
     }
   };
 
+  const handleOnRemovePost = () => {
+    Alert.alert("Remove Post", "Are you sure you want to remove this post?", [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: "Remove",
+        style: "destructive",
+        onPress: () => {
+          removePostById(post.id);
+          router.back();
+        },
+      },
+    ]);
+  };
+
   return (
     <ScreenLayout
       footer={
-        <Spacer gap="s16" direction="horizontal" size="s16">
-          <Button label="Open Post" onPress={handleOpenInBrowser} />
+        <Spacer
+          style={GeneralStyles.directionRow}
+          gap="s16"
+          direction="horizontal"
+          size="s16"
+        >
+          <Button label="Open" onPress={handleOpenInBrowser} />
+          <TouchableOpacity
+            activeOpacity={ACTIVE_OPACITY}
+            onPress={handleOnRemovePost}
+            style={styles.removePostButton}
+          >
+            <Icon name="trash" size={Units.s24} color={Colors.text.onPrimary} />
+          </TouchableOpacity>
         </Spacer>
       }
     >
