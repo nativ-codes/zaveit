@@ -45,30 +45,34 @@ const parseTags = async (title: string): Promise<ParseTagsReturnType> => {
   const suggestedTags = await getSuggestedTags(title);
 
   // Filter suggested tags that are also in CATEGORIES
-  const selectedMainTags = suggestedTags.filter(tag => 
+  const selectedMainTags = suggestedTags.filter((tag) =>
     CATEGORIES.includes(tag.toLowerCase())
   );
 
   // Filter suggested tags that are NOT in CATEGORIES
-  const selectedAdditionalTags = suggestedTags.filter(tag => 
-    !CATEGORIES.includes(tag.toLowerCase())
+  const selectedAdditionalTags = suggestedTags.filter(
+    (tag) => !CATEGORIES.includes(tag.toLowerCase())
   );
 
   // Filter local tags that are NOT in CATEGORIES and make them unique
-  const localAdditionalTags = [...new Set(
-    localTags.filter(tag => !CATEGORIES.includes(tag.toLowerCase()))
-  )];
+  const localAdditionalTags = [
+    ...new Set(
+      localTags.filter((tag) => !CATEGORIES.includes(tag.toLowerCase()))
+    ),
+  ];
 
   // Create mainTags list with selectedMainTags at the beginning
   const mainTags = [
     ...selectedMainTags,
-    ...CATEGORIES.filter(tag => !selectedMainTags.includes(tag))
+    ...CATEGORIES.filter((tag) => !selectedMainTags.includes(tag)),
   ];
 
   // Create additionalTags list with selectedAdditionalTags at the beginning
   const additionalTags = [
     ...selectedAdditionalTags,
-    ...localAdditionalTags.filter(tag => !selectedAdditionalTags.includes(tag))
+    ...localAdditionalTags.filter(
+      (tag) => !selectedAdditionalTags.includes(tag)
+    ),
   ];
 
   return {
@@ -79,7 +83,7 @@ const parseTags = async (title: string): Promise<ParseTagsReturnType> => {
   };
 };
 
-export default function ShareIntentScreen() {
+function ShareIntentScreen() {
   const { shareIntent, resetShareIntent } = useShareIntentContext();
   const router = useRouter();
   const [postMetadata, setPostMetadata] = useState<
@@ -93,6 +97,11 @@ export default function ShareIntentScreen() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+
+  useEffect(() => {
+    return () => resetShareIntent();
+  }, [resetShareIntent]);
 
   const platformConfig = shareIntent?.webUrl
     ? checkSocialPlatform(shareIntent.webUrl)
@@ -184,7 +193,6 @@ export default function ShareIntentScreen() {
       };
       await savePost(post);
     }
-    resetShareIntent();
     router.replace("/");
   };
 
@@ -206,7 +214,7 @@ export default function ShareIntentScreen() {
     }));
   };
 
-   // TODO: disable button
+
   return (
     <ScreenLayout
       footer={
@@ -238,3 +246,5 @@ export default function ShareIntentScreen() {
     </ScreenLayout>
   );
 }
+
+export default ShareIntentScreen;

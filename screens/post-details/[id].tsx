@@ -3,8 +3,8 @@ import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import {
   increasePostAccessCount,
-  removePostById,
-  usePosts,
+  removePost,
+  usePosts
 } from "@/config/storage/persistent";
 import * as Linking from "expo-linking";
 import { router, useLocalSearchParams } from "expo-router";
@@ -18,6 +18,7 @@ function PostDetailsScreen() {
   const { id } = useLocalSearchParams<PostDetailsPropsType>();
   const posts = usePosts();
   const post = getPostDetails({ posts, id });
+  console.log("post", post);
 
   useEffect(() => {
     if (post) {
@@ -51,7 +52,7 @@ function PostDetailsScreen() {
         text: "Remove",
         style: "destructive",
         onPress: () => {
-          removePostById(post.id);
+          removePost(post);
           router.back();
         },
       },

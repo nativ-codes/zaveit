@@ -1,6 +1,6 @@
 import { initializeGoogleSignIn, signInWithGoogle } from '@/services/google-auth.service';
 import { Ionicons } from '@expo/vector-icons';
-import { Stack, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -27,17 +27,10 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <Stack.Screen 
-        options={{
-          title: 'Login',
-          headerShown: false,
-        }} 
-      />
-
       <View style={styles.content}>
         <View style={styles.logoContainer}>
           <Ionicons name="bookmark" size={80} color="#0066cc" />
-          <Text style={styles.title}>Zaveit</Text>
+          <Text style={styles.title}>ZaveIT</Text>
           <Text style={styles.subtitle}>Save and organize your content</Text>
         </View>
 

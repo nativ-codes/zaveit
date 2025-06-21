@@ -11,7 +11,7 @@ function FrequentlyAccessedSection({
 }: FrequentlyAccessedSectionPropsType) {
   const posts = useFrequentlyAccessedPosts();
 
-  return (
+  return Boolean(posts.length) && (
     <HorizontalScrollViewPosts
       Element={PreviewPostCard}
       title="Frequently Accessed"

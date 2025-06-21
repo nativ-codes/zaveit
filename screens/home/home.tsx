@@ -1,46 +1,36 @@
 import {
-  HorizontalScrollViewPosts,
-  PreviewPostCard,
-  TopBar,
+  TopBar
 } from "@/common/components";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
-import { usePosts } from "@/config/storage/persistent";
 import { useSyncLists } from "@/config/use-sync-lists";
-import { useRouter } from "expo-router";
+import { router, useRouter } from "expo-router";
 import { useShareIntentContext } from "expo-share-intent";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import { Text } from "react-native";
-import { getRandomPick } from "../search/search.util";
 import FrequentlyAccessedSection from "./components/frequently-accessed-section/frequently-accessed-section";
+import RandomPickSection from "./components/random-pick-section/random-pick-section";
 import RecentlyAddedSection from "./components/recently-added-section/recently-added-section";
 
-function HomeScreen() {
-  const { hasShareIntent } = useShareIntentContext();
+const useShareIntent = () => {
   const router = useRouter();
-  const posts = usePosts();
-  const { syncLists } = useSyncLists();
+  const { hasShareIntent } = useShareIntentContext();
 
   useEffect(() => {
     if (hasShareIntent) {
-      router.replace("/share-intent");
+      router.navigate("/share-intent");
     }
-  }, [hasShareIntent]);
+  }, [hasShareIntent, router]);
+};
+
+
+function HomeScreen() {
+  useShareIntent();
+  const { syncLists } = useSyncLists();
 
   useEffect(() => {
     syncLists();
   }, []);
-
-  // const handleLogout = async () => {
-  //   try {
-  //     await signOut();
-  //     router.replace("/");
-  //   } catch (error) {
-  //     console.error("Error signing out:", error);
-  //   }
-  // };
-
-  const randomPost = useMemo(() => getRandomPick(posts || []), [posts]);
 
   const handleOnPostPress = (postId: string) => {
     router.push({
@@ -60,14 +50,7 @@ function HomeScreen() {
       <Spacer gap="s16">
         <RecentlyAddedSection onPostPress={handleOnPostPress} />
         <FrequentlyAccessedSection onPostPress={handleOnPostPress} />
-        {randomPost && (
-          <HorizontalScrollViewPosts
-            Element={PreviewPostCard}
-            title="Random Pick"
-            posts={[randomPost]}
-            onPostPress={handleOnPostPress}
-          />
-        )}
+        <RandomPickSection onPostPress={handleOnPostPress} />
       </Spacer>
     </ScreenLayout>
   );

@@ -20,10 +20,18 @@ function TopBar({
 }: TopBarPropsType) {
   const renderLeftComponent = () => {
     if (hasBackButton) {
+      const goBack = () => {
+        if (router.canGoBack()) {
+          router.back();
+        } else {
+          router.navigate("/");
+        }
+      };
+
       return (
         <TouchableOpacity
           activeOpacity={ACTIVE_OPACITY}
-          onPress={router.back}
+          onPress={goBack}
           hitSlop={Units.s16}
         >
           <Icon

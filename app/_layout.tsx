@@ -1,7 +1,6 @@
-import { SCREEN_OPTIONS } from "@/common/constants";
+import MainStack from "@/common/containers/main-stack/main-stack";
 import { AuthProvider } from "@/config/contexts/auth.context";
 import { useFonts } from "expo-font";
-import { router, Stack } from "expo-router";
 import { ShareIntentProvider } from "expo-share-intent";
 import { StatusBar } from "expo-status-bar";
 import "react-native-get-random-values";
@@ -11,7 +10,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 export default function RootLayout() {
   const [loaded] = useFonts({
     Gellix: require("../assets/fonts/Gellix-Regular.ttf"),
-    GellixBold: require("../assets/fonts/Gellix-Bold.ttf")
+    GellixBold: require("../assets/fonts/Gellix-Bold.ttf"),
   });
 
   if (!loaded) {
@@ -20,30 +19,10 @@ export default function RootLayout() {
   }
 
   return (
-    <ShareIntentProvider
-      options={{
-        resetOnBackground: true,
-        onResetShareIntent: () =>
-          // used when app going in background and when the reset button is pressed
-          router.replace({
-            pathname: "/",
-          }),
-      }}
-    >
+    <ShareIntentProvider>
       <SafeAreaProvider>
         <AuthProvider>
-          <Stack screenOptions={SCREEN_OPTIONS}>
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="+not-found" />
-            <Stack.Screen name="post-details" />
-            <Stack.Screen name="view-posts" />
-            <Stack.Screen
-              name="login"
-              options={{
-                presentation: "modal",
-              }}
-            />
-          </Stack>
+          <MainStack />
           <StatusBar style="auto" />
         </AuthProvider>
       </SafeAreaProvider>

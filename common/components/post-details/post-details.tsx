@@ -57,11 +57,27 @@ function PostDetails({
           {title && (
             <Text style={GeneralStyles.textTitlePostLargePrimary}>{title}</Text>
           )}
-          {author && (
-            <Text style={GeneralStyles.textLabelMediumSecondary}>
-              Author: {author}
-            </Text>
-          )}
+          <Row
+            center={
+              Boolean(author) ? (
+                <Text style={GeneralStyles.textLabelMediumSecondary}>
+                  by {author}
+                </Text>
+              ) : null
+            }
+            right={
+              Boolean(timestamp) ? (
+                <Text
+                  style={StyleSheet.compose(
+                    GeneralStyles.textLabelMediumSecondary,
+                    GeneralStyles.textRight
+                  )}
+                >
+                  Added on {formatTimestampToDateString(timestamp)}
+                </Text>
+              ) : null
+            }
+          />
         </Spacer>
         <TouchableOpacity
           activeOpacity={ACTIVE_OPACITY}
@@ -70,7 +86,11 @@ function PostDetails({
           <Row
             center={<Text style={GeneralStyles.textLink}>{url}</Text>}
             right={
-              <Icon name="content-copy" size={Units.s24} color={Colors.primary} />
+              <Icon
+                name="content-copy"
+                size={Units.s24}
+                color={Colors.primary}
+              />
             }
           />
         </TouchableOpacity>
@@ -85,19 +105,6 @@ function PostDetails({
                 onPress={() => handleOnTagPress(tag)}
               />
             ))}
-          </Spacer>
-        )}
-
-        {timestamp && (
-          <Spacer direction="top" size="s32">
-            <Text
-              style={StyleSheet.compose(
-                GeneralStyles.textLabelMediumSecondary,
-                GeneralStyles.textRight
-              )}
-            >
-              Added on {formatTimestampToDateString(timestamp)}
-            </Text>
           </Spacer>
         )}
       </Spacer>
