@@ -1,5 +1,8 @@
-import { PostType } from '@/types/posts';
+import { PostType } from "@/types";
 
-export type PreviewPostPropsType = Omit<PostType, 'author' | 'timestamp' | 'id' > & {
+export type PreviewPostPropsType = Pick<
+  PostType,
+  "url" | "title" | "thumbnail" | "tags"
+> & {
   onPress?: () => void;
-}; 
+};

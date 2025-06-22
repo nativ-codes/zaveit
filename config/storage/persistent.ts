@@ -1,4 +1,4 @@
-import { HORIZONTAL_SCROLLVIEW_POSTS } from "@/common/constants/ui";
+import { MAX_HORIZONTAL_SCROLLVIEW_POSTS } from "@/common/constants";
 import { getRandomPick, getSortedTags } from "@/screens/search/search.util";
 import { removePostService, savePostService } from "@/services/posts.service";
 import { PostType } from "@/types/posts";
@@ -49,7 +49,7 @@ export const useFrequentlyAccessedPosts = (): PostType[] => {
     const posts = getPosts();
     const frequentlyAccessedPostsIds = Object.entries(frequentlyAccessedPosts)
       .sort(([, a]: [string, number], [, b]: [string, number]) => b - a)
-      .slice(0, HORIZONTAL_SCROLLVIEW_POSTS)
+      .slice(0, MAX_HORIZONTAL_SCROLLVIEW_POSTS)
       .map(([id]) => id);
 
     const filteredPosts = posts.filter((post: PostType) =>
@@ -70,7 +70,7 @@ export const useRecentlyAddedPosts = (): PostType[] => {
   return useMemo(() => {
     const posts = JSON.parse(postsRaw || "[]");
 
-    return posts.slice(-HORIZONTAL_SCROLLVIEW_POSTS).reverse();
+    return posts.slice(-MAX_HORIZONTAL_SCROLLVIEW_POSTS).reverse();
   }, [postsRaw]);
 };
 

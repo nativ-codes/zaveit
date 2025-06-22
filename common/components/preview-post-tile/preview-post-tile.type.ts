@@ -1,6 +1,8 @@
-export type PreviewPostTilePropsType = {
-  url: string;
-  title?: string;
-  thumbnail?: string;
+import { PostType } from "@/types";
+
+export type PreviewPostTilePropsType = Pick<
+  PostType,
+  "url" | "title" | "thumbnail"
+> & {
   onPress?: () => void;
-}; 
+};
