@@ -1,11 +1,34 @@
 import { SCREEN_OPTIONS } from "@/common/constants";
 import { useAuth } from "@/config/contexts/auth.context";
-import { router, Stack } from "expo-router";
+import { router, Stack, useRouter } from "expo-router";
+import { useShareIntentContext } from "expo-share-intent";
 import { useEffect, useState } from "react";
+
+const useShareIntent = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
+  const router = useRouter();
+  const { hasShareIntent } = useShareIntentContext();
+
+  useEffect(() => {
+    console.log("hasShareIntent", hasShareIntent);
+    if (hasShareIntent) {
+      console.log("hasShareIntent", hasShareIntent);
+      if (isAuthenticated) {
+        router.navigate("/share-intent");
+      } else {
+        router.navigate("/login");
+      }
+    }
+  }, [hasShareIntent, router]);
+};
 
 function MainStack() {
   const { isAuthenticated, isLoading } = useAuth();
   const [isMounted, setIsMounted] = useState(false);
+  const { hasShareIntent } = useShareIntentContext();
+  console.log("hasShareIntent", hasShareIntent);
+  useShareIntent({
+    isAuthenticated,
+  });
 
   useEffect(() => {
     setIsMounted(true);

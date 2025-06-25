@@ -12,7 +12,11 @@ export const checkSocialPlatform = (
     const urlObj = new URL(url);
     const domain = urlObj.hostname.toLowerCase().replace("www.", "");
 
-    return PLATFORM_CONFIGS[domain as SocialPlatform];
+    const platformConfig = Object.keys(PLATFORM_CONFIGS).find((key) =>
+      PLATFORM_CONFIGS[key as SocialPlatform].domains.includes(domain)
+    );
+
+    return platformConfig ? PLATFORM_CONFIGS[platformConfig as SocialPlatform] : undefined;
   } catch (error) {
     return undefined;
   }

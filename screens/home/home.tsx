@@ -3,28 +3,15 @@ import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { useHasPosts } from "@/config/storage/persistent";
 import { useSyncLists } from "@/config/use-sync-lists";
-import { router, useRouter } from "expo-router";
-import { useShareIntentContext } from "expo-share-intent";
+import { router } from "expo-router";
 import React, { useEffect } from "react";
 import { Text } from "react-native";
 import FrequentlyAccessedSection from "./components/frequently-accessed-section/frequently-accessed-section";
 import RandomPickSection from "./components/random-pick-section/random-pick-section";
 import RecentlyAddedSection from "./components/recently-added-section/recently-added-section";
 
-const useShareIntent = () => {
-  const router = useRouter();
-  const { hasShareIntent } = useShareIntentContext();
-
-  useEffect(() => {
-    if (hasShareIntent) {
-      router.navigate("/share-intent");
-    }
-  }, [hasShareIntent, router]);
-};
-
 function HomeScreen() {
   const hasPosts = useHasPosts();
-  useShareIntent();
   const { syncLists } = useSyncLists();
 
   useEffect(() => {

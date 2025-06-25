@@ -8,7 +8,7 @@ import * as Burnt from "burnt";
 
 import { useRouter } from "expo-router";
 import { useShareIntentContext } from "expo-share-intent";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { v4 as uuid } from "uuid";
 import { getOEmbedMetadata } from "./share-intent.service";
 import {
@@ -18,6 +18,7 @@ import {
 } from "./share-intent.utils";
 
 function ShareIntentScreen() {
+  console.log("ShareIntentScreen");
   const { shareIntent, resetShareIntent } = useShareIntentContext();
   const router = useRouter();
   const [postMetadata, setPostMetadata] = useState<
@@ -34,9 +35,10 @@ function ShareIntentScreen() {
     return () => resetShareIntent();
   }, [resetShareIntent]);
 
-  const platformConfig = shareIntent?.webUrl
-    ? checkSocialPlatform(shareIntent.webUrl)
-    : undefined;
+  const platformConfig = useMemo(
+    () => checkSocialPlatform(shareIntent?.webUrl as string),
+    [shareIntent?.webUrl]
+  );
 
   const handleOnSaveMetadata = async () => {
     if (shareIntent.meta) {

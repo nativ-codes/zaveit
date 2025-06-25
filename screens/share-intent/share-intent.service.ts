@@ -23,11 +23,14 @@ export const getOEmbedMetadata = async ({
       `${platformConfig.oembedEndpoint}?url=${encodedUrl}&format=json`
     );
 
+
     if (!response.ok) {
       throw new Error("Failed to fetch oEmbed metadata");
     }
 
     const data = await response.json();
+
+    console.log("data", JSON.stringify(data));
 
     return {
       author: data.author_name,
