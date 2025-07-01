@@ -1,7 +1,7 @@
 import {
   Button,
   EmptyPlaceholder,
-  HorizontalScrollviewTags,
+  HorizontalScrollViewTags,
   PreviewPost,
   TopBar,
 } from "@/common/components";
@@ -114,7 +114,7 @@ function SearchScreen() {
           </View>
         </Spacer>
 
-        <HorizontalScrollviewTags
+        <HorizontalScrollViewTags
           primaryTags={primaryTags}
           secondaryTags={secondaryTags}
           onPrimaryTagSelect={setSelectedPrimaryTag}

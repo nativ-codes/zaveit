@@ -3,8 +3,9 @@ export const Colors = {
   white: "#FFFFFF",
   black: "#000000",
   transparent: "transparent",
-  primary: "#5474FD", //"#F15946",
+  primary: "#5474FD",
   shadow: "#9397A0",
+  skeleton: "#E1E5E9",
 
   // Text colors
   text: {

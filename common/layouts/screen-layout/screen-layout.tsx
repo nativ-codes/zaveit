@@ -13,6 +13,7 @@ function ScreenLayout({ children, testID, style, footer }: ScreenLayoutPropsType
   return (
     <View testID={`${testID}_ScreenLayout`} style={styles.wrapper}>
       <ScrollView
+        keyboardShouldPersistTaps="handled"
         testID={`${testID}_StaticScreenLayout_ScrollView`}
         contentContainerStyle={StyleSheet.compose(style, {
           paddingTop: insets.top,

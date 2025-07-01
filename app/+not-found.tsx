@@ -1,16 +1,13 @@
-import { Link, Stack, useLocalSearchParams } from "expo-router";
+import { Link, Stack } from "expo-router";
 import { Fragment } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 export default function NotFoundScreen() {
-  const params = useLocalSearchParams();
-
   return (
     <Fragment>
       <Stack.Screen options={{ title: "Oops!" }} />
       <View style={styles.container}>
         <Text>This screen does not exist.</Text>
-        <Text>Params: {JSON.stringify(params)}</Text>
         <Link href="/" style={styles.link} testID="NotFoundScreen_HomeLink">
           <Text>Go to home screen!</Text>
         </Link>

@@ -1,4 +1,4 @@
-export type HorizontalScrollviewTagsPropsType = {
+export type HorizontalScrollViewTagsPropsType = {
   primaryTags: string[];
   secondaryTags: string[];
   selectedPrimaryTag: string | undefined;

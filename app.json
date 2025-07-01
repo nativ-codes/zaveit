@@ -58,7 +58,9 @@
       [
         "expo-share-intent",
         {
-          "iosAppGroupIdentifier": "group.com.nativcodes.zaveits"
+          "iosAppGroupIdentifier": "group.com.nativcodes.zaveits",
+          "NSExtensionActivationSupportsWebURLWithMaxCount": 1,
+          "NSExtensionActivationSupportsWebPageWithMaxCount": 1
         }
       ],
       "@react-native-firebase/app",

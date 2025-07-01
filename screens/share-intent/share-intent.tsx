@@ -31,7 +31,7 @@ function ShareIntentScreen() {
     selectedMainTags: [],
     mainTags: [],
   });
-
+  console.log("shareIntent", shareIntent);
   useEffect(() => {
     return () => resetShareIntent();
   }, [resetShareIntent]);

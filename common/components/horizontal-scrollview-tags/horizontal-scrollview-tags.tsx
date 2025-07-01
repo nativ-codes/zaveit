@@ -4,16 +4,16 @@ import { toggleTag } from "@/common/utils/misc";
 import React from "react";
 import { ScrollView } from "react-native";
 import TagItem from "../tag-item/tag-item";
-import { HorizontalScrollviewTagsPropsType } from "./horizontal-scrollview-tags.type";
+import { HorizontalScrollViewTagsPropsType } from "./horizontal-scrollview-tags.type";
 
-const HorizontalScrollviewTags = ({
+const HorizontalScrollViewTags = ({
   primaryTags,
   secondaryTags,
   selectedPrimaryTag,
   selectedSecondaryTags,
   onPrimaryTagSelect,
   onSecondaryTagSelect,
-}: HorizontalScrollviewTagsPropsType) => {
+}: HorizontalScrollViewTagsPropsType) => {
   const handleOnPrimaryTagSelect = (tag: string) => {
     onPrimaryTagSelect((prevPrimaryTagSelected) => {
       if (prevPrimaryTagSelected === tag) {
@@ -38,7 +38,7 @@ const HorizontalScrollviewTags = ({
     <Spacer
       gap="s8"
       style={GeneralStyles.directionRow}
-      testID="Components_HorizontalScrollviewTags"
+      testID="Components_HorizontalScrollViewTags"
     >
       {selectedPrimaryTag ? (
         <Spacer direction="left" size="s16">
@@ -94,4 +94,4 @@ const HorizontalScrollviewTags = ({
   );
 };
 
-export default HorizontalScrollviewTags;
+export default HorizontalScrollViewTags;
