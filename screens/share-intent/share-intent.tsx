@@ -31,10 +31,6 @@ function ShareIntentScreen() {
     selectedMainTags: [],
     mainTags: [],
   });
-  console.log("shareIntent", shareIntent);
-  useEffect(() => {
-    return () => resetShareIntent();
-  }, [resetShareIntent]);
 
   const platformConfig = useMemo(
     () => checkSocialPlatform(shareIntent?.webUrl as string),
