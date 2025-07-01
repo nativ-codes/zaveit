@@ -6,9 +6,14 @@ export default StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.primary,
     height: Units.s64,
-    alignItems: "center"
+    gap: Units.s16,
+    flexDirection: "row",
+    justifyContent: "space-between"
   },
   disabled: {
     opacity: 0.7,
   },
-}); 
+  emptyView: {
+    width: Units.s24,
+  },
+});

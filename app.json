@@ -55,7 +55,12 @@
           }
         }
       ],
-      "expo-share-intent",
+      [
+        "expo-share-intent",
+        {
+          "iosAppGroupIdentifier": "group.com.nativcodes.zaveits"
+        }
+      ],
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
       "@react-native-google-signin/google-signin"

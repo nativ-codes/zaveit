@@ -18,6 +18,10 @@ export const GeneralStyles = StyleSheet.create({
   directionRow: {
     flexDirection: "row",
   },
+  centerContent: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
 
   /* Text Title Screen */
   textTitleScreenPrimary: {

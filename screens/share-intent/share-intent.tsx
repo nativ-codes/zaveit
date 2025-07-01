@@ -17,6 +17,7 @@ import {
   ParseTagsReturnType,
 } from "./share-intent.utils";
 
+// TODO check if there are shareIntents
 function ShareIntentScreen() {
   console.log("ShareIntentScreen");
   const { shareIntent, resetShareIntent } = useShareIntentContext();

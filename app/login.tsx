@@ -1,10 +1,19 @@
-import { initializeGoogleSignIn, signInWithGoogle } from '@/services/google-auth.service';
-import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import React, { useEffect } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Button } from "@/common/components";
+import { Units } from "@/common/constants";
+import { Spacer } from "@/common/layouts";
+import { GeneralStyles } from "@/common/styles";
+import {
+  initializeGoogleSignIn,
+  signInWithGoogle,
+} from "@/services/google-auth.service";
+import { Image } from "expo-image";
+import { useRouter } from "expo-router";
+import React, { useEffect } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function LoginScreen() {
+  const insets = useSafeAreaInsets();
   const router = useRouter();
 
   useEffect(() => {
@@ -17,31 +26,62 @@ export default function LoginScreen() {
       const { user } = await signInWithGoogle();
       if (user) {
         // Navigate to home screen after successful login
-        router.replace('/');
+        router.replace("/");
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
       // You might want to show an error message to the user here
     }
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.content}>
-        <View style={styles.logoContainer}>
-          <Ionicons name="bookmark" size={80} color="#0066cc" />
-          <Text style={styles.title}>ZaveIT</Text>
-          <Text style={styles.subtitle}>Save and organize your content</Text>
-        </View>
-
-        <TouchableOpacity
-          style={styles.googleButton}
-          onPress={handleGoogleSignIn}
+      <View
+        style={StyleSheet.compose(
+          GeneralStyles.flex,
+          GeneralStyles.centerContent
+        )}
+      >
+        <Spacer
+          gap="s32"
+          direction="horizontal"
+          size="s32"
+          style={GeneralStyles.centerContent}
         >
-          <Ionicons name="logo-google" size={24} color="#4285F4" style={styles.googleIcon} />
-          <Text style={styles.googleButtonText}>Continue with Google</Text>
-        </TouchableOpacity>
+          <Image
+            source={require("@/assets/images/splash-icon.png")}
+            style={{
+              width: Units.s128,
+              height: Units.s128,
+            }}
+          />
+          <Spacer gap="s8" style={GeneralStyles.centerContent}>
+            <Text style={GeneralStyles.textTitleScreenPrimary}>ZaveIT</Text>
+            <Text
+              style={StyleSheet.compose(
+                GeneralStyles.textLabelLargeSecondary,
+                GeneralStyles.textCenter
+              )}
+            >
+              Your smart bookmark manager
+            </Text>
+          </Spacer>
+        </Spacer>
       </View>
+      <Spacer
+        direction="horizontal"
+        size="s16"
+        style={{
+          paddingBottom: insets.bottom + Units.s16,
+          flexDirection: "row",
+        }}
+      >
+        <Button.Social
+          label="Continue with Google"
+          iconName="google"
+          onPress={handleGoogleSignIn}
+        />
+      </Spacer>
     </View>
   );
 }
@@ -49,39 +89,33 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
+    backgroundColor: "#fff",
   },
   logoContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 60,
   },
   title: {
     fontSize: 32,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
     marginTop: 16,
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
+    color: "#666",
     marginTop: 8,
   },
   googleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#ddd',
-    shadowColor: '#000',
+    borderColor: "#ddd",
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -95,7 +129,7 @@ const styles = StyleSheet.create({
   },
   googleButtonText: {
     fontSize: 16,
-    color: '#333',
-    fontWeight: '500',
+    color: "#333",
+    fontWeight: "500",
   },
-}); 
+});
