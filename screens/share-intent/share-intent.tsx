@@ -1,18 +1,25 @@
-import { Button, TopBar, UpdatePostDetails } from "@/common/components";
-import { IMAGE_PLACEHOLDER } from "@/common/constants";
+import {
+  Button,
+  SpinningLoader,
+  TopBar,
+  UpdatePostDetails,
+} from "@/common/components";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { safelyPrintError, toggleTag } from "@/common/utils/misc";
 import { savePost } from "@/config/storage/persistent";
-import { PlatformConfig, PostMetadataType, PostType } from "@/types";
+import { PostMetadataType, PostType } from "@/types";
 import * as Burnt from "burnt";
 
+import { GeneralStyles } from "@/common/styles";
 import { useRouter } from "expo-router";
 import { useShareIntentContext } from "expo-share-intent";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { v4 as uuid } from "uuid";
-import { getOEmbedMetadata } from "./share-intent.service";
+import styles from "./share-intent.style";
 import {
-  checkSocialPlatform,
+  getMetadata,
   parseTags,
   ParseTagsReturnType,
 } from "./share-intent.utils";
@@ -22,6 +29,7 @@ function ShareIntentScreen() {
   console.log("ShareIntentScreen");
   const { shareIntent, resetShareIntent } = useShareIntentContext();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [postMetadata, setPostMetadata] = useState<
     PostMetadataType | undefined
   >();
@@ -31,29 +39,6 @@ function ShareIntentScreen() {
     selectedMainTags: [],
     mainTags: [],
   });
-
-  const platformConfig = useMemo(
-    () => checkSocialPlatform(shareIntent?.webUrl as string),
-    [shareIntent?.webUrl]
-  );
-
-  const handleOnSaveMetadata = async () => {
-    if (shareIntent.meta) {
-      setPostMetadata({
-        url: shareIntent.webUrl || "",
-        title: shareIntent.meta?.title || shareIntent.webUrl || "",
-        author: shareIntent.meta?.author || "Unknown",
-        thumbnail: shareIntent.meta?.["og:image"] || IMAGE_PLACEHOLDER,
-      });
-
-      if (shareIntent.meta?.title) {
-        const response = await parseTags(shareIntent.meta.title);
-        setTags(response);
-      }
-    } else {
-      handleOnError(new Error("No metadata provided"));
-    }
-  };
 
   const handleOnError = (error: Error) => {
     console.error(safelyPrintError(error));
@@ -69,39 +54,27 @@ function ShareIntentScreen() {
     // TODO: Add error logging
   };
 
-  const handleOnSaveOEmbedData = async () => {
-    try {
-      const data = await getOEmbedMetadata({
-        platformConfig: platformConfig as PlatformConfig,
-        url: shareIntent.webUrl || "",
-      });
-
-      setPostMetadata(data);
-
-      if (data.title) {
-        const response = await parseTags(data.title);
-        setTags(response);
-      }
-    } catch (_) {
-      handleOnSaveMetadata();
-    }
-  };
-
   useEffect(() => {
-    const fetchOEmbedData = async () => {
+    const fetchMetadata = async () => {
       if (!shareIntent?.webUrl) {
         return;
       }
 
-      if (!platformConfig) {
-        await handleOnSaveMetadata();
-      } else {
-        await handleOnSaveOEmbedData();
+      try {
+        const data = await getMetadata(shareIntent);
+        setPostMetadata(data);
+
+        if (data?.title) {
+          const response = await parseTags(data.title);
+          setTags(response);
+        }
+      } catch (error) {
+        handleOnError(error as Error);
       }
     };
 
-    fetchOEmbedData();
-  }, [platformConfig, shareIntent?.webUrl]);
+    fetchMetadata();
+  }, [shareIntent]);
 
   const handleSave = async () => {
     try {
@@ -121,7 +94,7 @@ function ShareIntentScreen() {
       resetShareIntent();
       router.replace("/");
       Burnt.toast({
-        title: "Zaved successfully!",
+        title: "Zaved it successfully!",
         preset: "done",
         duration: 2,
         haptic: "success",
@@ -153,18 +126,25 @@ function ShareIntentScreen() {
 
   return (
     <ScreenLayout
+      hasTopInset={false}
       footer={
         <Spacer gap="s16" direction="horizontal" size="s16">
           <Button
             label="Zave IT"
             onPress={handleSave}
-            isDisabled={!Boolean(tags.mainTags.length)}
+            isLoading={!Boolean(tags.mainTags.length)}
           />
         </Spacer>
       }
     >
-      <TopBar hasBackButton />
-      {postMetadata && (
+      <View
+        style={StyleSheet.compose(styles.topBarContainer, {
+          top: insets.top,
+        })}
+      >
+        <TopBar hasBackButton />
+      </View>
+      {postMetadata ? (
         <UpdatePostDetails
           title={postMetadata.title}
           author={postMetadata.author}
@@ -178,6 +158,10 @@ function ShareIntentScreen() {
           onAdditionalTagPress={handleOnAdditionalTagPress}
           isLoading={!Boolean(tags.mainTags.length)}
         />
+      ) : (
+        <View style={GeneralStyles.spinningLoaderContainer}>
+          <SpinningLoader />
+        </View>
       )}
     </ScreenLayout>
   );

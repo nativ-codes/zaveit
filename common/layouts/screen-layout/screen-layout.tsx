@@ -7,7 +7,7 @@ import { TAB_BAR_HEIGHT, Units } from "@/common/constants";
 import styles from "./screen-layout.style";
 import { ScreenLayoutPropsType } from "./screen-layout.type";
 
-function ScreenLayout({ children, testID, style, footer }: ScreenLayoutPropsType) {
+function ScreenLayout({ children, testID, style, footer, hasTopInset = true }: ScreenLayoutPropsType) {
   const insets = useSafeAreaInsets();
 
   return (
@@ -16,7 +16,7 @@ function ScreenLayout({ children, testID, style, footer }: ScreenLayoutPropsType
         keyboardShouldPersistTaps="handled"
         testID={`${testID}_StaticScreenLayout_ScrollView`}
         contentContainerStyle={StyleSheet.compose(style, {
-          paddingTop: insets.top,
+          paddingTop: hasTopInset ? insets.top : 0,
           paddingBottom: insets.bottom + TAB_BAR_HEIGHT + Units.s16,
         })}
       >

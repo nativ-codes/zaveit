@@ -1,7 +1,18 @@
-import { MAIN_TAGS, PLATFORM_CONFIGS } from "@/common/constants";
+import {
+  IMAGE_PLACEHOLDER,
+  MAIN_TAGS,
+  PLATFORM_CONFIGS,
+} from "@/common/constants";
+import { getIsEmpty } from "@/common/utils";
 import { getTags } from "@/config/storage/persistent";
 import { getSuggestedTags } from "@/services/llm";
-import { PlatformConfig, SocialPlatform } from "@/types";
+import { PlatformConfig, PostMetadataType, SocialPlatform } from "@/types";
+import { ShareIntent } from "expo-share-intent";
+import {
+  getCustomLinkPreviewMetadata,
+  getLinkPreviewMetadata,
+  getOEmbedMetadata,
+} from "./share-intent.service";
 
 export const checkSocialPlatform = (
   url: string
@@ -16,7 +27,9 @@ export const checkSocialPlatform = (
       PLATFORM_CONFIGS[key as SocialPlatform].domains.includes(domain)
     );
 
-    return platformConfig ? PLATFORM_CONFIGS[platformConfig as SocialPlatform] : undefined;
+    return platformConfig
+      ? PLATFORM_CONFIGS[platformConfig as SocialPlatform]
+      : undefined;
   } catch (error) {
     return undefined;
   }
@@ -29,7 +42,9 @@ export type ParseTagsReturnType = {
   mainTags: string[];
 };
 
-export const parseTags = async (title: string): Promise<ParseTagsReturnType> => {
+export const parseTags = async (
+  title: string
+): Promise<ParseTagsReturnType> => {
   const localTags = getTags();
   const suggestedTags = await getSuggestedTags(title);
 
@@ -70,4 +85,61 @@ export const parseTags = async (title: string): Promise<ParseTagsReturnType> => 
     additionalTags,
     mainTags,
   };
+};
+
+export const getMetadata = async (
+  shareIntent: ShareIntent
+): Promise<PostMetadataType> => {
+  if (!shareIntent.webUrl) {
+    throw new Error("No URL provided");
+  }
+  
+  const platformConfig = checkSocialPlatform(shareIntent.webUrl);
+  if (platformConfig) {
+    const data = await getOEmbedMetadata({
+      platformConfig: platformConfig as PlatformConfig,
+      url: shareIntent.webUrl,
+    });
+
+    if (data) {
+      return data;
+    }
+  }
+
+  if (!getIsEmpty(shareIntent.meta)) {
+    return {
+      url: shareIntent.webUrl || "",
+      title: shareIntent.meta?.title || shareIntent.webUrl || "",
+      author: shareIntent.meta?.author || "",
+      thumbnail: shareIntent.meta?.["og:image"] || IMAGE_PLACEHOLDER
+    };
+  }
+
+  const customLinkPreviewMetadata = await getCustomLinkPreviewMetadata({
+    url: shareIntent.webUrl,
+  });
+
+  if (customLinkPreviewMetadata?.title) {
+    return {
+      url: shareIntent.webUrl || "",
+      title: customLinkPreviewMetadata.title || shareIntent.webUrl || "",
+      author: "",
+      thumbnail: customLinkPreviewMetadata.thumbnail || IMAGE_PLACEHOLDER,
+    };
+  }
+
+  const linkPreviewMetadata = await getLinkPreviewMetadata({
+    url: shareIntent.webUrl,
+  });
+
+  if (linkPreviewMetadata?.title) {
+    return {
+      url: shareIntent.webUrl || "",
+      title: linkPreviewMetadata.title || shareIntent.webUrl || "",
+      author: "",
+      thumbnail: linkPreviewMetadata.image || IMAGE_PLACEHOLDER
+    };
+  }
+
+  throw new Error("URL not supported");
 };

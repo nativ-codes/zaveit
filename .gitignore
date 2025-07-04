@@ -44,3 +44,4 @@ fastlane/
 llm.ts
 keys/
 core/
+general.service.ts

@@ -6,9 +6,10 @@ export default StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.primary,
     height: Units.s64,
-    alignItems: "center"
+    alignItems: "center",
+    justifyContent: "center",
   },
-  disabled: {
-    opacity: 0.7,
+  loading: {
+    backgroundColor: Colors.primaryDisabled,
   },
 }); 

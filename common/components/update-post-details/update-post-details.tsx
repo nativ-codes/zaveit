@@ -102,7 +102,7 @@ function UpdatePostDetails({
           onPress={handleOnCopyToClipboard}
         >
           <Row
-            center={<Text style={GeneralStyles.textLink}>{url}</Text>}
+            center={<Text style={GeneralStyles.textLink} numberOfLines={2}>{url}</Text>}
             right={
               <Icon name="content-copy" size={Units.s24} color={Colors.primary} />
             }

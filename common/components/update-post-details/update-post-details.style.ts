@@ -4,7 +4,7 @@ import { StyleSheet } from "react-native";
 export default StyleSheet.create({
   image: {
     width: "100%",
-    height: Units.s200,
+    height: Units.s400,
   },
   tagsContainer: {
     flexDirection: "row",

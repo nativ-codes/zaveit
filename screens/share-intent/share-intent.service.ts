@@ -1,4 +1,9 @@
 import { safelyPrintError } from "@/common/utils";
+import {
+  fetchLinkPreview,
+  fetchLocalLinkPreview,
+  fetchOEmbedMetadata,
+} from "@/services/general.service";
 import { PlatformConfig } from "@/types";
 
 type GetOEmbedMetadataReturnType = {
@@ -13,24 +18,31 @@ type GetOEmbedMetadataType = {
   url: string;
 };
 
+type GetLinkPreviewMetadataReturnType = {
+  title: string;
+  image: string;
+  url: string;
+};
+
+type GetLinkPreviewMetadataType = {
+  url: string;
+};
+
 export const getOEmbedMetadata = async ({
   platformConfig,
   url,
-}: GetOEmbedMetadataType): Promise<GetOEmbedMetadataReturnType> => {
+}: GetOEmbedMetadataType): Promise<GetOEmbedMetadataReturnType | undefined> => {
   try {
-    const encodedUrl = encodeURIComponent(url || "");
-    const response = await fetch(
-      `${platformConfig.oembedEndpoint}?url=${encodedUrl}&format=json`
-    );
-
+    const response = await fetchOEmbedMetadata({
+      url,
+      platformConfig,
+    });
 
     if (!response.ok) {
       throw new Error("Failed to fetch oEmbed metadata");
     }
 
     const data = await response.json();
-
-    console.log("data", JSON.stringify(data));
 
     return {
       author: data.author_name,
@@ -40,6 +52,64 @@ export const getOEmbedMetadata = async ({
     };
   } catch (error) {
     console.log("getOEmbedMetadata", safelyPrintError(error));
-    throw error;
+    return undefined;
+  }
+};
+
+export const getLinkPreviewMetadata = async ({
+  url,
+}: GetLinkPreviewMetadataType): Promise<
+  GetLinkPreviewMetadataReturnType | undefined
+> => {
+  try {
+    const response = await fetchLinkPreview(url);
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch link preview metadata");
+    }
+
+    const data = await response.json();
+
+    return {
+      title: data.title || "",
+      image: data.image || "",
+      url: url || "",
+    };
+  } catch (error) {
+    console.log("getLinkPreviewMetadata", safelyPrintError(error));
+    return undefined;
+  }
+};
+
+type GetLocalLinkPreviewMetadataReturnType = {
+  title: string;
+  thumbnail: string;
+};
+
+type GetLocalLinkPreviewMetadataType = {
+  url: string;
+};
+
+export const getLocalLinkPreviewMetadata = async ({
+  url,
+}: GetLocalLinkPreviewMetadataType): Promise<
+  GetLocalLinkPreviewMetadataReturnType | undefined
+> => {
+  try {
+    const response = await fetchLocalLinkPreview(url);
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch local link preview metadata");
+    }
+
+    const data = await response.json();
+
+    return {
+      title: data.title || "",
+      thumbnail: data.thumbnail || data.image || "",
+    };
+  } catch (error) {
+    console.log("getLocalLinkPreviewMetadata", safelyPrintError(error));
+    return undefined;
   }
 };

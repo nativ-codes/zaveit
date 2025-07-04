@@ -7,6 +7,7 @@ import { signOut } from "@/services/google-auth.service";
 import { deleteUser } from "@/services/users.service";
 import { LegalEnum } from "@/types";
 import * as Application from "expo-application";
+import * as Linking from "expo-linking";
 import { router } from "expo-router";
 import React from "react";
 import { Alert, StyleSheet, Text } from "react-native";
@@ -24,6 +25,25 @@ function SettingsScreen() {
       pathname: "/legal",
       params: { type: LegalEnum.PRIVACY_POLICY },
     });
+  };
+
+  const handleOnSendFeedbackPress = () => {
+    Alert.alert(
+      "Send Feedback",
+      "You will be redirected to a webpage to send your feedback. Continue?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Continue",
+          onPress: () => {
+            Linking.openURL("https://nativ.codes/#contact");
+          },
+        },
+      ]
+    );
   };
 
   const logOut = async () => {
@@ -89,7 +109,7 @@ function SettingsScreen() {
         <Menu>
           <Menu.Item
             onPress={noop}
-            label="Add main tags"
+            label="Manage main tags"
             right={
               <Text style={GeneralStyles.textLabelMediumSecondary}>Soon</Text>
             }
@@ -111,7 +131,7 @@ function SettingsScreen() {
             onPress={handleOnPrivacyPolicyPress}
             label="Privacy Policy"
           />
-          <Menu.Item onPress={() => {}} label="Send us your feedback" />
+          <Menu.Item onPress={handleOnSendFeedbackPress} label="Send us your feedback" />
         </Menu>
         <Menu>
           <Menu.Item

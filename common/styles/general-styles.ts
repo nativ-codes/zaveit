@@ -102,4 +102,9 @@ export const GeneralStyles = StyleSheet.create({
     paddingHorizontal: Units.s16,
     borderRadius: Units.s24
   },
+  spinningLoaderContainer: {
+    marginTop: '60%',
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });

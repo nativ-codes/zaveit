@@ -4,12 +4,13 @@ import { GeneralStyles } from "@/common/styles";
 import {
   increasePostAccessCount,
   removePost,
-  usePosts
+  usePosts,
 } from "@/config/storage/persistent";
 import * as Linking from "expo-linking";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect } from "react";
-import { Alert, Text, View } from "react-native";
+import { Alert, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getPostDetails } from "../search/search.util";
 import styles from "./[id].style";
 import { PostDetailsPropsType } from "./[id].type";
@@ -18,6 +19,7 @@ function PostDetailsScreen() {
   const { id } = useLocalSearchParams<PostDetailsPropsType>();
   const posts = usePosts();
   const post = getPostDetails({ posts, id });
+  const insets = useSafeAreaInsets();
   console.log("post", post);
 
   useEffect(() => {
@@ -61,6 +63,7 @@ function PostDetailsScreen() {
 
   return (
     <ScreenLayout
+      hasTopInset={false}
       footer={
         <Spacer
           style={GeneralStyles.directionRow}
@@ -68,12 +71,22 @@ function PostDetailsScreen() {
           direction="horizontal"
           size="s16"
         >
-          <Button.Icon iconName="trash" onPress={handleOnRemovePost} theme="error" />
+          <Button.Icon
+            iconName="trash"
+            onPress={handleOnRemovePost}
+            theme="error"
+          />
           <Button label="Open" onPress={handleOpenInBrowser} />
         </Spacer>
       }
     >
-      <TopBar hasBackButton />
+      <View
+        style={StyleSheet.compose(styles.topBarContainer, {
+          top: insets.top,
+        })}
+      >
+        <TopBar hasBackButton />
+      </View>
       <PostDetails {...post} />
     </ScreenLayout>
   );

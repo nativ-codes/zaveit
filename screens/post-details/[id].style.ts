@@ -10,5 +10,11 @@ export default StyleSheet.create({
   errorText: {
     fontSize: 16,
     color: "#666",
+  },
+  topBarContainer: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    zIndex: 1000,
   }
 });

@@ -8,7 +8,7 @@ import * as Burnt from "burnt";
 import * as Clipboard from "expo-clipboard";
 import { router } from "expo-router";
 import React from "react";
-import { Image, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import TagItem from "../tag-item/tag-item";
 import styles from "./post-details.style";
 import { PostDetailsPropsType } from "./post-details.type";
@@ -63,7 +63,7 @@ function PostDetails({
                 <Text style={GeneralStyles.textLabelMediumSecondary}>
                   by {author}
                 </Text>
-              ) : null
+              ) : <View />
             }
             right={
               Boolean(timestamp) ? (
@@ -84,7 +84,7 @@ function PostDetails({
           onPress={handleOnCopyToClipboard}
         >
           <Row
-            center={<Text style={GeneralStyles.textLink}>{url}</Text>}
+            center={<Text style={GeneralStyles.textLink} numberOfLines={2}>{url}</Text>}
             right={
               <Icon
                 name="content-copy"

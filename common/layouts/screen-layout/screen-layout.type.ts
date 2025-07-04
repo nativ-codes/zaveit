@@ -5,4 +5,5 @@ export type ScreenLayoutPropsType = {
   style?: ViewStyle;
   testID?: string;
   footer?: React.ReactNode;
+  hasTopInset?: boolean;
 }; 

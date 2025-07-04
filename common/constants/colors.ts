@@ -4,6 +4,7 @@ export const Colors = {
   black: "#000000",
   transparent: "transparent",
   primary: "#5474FD",
+  primaryDisabled: "#869dfd",
   shadow: "#9397A0",
   skeleton: "#E1E5E9",
 
