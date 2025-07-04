@@ -5,12 +5,12 @@ import {
 } from "@/common/constants";
 import { getIsEmpty } from "@/common/utils";
 import { getTags } from "@/config/storage/persistent";
-import { getSuggestedTags } from "@/services/llm";
+import { getSuggestedTags } from "@/services/general.service";
 import { PlatformConfig, PostMetadataType, SocialPlatform } from "@/types";
 import { ShareIntent } from "expo-share-intent";
 import {
-  getCustomLinkPreviewMetadata,
   getLinkPreviewMetadata,
+  getLocalLinkPreviewMetadata,
   getOEmbedMetadata,
 } from "./share-intent.service";
 
@@ -115,16 +115,16 @@ export const getMetadata = async (
     };
   }
 
-  const customLinkPreviewMetadata = await getCustomLinkPreviewMetadata({
+  const localLinkPreviewMetadata = await getLocalLinkPreviewMetadata({
     url: shareIntent.webUrl,
   });
 
-  if (customLinkPreviewMetadata?.title) {
+  if (localLinkPreviewMetadata?.title) {
     return {
       url: shareIntent.webUrl || "",
-      title: customLinkPreviewMetadata.title || shareIntent.webUrl || "",
+      title: localLinkPreviewMetadata.title || shareIntent.webUrl || "",
       author: "",
-      thumbnail: customLinkPreviewMetadata.thumbnail || IMAGE_PLACEHOLDER,
+      thumbnail: localLinkPreviewMetadata.thumbnail || IMAGE_PLACEHOLDER,
     };
   }
 

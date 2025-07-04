@@ -41,7 +41,6 @@ android/
 ios/
 .env
 fastlane/
-llm.ts
 keys/
 core/
 general.service.ts
