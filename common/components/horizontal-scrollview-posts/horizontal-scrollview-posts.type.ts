@@ -6,4 +6,5 @@ export type HorizontalScrollViewPostsType = {
   Element: React.ComponentType<any>;
   onViewAll?: () => void;
   onPostPress: (id: string) => void;
+  estimatedItemSize?: number;
 }; 

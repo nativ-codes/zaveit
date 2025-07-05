@@ -1,5 +1,6 @@
 import { PreviewPostTile } from "@/common/components";
 import HorizontalScrollViewPosts from "@/common/components/horizontal-scrollview-posts/horizontal-scrollview-posts";
+import { Units } from "@/common/constants/units";
 import { useRouter } from "expo-router";
 import React from "react";
 import { getPostsForTag } from "../../search.util";
@@ -30,6 +31,7 @@ function TagPostsList({ tags, posts }: TagPostsListPropsType) {
             params: { id },
           });
         }}
+        estimatedItemSize={Units.s256}
       />
     );
   };
