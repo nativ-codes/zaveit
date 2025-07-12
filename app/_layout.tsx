@@ -7,6 +7,7 @@ import "react-native-get-random-values";
 import "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
+// TODO: Save thumbnail image locally 
 export default function RootLayout() {
   const [loaded] = useFonts({
     Gellix: require("../assets/fonts/Gellix-Regular.ttf"),
