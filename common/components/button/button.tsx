@@ -7,15 +7,20 @@ import SpinningLoader from "../spinning-loader/spinning-loader";
 import ButtonIcon from "./button-icon/button-icon";
 import ButtonSocial from "./button-social/button-social";
 import styles from "./button.style";
-import { ButtonPropsType } from "./button.type";
+import { ButtonPropsType, ButtonTextVariantMap, ButtonTypeEnum } from "./button.type";
 
-function Button({ label, onPress, isLoading = false }: ButtonPropsType) {
+function Button({
+  label,
+  onPress,
+  type = ButtonTypeEnum.primary,
+  isLoading = false,
+}: ButtonPropsType) {
   return (
     <TouchableOpacity
       activeOpacity={ACTIVE_OPACITY}
       style={[
         GeneralStyles.actionableContent,
-        styles.button,
+        styles[`buttonType${type}`],
         isLoading && styles.loading,
       ]}
       onPress={onPress}
@@ -24,10 +29,12 @@ function Button({ label, onPress, isLoading = false }: ButtonPropsType) {
       {isLoading ? (
         <Spacer style={GeneralStyles.directionRow} gap="s16">
           <SpinningLoader color={Colors.text.onPrimary} size="small" />
-          <Text style={GeneralStyles.textTitlePostMediumOnPrimary}>Loading...</Text>
+          <Text style={GeneralStyles.textTitlePostMediumOnPrimary}>
+            Loading...
+          </Text>
         </Spacer>
       ) : (
-        <Text style={GeneralStyles.textTitlePostMediumOnPrimary}>{label}</Text>
+        <Text style={ButtonTextVariantMap[type]}>{label}</Text>
       )}
     </TouchableOpacity>
   );

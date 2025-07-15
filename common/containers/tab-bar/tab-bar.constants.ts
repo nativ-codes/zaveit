@@ -17,4 +17,10 @@ export const TAB_BAR_ITEMS = [
     iconFocused: "cog",
     iconUnfocused: "cog-outline",
   },
-];
+  __DEV__ && {
+    name: "debug",
+    label: "DEBUG",
+    iconFocused: "bug",
+    iconUnfocused: "bug-outline",
+  },
+].filter(Boolean);

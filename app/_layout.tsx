@@ -1,7 +1,7 @@
 import MainStack from "@/common/containers/main-stack/main-stack";
 import AuthProvider from "@/config/contexts/auth.context";
 import { useFonts } from "expo-font";
-import { ShareIntentProvider, useShareIntentContext } from "expo-share-intent";
+import { ShareIntentProvider } from "expo-share-intent";
 import { StatusBar } from "expo-status-bar";
 import "react-native-get-random-values";
 import "react-native-reanimated";
@@ -13,8 +13,7 @@ export default function RootLayout() {
     Gellix: require("../assets/fonts/Gellix-Regular.ttf"),
     GellixBold: require("../assets/fonts/Gellix-Bold.ttf"),
   });
-  const { hasShareIntent } = useShareIntentContext();
-  console.log("RootLayout hasShareIntent", hasShareIntent);
+
   if (!loaded) {
     // Async font loading only occurs in development.
     return null;

@@ -2,6 +2,7 @@ import { Button } from "@/common/components";
 import { Units } from "@/common/constants";
 import { Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
+import { setShouldContinueWithoutAccount } from "@/config/storage/persistent";
 import {
   initializeGoogleSignIn,
   signInWithGoogle,
@@ -9,7 +10,7 @@ import {
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import React, { useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import styles from "./login.style";
 
@@ -31,6 +32,10 @@ function LoginScreen() {
     } catch (error) {
       console.error("Login error:", error);
     }
+  };
+
+  const handleContinueWithoutAccount = () => {
+    setShouldContinueWithoutAccount(true);
   };
 
   return (
@@ -67,15 +72,25 @@ function LoginScreen() {
       <Spacer
         direction="horizontal"
         size="s16"
-        style={StyleSheet.compose(GeneralStyles.directionRow, {
+        style={{
+          gap: Units.s16,
+          alignItems: "center",
           paddingBottom: insets.bottom + Units.s16,
-        })}
+        }}
       >
         <Button.Social
           label="Continue with Google"
           iconName="google"
           onPress={handleGoogleSignIn}
         />
+        <TouchableOpacity
+          onPress={handleContinueWithoutAccount}
+          hitSlop={Units.s16}
+        >
+          <Text style={GeneralStyles.textLabelMediumSecondary}>
+            Continue without account
+          </Text>
+        </TouchableOpacity>
       </Spacer>
     </View>
   );

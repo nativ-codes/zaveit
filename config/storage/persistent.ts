@@ -3,7 +3,7 @@ import { getRandomPick, getSortedTags } from "@/screens/search/search.util";
 import { removePostService, savePostService } from "@/services/posts.service";
 import { PostType } from "@/types/posts";
 import { useMemo } from "react";
-import { MMKV, useMMKVString } from "react-native-mmkv";
+import { MMKV, useMMKVBoolean, useMMKVString } from "react-native-mmkv";
 
 export const storage = new MMKV({
   id: "zaveit-storage",
@@ -139,4 +139,20 @@ export const useHasPosts = (): boolean => {
   const posts = usePosts();
 
   return useMemo(() => Boolean(posts.length), [posts]);
+};
+
+export const useHasBeenOnboarded = (): boolean => {
+  const [hasBeenOnboarded] = useMMKVBoolean("hasBeenOnboarded", storage);
+
+  return useMemo(() => hasBeenOnboarded || false, [hasBeenOnboarded]);
+};
+
+export const useShouldContinueWithoutAccount = (): boolean => {
+  const [shouldContinueWithoutAccount] = useMMKVBoolean("shouldContinueWithoutAccount", storage);
+
+  return useMemo(() => shouldContinueWithoutAccount || false, [shouldContinueWithoutAccount]);
+};
+
+export const setShouldContinueWithoutAccount = (shouldContinueWithoutAccount: boolean): void => {
+  storage.set("shouldContinueWithoutAccount", shouldContinueWithoutAccount);
 };
