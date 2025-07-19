@@ -8,6 +8,7 @@ import "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 // TODO: Save thumbnail image locally 
+// TODO: Sync thumbnails
 export default function RootLayout() {
   const [loaded] = useFonts({
     Gellix: require("../assets/fonts/Gellix-Regular.ttf"),

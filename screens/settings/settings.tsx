@@ -2,7 +2,11 @@ import { Menu, TopBar } from "@/common/components";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { noop } from "@/common/utils";
-import { clearAllData } from "@/config/storage/persistent";
+import { useAuth } from "@/config/contexts/auth.context";
+import {
+  clearAllData,
+  setShouldContinueWithoutAccount,
+} from "@/config/storage/persistent";
 import { signOut } from "@/services/google-auth.service";
 import { deleteUser } from "@/services/users.service";
 import { LegalEnum } from "@/types";
@@ -13,6 +17,8 @@ import React from "react";
 import { Alert, StyleSheet, Text } from "react-native";
 
 function SettingsScreen() {
+  const { isAuthenticated, user } = useAuth();
+  console.log("user", user);
   const handleOnTermsAndConditionsPress = () => {
     router.push({
       pathname: "/legal",
@@ -96,6 +102,10 @@ function SettingsScreen() {
     ]);
   };
 
+  const handleOnLogIn = () => {
+    setShouldContinueWithoutAccount(false);
+  };
+
   return (
     <ScreenLayout>
       <Spacer direction="bottom" size="s8">
@@ -131,15 +141,31 @@ function SettingsScreen() {
             onPress={handleOnPrivacyPolicyPress}
             label="Privacy Policy"
           />
-          <Menu.Item onPress={handleOnSendFeedbackPress} label="Send us your feedback" />
-        </Menu>
-        <Menu>
           <Menu.Item
-            onPress={handleOnRemoveAccount}
-            label="Remove account"
+            onPress={handleOnSendFeedbackPress}
+            label="Send us your feedback"
           />
-          <Menu.Item onPress={handleOnLogOut} label="Log out" />
         </Menu>
+        {isAuthenticated ? (
+          <Menu>
+            {Boolean(user?.displayName) && (
+              <Spacer direction={["left", "bottom"]} size="s8">
+                <Text style={GeneralStyles.textLabelMediumSecondary}>
+                  Connected as {user?.displayName}
+                </Text>
+              </Spacer>
+            )}
+            <Menu.Item onPress={handleOnRemoveAccount} label="Remove account" />
+            <Menu.Item onPress={handleOnLogOut} label="Log out" />
+          </Menu>
+        ) : (
+          <Menu>
+            <Menu.Item
+              onPress={handleOnLogIn}
+              label="Connect to your account"
+            />
+          </Menu>
+        )}
         <Text
           style={StyleSheet.compose(
             GeneralStyles.textLabelMediumSecondary,
