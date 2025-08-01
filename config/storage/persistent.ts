@@ -112,9 +112,8 @@ export const updatePost = async (post: PostType): Promise<void> => {
 
   const updatedPosts = posts.map((p) => (p.id === post.id ? post : p));
   storage.set("posts", JSON.stringify(updatedPosts));
-  console.log("[Posts Service] Updated posts:", appAuthType);
+
   if (appAuthType === "google") {
-    console.log("[Posts Service] Updating post:", { post });
     try {
       await updatePostService(post);
     } catch (error) {

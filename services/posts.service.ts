@@ -213,17 +213,10 @@ export const refreshPosts = async () => {
     const platformConfig = checkSocialPlatform(post.url);
     
     if (platformConfig && platformConfig.expiresAt) {
-      console.log(
-        "[Posts Service] Post to refresh:",
-        post.updatedAt,
-        platformConfig.expiresAt
-      );
       return Date.now() > (post.updatedAt || 0) + platformConfig.expiresAt;
     }
     return false;
   });
-
-  console.log("[Posts Service] Posts to refresh:", posts.length);
 
   postsToRefresh.forEach(async (post) => {
     const metadata = await getMetadata({
