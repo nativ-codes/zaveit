@@ -9,6 +9,7 @@ export interface PlatformConfig {
   platform: SocialPlatform;
   domains: string[];
   oembedEndpoint: string;
+  expiresAt?: number;
 }
 
 export type PostType = {
@@ -18,7 +19,8 @@ export type PostType = {
   author: string;
   thumbnail: string;
   timestamp: number;
+  updatedAt: number;
   tags: string[];
 };
 
-export type PostMetadataType = Omit<PostType, "id" | "timestamp" | "tags">;
+export type PostMetadataType = Omit<PostType, "id" | "timestamp" | "tags" | "updatedAt">;

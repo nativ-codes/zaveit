@@ -88,7 +88,7 @@ export const parseTags = async (
 };
 
 export const getMetadata = async (
-  shareIntent: ShareIntent
+  shareIntent: Partial<ShareIntent>
 ): Promise<PostMetadataType> => {
   if (!shareIntent.webUrl) {
     throw new Error("No URL provided");

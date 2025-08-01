@@ -27,6 +27,7 @@ function LoginScreen() {
     try {
       const { user } = await signInWithGoogle();
       await syncPosts({ uid: user.uid });
+      setAppAuthType("google");
 
       if (user) {
         router.replace("/");

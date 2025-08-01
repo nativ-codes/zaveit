@@ -1,6 +1,10 @@
 import { MAX_HORIZONTAL_SCROLLVIEW_POSTS } from "@/common/constants";
 import { getRandomPick, getSortedTags } from "@/screens/search/search.util";
-import { removePostService, savePostService } from "@/services/posts.service";
+import {
+  removePostService,
+  savePostService,
+  updatePostService,
+} from "@/services/posts.service";
 import { PostType } from "@/types/posts";
 import { useMemo } from "react";
 import { useMMKVString } from "react-native-mmkv";
@@ -94,6 +98,25 @@ export const savePost = async (post: PostType): Promise<void> => {
   if (appAuthType === "google") {
     try {
       await savePostService(post);
+    } catch (error) {
+      console.error("[Posts Service] Error saving post:", {
+        error: error.message,
+      });
+    }
+  }
+};
+
+export const updatePost = async (post: PostType): Promise<void> => {
+  const posts = getPosts();
+  const appAuthType = getAppAuthType();
+
+  const updatedPosts = posts.map((p) => (p.id === post.id ? post : p));
+  storage.set("posts", JSON.stringify(updatedPosts));
+  console.log("[Posts Service] Updated posts:", appAuthType);
+  if (appAuthType === "google") {
+    console.log("[Posts Service] Updating post:", { post });
+    try {
+      await updatePostService(post);
     } catch (error) {
       console.error("[Posts Service] Error saving post:", {
         error: error.message,

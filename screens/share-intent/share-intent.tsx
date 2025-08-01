@@ -87,6 +87,7 @@ function ShareIntentScreen() {
           thumbnail: postMetadata?.thumbnail || "",
           tags: [...tags.selectedMainTags, ...tags.selectedAdditionalTags],
           timestamp: Date.now(),
+          updatedAt: Date.now(),
         };
         await savePost(post);
       }

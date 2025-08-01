@@ -9,8 +9,12 @@ import React from "react";
 import { Text } from "react-native";
 
 function DebugScreen() {
-  const setShouldNotContinueWithoutAccount = () => {
+  const handleOnAuthType = () => {
     setAppAuthType();
+  };
+
+  const handleOnGoogleAuthType = () => {
+    setAppAuthType("google");
   };
 
   return (
@@ -23,9 +27,10 @@ function DebugScreen() {
       <Spacer direction="horizontal" size="s16" gap="s32">
         <Menu>
           <Menu.Item onPress={clearAllData} label="Clear all data" />
+          <Menu.Item onPress={handleOnAuthType} label="Reset appAuthType" />
           <Menu.Item
-            onPress={setShouldNotContinueWithoutAccount}
-            label="Reset appAuthType"
+            onPress={handleOnGoogleAuthType}
+            label="Google appAuthType"
           />
         </Menu>
       </Spacer>

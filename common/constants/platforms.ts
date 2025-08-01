@@ -4,7 +4,8 @@ export const PLATFORM_CONFIGS: Record<SocialPlatform, PlatformConfig> = {
   [SocialPlatform.TIKTOK]: {
     platform: SocialPlatform.TIKTOK,
     domains: ["tiktok.com", "vm.tiktok.com"],
-    oembedEndpoint: "https://www.tiktok.com/oembed"
+    oembedEndpoint: "https://www.tiktok.com/oembed",
+    expiresAt: 1000 * 60 * 60 * 24 * 7, // 7 days
   },
   [SocialPlatform.REDDIT]: {
     platform: SocialPlatform.REDDIT,

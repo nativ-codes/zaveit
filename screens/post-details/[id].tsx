@@ -9,6 +9,7 @@ import { GeneralStyles } from "@/common/styles";
 import {
   increasePostAccessCount,
   removePost,
+  updatePost,
   usePosts,
 } from "@/config/storage/persistent";
 import { PostType } from "@/types";
@@ -58,6 +59,14 @@ function PostDetailsScreen() {
     ]);
   };
 
+  const handleUpdatePost = () => {
+    updatePost({
+      ...post,
+      title: "Updated Title",
+      updatedAt: Date.now(),
+    });
+  };
+
   return (
     <ScreenLayout
       hasTopInset={false}
@@ -77,6 +86,11 @@ function PostDetailsScreen() {
             type="primary"
             label="Open"
             onPress={handleOpenInBrowser}
+          />
+          <Button
+            type="primary"
+            label="Update"
+            onPress={handleUpdatePost}
           />
         </Spacer>
       }

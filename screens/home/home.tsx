@@ -2,8 +2,9 @@ import { EmptyPlaceholder, TopBar } from "@/common/components";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { useHasPosts } from "@/config/storage/persistent";
+import { refreshPosts } from "@/services/posts.service";
 import { router } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import { Text } from "react-native";
 import FrequentlyAccessedSection from "./components/frequently-accessed-section/frequently-accessed-section";
 import RandomPickSection from "./components/random-pick-section/random-pick-section";
@@ -18,6 +19,10 @@ function HomeScreen() {
       params: { id: postId },
     });
   };
+
+  useEffect(() => {
+    hasPosts && refreshPosts();
+  }, [hasPosts]);
 
   return (
     <ScreenLayout>
