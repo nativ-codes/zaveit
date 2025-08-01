@@ -3,12 +3,9 @@ import { getRandomPick, getSortedTags } from "@/screens/search/search.util";
 import { removePostService, savePostService } from "@/services/posts.service";
 import { PostType } from "@/types/posts";
 import { useMemo } from "react";
-import { MMKV, useMMKVBoolean, useMMKVString } from "react-native-mmkv";
-
-export const storage = new MMKV({
-  id: "zaveit-storage",
-  encryptionKey: process.env.EXPO_PUBLIC_MMKV_ENCRYPTON_KEY,
-});
+import { useMMKVString } from "react-native-mmkv";
+import { getAppAuthType } from "./auth";
+import { storage } from "./storage";
 
 type FrequentlyAccessedPostsType = Record<string, number>;
 
@@ -21,7 +18,9 @@ export const getFrequentlyAccessedPosts = (): FrequentlyAccessedPostsType => {
   const frequentlyAccessedPostsRaw = storage.getString(
     "frequentlyAccessedPosts"
   );
-  return frequentlyAccessedPostsRaw ? JSON.parse(frequentlyAccessedPostsRaw) : {};
+  return frequentlyAccessedPostsRaw
+    ? JSON.parse(frequentlyAccessedPostsRaw)
+    : {};
 };
 
 export const increasePostAccessCount = (postId: string): void => {
@@ -87,28 +86,40 @@ export const getTags = (): string[] => {
 
 export const savePost = async (post: PostType): Promise<void> => {
   const posts = getPosts();
+  const appAuthType = getAppAuthType();
 
-  posts.unshift(post);
+  posts.push(post);
   storage.set("posts", JSON.stringify(posts));
 
-  try {
-    await savePostService(post);
-  } catch (error) {
-    console.error('[Posts Service] Error saving post:', { error: error.message });
+  if (appAuthType === "google") {
+    try {
+      await savePostService(post);
+    } catch (error) {
+      console.error("[Posts Service] Error saving post:", {
+        error: error.message,
+      });
+    }
   }
 };
 
 export const removePost = async (post: PostType): Promise<void> => {
-  try {
-    removePostById(post);
-    await removePostService(post);
-  } catch (error) {
-    console.error('[Posts Service] Error removing post:', { error: error.message });
+  const appAuthType = getAppAuthType();
+  removePostById(post);
+
+  if (appAuthType === "google") {
+    try {
+      await removePostService(post);
+    } catch (error) {
+      console.error("[Posts Service] Error removing post:", {
+        error: error.message,
+      });
+    }
   }
 };
 
 export const savePosts = (posts: PostType[]): void => {
-  storage.set("posts", JSON.stringify(posts));
+  const previousPosts = getPosts();
+  storage.set("posts", JSON.stringify([...previousPosts, ...posts]));
 };
 
 export const usePosts = (): PostType[] => {
@@ -119,7 +130,9 @@ export const usePosts = (): PostType[] => {
 
 export const removePostById = (post: PostType): void => {
   const posts = getPosts();
-  const updatedPosts = posts.filter((currentPost) => currentPost.id !== post.id);
+  const updatedPosts = posts.filter(
+    (currentPost) => currentPost.id !== post.id
+  );
 
   const frequentlyAccessedPosts = getFrequentlyAccessedPosts();
   delete frequentlyAccessedPosts[post.id];
@@ -139,20 +152,4 @@ export const useHasPosts = (): boolean => {
   const posts = usePosts();
 
   return useMemo(() => Boolean(posts.length), [posts]);
-};
-
-export const useHasBeenOnboarded = (): boolean => {
-  const [hasBeenOnboarded] = useMMKVBoolean("hasBeenOnboarded", storage);
-
-  return useMemo(() => hasBeenOnboarded || false, [hasBeenOnboarded]);
-};
-
-export const useShouldContinueWithoutAccount = (): boolean => {
-  const [shouldContinueWithoutAccount] = useMMKVBoolean("shouldContinueWithoutAccount", storage);
-
-  return useMemo(() => shouldContinueWithoutAccount || false, [shouldContinueWithoutAccount]);
-};
-
-export const setShouldContinueWithoutAccount = (shouldContinueWithoutAccount: boolean): void => {
-  storage.set("shouldContinueWithoutAccount", shouldContinueWithoutAccount);
 };

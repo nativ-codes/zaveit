@@ -3,9 +3,9 @@ import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { noop } from "@/common/utils";
 import { useAuth } from "@/config/contexts/auth.context";
+import { setAppAuthType } from "@/config/storage/auth";
 import {
-  clearAllData,
-  setShouldContinueWithoutAccount,
+  clearAllData
 } from "@/config/storage/persistent";
 import { signOut } from "@/services/google-auth.service";
 import { deleteUser } from "@/services/users.service";
@@ -18,7 +18,7 @@ import { Alert, StyleSheet, Text } from "react-native";
 
 function SettingsScreen() {
   const { isAuthenticated, user } = useAuth();
-  console.log("user", user);
+
   const handleOnTermsAndConditionsPress = () => {
     router.push({
       pathname: "/legal",
@@ -55,7 +55,7 @@ function SettingsScreen() {
   const logOut = async () => {
     try {
       await signOut();
-      router.replace("/");
+      setAppAuthType();
       clearAllData();
     } catch (error) {
       console.error("Error signing out:", error);
@@ -103,7 +103,7 @@ function SettingsScreen() {
   };
 
   const handleOnLogIn = () => {
-    setShouldContinueWithoutAccount(false);
+    setAppAuthType();
   };
 
   return (

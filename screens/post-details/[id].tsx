@@ -73,7 +73,11 @@ function PostDetailsScreen() {
             onPress={handleOnRemovePost}
             theme="error"
           />
-          <Button label="Open" onPress={handleOpenInBrowser} />
+          <Button
+            type="primary"
+            label="Open"
+            onPress={handleOpenInBrowser}
+          />
         </Spacer>
       }
     >

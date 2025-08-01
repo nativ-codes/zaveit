@@ -1,18 +1,17 @@
 import { SCREEN_OPTIONS } from "@/common/constants";
 import { useShareIntent } from "@/common/utils";
 import { useAuth } from "@/config/contexts/auth.context";
-import { useShouldContinueWithoutAccount } from "@/config/storage/persistent";
+import { useAppAuthType } from "@/config/storage/auth";
 import { router, Stack } from "expo-router";
 import { useEffect, useState } from "react";
 
 function MainStack() {
   const { isAuthenticated, isLoading } = useAuth();
-  const shouldContinueWithoutAccount = useShouldContinueWithoutAccount();
+  const appAuthType = useAppAuthType();
+
   const [isMounted, setIsMounted] = useState(false);
 
-  useShareIntent({
-    isAuthenticated,
-  });
+  useShareIntent();
 
   useEffect(() => {
     setIsMounted(true);
@@ -20,13 +19,14 @@ function MainStack() {
 
   useEffect(() => {
     if (isMounted && !isLoading) {
-      if (isAuthenticated || shouldContinueWithoutAccount) {
+      if (isAuthenticated || Boolean(appAuthType)) {
         router.replace("/");
       } else {
+        console.log("redirecting to login");
         router.replace("/login");
       }
     }
-  }, [isAuthenticated, isLoading, isMounted, shouldContinueWithoutAccount]);
+  }, [isAuthenticated, isLoading, isMounted, appAuthType]);
 
   return (
     <Stack screenOptions={SCREEN_OPTIONS}>

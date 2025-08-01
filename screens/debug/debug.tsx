@@ -1,20 +1,23 @@
 import { Menu, TopBar } from "@/common/components";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
-import { clearAllData, setShouldContinueWithoutAccount } from "@/config/storage/persistent";
+import { setAppAuthType } from "@/config/storage/auth";
+import {
+  clearAllData,
+} from "@/config/storage/persistent";
 import React from "react";
 import { Text } from "react-native";
 
 function DebugScreen() {
-    const setShouldNotContinueWithoutAccount = () => setShouldContinueWithoutAccount(false);
+  const setShouldNotContinueWithoutAccount = () => {
+    setAppAuthType();
+  };
 
   return (
     <ScreenLayout>
       <Spacer direction="bottom" size="s8">
         <TopBar
-          left={
-            <Text style={GeneralStyles.textTitleScreenPrimary}>Debug</Text>
-          }
+          left={<Text style={GeneralStyles.textTitleScreenPrimary}>Debug</Text>}
         />
       </Spacer>
       <Spacer direction="horizontal" size="s16" gap="s32">
@@ -22,7 +25,7 @@ function DebugScreen() {
           <Menu.Item onPress={clearAllData} label="Clear all data" />
           <Menu.Item
             onPress={setShouldNotContinueWithoutAccount}
-            label="Reset shouldContinueWithoutAccount"
+            label="Reset appAuthType"
           />
         </Menu>
       </Spacer>

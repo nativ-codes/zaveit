@@ -2,11 +2,12 @@ import { Button } from "@/common/components";
 import { Units } from "@/common/constants";
 import { Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
-import { setShouldContinueWithoutAccount } from "@/config/storage/persistent";
+import { setAppAuthType } from "@/config/storage/auth";
 import {
   initializeGoogleSignIn,
   signInWithGoogle,
 } from "@/services/google-auth.service";
+import { syncPosts } from "@/services/posts.service";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import React, { useEffect } from "react";
@@ -25,6 +26,7 @@ function LoginScreen() {
   const handleGoogleSignIn = async () => {
     try {
       const { user } = await signInWithGoogle();
+      await syncPosts({ uid: user.uid });
 
       if (user) {
         router.replace("/");
@@ -35,7 +37,7 @@ function LoginScreen() {
   };
 
   const handleContinueWithoutAccount = () => {
-    setShouldContinueWithoutAccount(true);
+    setAppAuthType("anonymous");
   };
 
   return (
