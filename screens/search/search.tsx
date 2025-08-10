@@ -1,12 +1,5 @@
-import {
-  Button,
-  EmptyPlaceholder,
-  HorizontalScrollViewTags,
-  PreviewPost,
-  TopBar,
-} from "@/common/components";
+import { EmptyPlaceholder, HorizontalScrollViewTags, PreviewPost, TopBar } from "@/common/components";
 import { Units } from "@/common/constants";
-import { Colors } from "@/common/constants/colors";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { idExtractor } from "@/common/utils";
@@ -15,7 +8,8 @@ import { PostType } from "@/types";
 import { FlashList } from "@shopify/flash-list";
 import { useRouter } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
-import { Text, TextInput, View } from "react-native";
+import { Text, View } from "react-native";
+import SearchInput from "./components/search-input/search-input";
 import TagPostsList from "./components/tag-posts-list/tag-posts-list";
 import styles from "./search.style";
 import {
@@ -105,22 +99,11 @@ function SearchScreen() {
         />
       </Spacer>
       <Spacer direction="bottom" gap="s16" size="s32">
-        <Spacer direction="horizontal" size="s16">
-          <View>
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Search your saved content..."
-              value={searchQuery}
-              placeholderTextColor={Colors.text.placeholder}
-              onChangeText={setSearchQuery}
-            />
-            {Boolean(searchQuery.length) && (
-              <View style={styles.clearSearchButton}>
-                <Button.Icon iconName="x" onPress={handleOnClearSearch} />
-              </View>
-            )}
-          </View>
-        </Spacer>
+        <SearchInput
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          onClear={handleOnClearSearch}
+        />
 
         <HorizontalScrollViewTags
           primaryTags={primaryTags}
