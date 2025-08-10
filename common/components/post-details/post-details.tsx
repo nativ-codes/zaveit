@@ -1,8 +1,8 @@
-import { ACTIVE_OPACITY, Units } from "@/common/constants";
+import { ACTIVE_OPACITY, TWO_SECONDS, Units } from "@/common/constants";
 import { Colors } from "@/common/constants/colors";
 import { Row, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
-import { formatTimestampToDateString } from "@/common/utils";
+import { formatTimestampToDateString, useRefreshPost } from "@/common/utils";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import * as Burnt from "burnt";
 import * as Clipboard from "expo-clipboard";
@@ -14,6 +14,7 @@ import styles from "./post-details.style";
 import { PostDetailsPropsType } from "./post-details.type";
 
 function PostDetails({
+  id,
   title,
   author,
   url,
@@ -21,6 +22,8 @@ function PostDetails({
   tags,
   timestamp,
 }: PostDetailsPropsType) {
+  const handleOnError = useRefreshPost(id);
+
   const handleOnTagPress = (tag: string) => {
     router.push({
       pathname: "/view-posts",
@@ -35,7 +38,7 @@ function PostDetails({
       Burnt.toast({
         title: "Copied to clipboard.",
         preset: "done",
-        duration: 2,
+        duration: TWO_SECONDS,
         haptic: "success",
       });
     } catch (error) {
@@ -48,6 +51,7 @@ function PostDetails({
       {thumbnail && (
         <Image
           source={{ uri: thumbnail }}
+          onError={handleOnError}
           style={styles.image}
           resizeMode="cover"
         />
@@ -63,7 +67,9 @@ function PostDetails({
                 <Text style={GeneralStyles.textLabelMediumSecondary}>
                   by {author}
                 </Text>
-              ) : <View />
+              ) : (
+                <View />
+              )
             }
             right={
               Boolean(timestamp) ? (
@@ -84,7 +90,11 @@ function PostDetails({
           onPress={handleOnCopyToClipboard}
         >
           <Row
-            center={<Text style={GeneralStyles.textLink} numberOfLines={2}>{url}</Text>}
+            center={
+              <Text style={GeneralStyles.textLink} numberOfLines={2}>
+                {url}
+              </Text>
+            }
             right={
               <Icon
                 name="content-copy"

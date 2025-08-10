@@ -27,6 +27,8 @@ function PostDetailsScreen() {
   const post = getPostDetails({ posts, id }) as PostType;
   const insets = useSafeAreaInsets();
 
+  console.log("post", post);
+
   useEffect(() => {
     if (post) {
       increasePostAccessCount(post.id);

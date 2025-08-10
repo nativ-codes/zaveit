@@ -2,8 +2,7 @@ import { MAX_HORIZONTAL_SCROLLVIEW_POSTS } from "@/common/constants";
 import { getRandomPick, getSortedTags } from "@/screens/search/search.util";
 import {
   removePostService,
-  savePostService,
-  updatePostService,
+  savePostService
 } from "@/services/posts.service";
 import { PostType } from "@/types/posts";
 import { useMemo } from "react";
@@ -108,20 +107,9 @@ export const savePost = async (post: PostType): Promise<void> => {
 
 export const updatePost = async (post: PostType): Promise<void> => {
   const posts = getPosts();
-  const appAuthType = getAppAuthType();
 
   const updatedPosts = posts.map((p) => (p.id === post.id ? post : p));
   storage.set("posts", JSON.stringify(updatedPosts));
-
-  if (appAuthType === "google") {
-    try {
-      await updatePostService(post);
-    } catch (error) {
-      console.error("[Posts Service] Error saving post:", {
-        error: error.message,
-      });
-    }
-  }
 };
 
 export const removePost = async (post: PostType): Promise<void> => {

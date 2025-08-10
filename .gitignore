@@ -44,3 +44,4 @@ fastlane/
 keys/
 core/
 general.service.ts
+mcp.json

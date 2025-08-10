@@ -2,7 +2,6 @@ import { EmptyPlaceholder, TopBar } from "@/common/components";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { useHasPosts } from "@/config/storage/persistent";
-import { refreshPosts } from "@/services/posts.service";
 import { router } from "expo-router";
 import React, { useEffect } from "react";
 import { Text } from "react-native";
@@ -21,7 +20,7 @@ function HomeScreen() {
   };
 
   useEffect(() => {
-    hasPosts && refreshPosts();
+    // hasPosts && refreshPosts();
   }, [hasPosts]);
 
   return (
