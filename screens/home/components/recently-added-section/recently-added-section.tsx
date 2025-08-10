@@ -17,6 +17,7 @@ function RecentlyAddedSection({ onPostPress }: RecentlyAddedSectionPropsType) {
       posts={posts}
       onPostPress={onPostPress}
       estimatedItemSize={Units.s256}
+      shouldDisplayCount={false}
     />
   );
 }

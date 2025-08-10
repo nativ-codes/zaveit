@@ -2,6 +2,7 @@ import { ACTIVE_OPACITY } from "@/common/constants/ui";
 import { Units } from "@/common/constants/units";
 import { Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
+import { idExtractor } from "@/common/utils";
 import { FlashList } from "@shopify/flash-list";
 import React, { useCallback } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -11,6 +12,7 @@ import { HorizontalScrollViewPostsType } from "./horizontal-scrollview-posts.typ
 function HorizontalScrollViewPosts({
   title,
   posts,
+  shouldDisplayCount = true,
   Element,
   estimatedItemSize,
   onViewAll,
@@ -28,7 +30,15 @@ function HorizontalScrollViewPosts({
   return (
     <Spacer gap="s8">
       <Spacer style={styles.titleContainer} direction="horizontal" size="s16">
-        <Text style={GeneralStyles.textTitleSectionPrimary}>{title}</Text>
+        <View style={styles.titleTextContainer}>
+          <Text style={GeneralStyles.textTitleSectionPrimary}>{title}</Text>
+          {shouldDisplayCount && (
+            <Text style={GeneralStyles.textLabelLargeSecondary}>
+              ({posts.length})
+            </Text>
+          )}
+        </View>
+
         {onViewAll && (
           <TouchableOpacity
             activeOpacity={ACTIVE_OPACITY}
@@ -43,6 +53,7 @@ function HorizontalScrollViewPosts({
         data={posts}
         renderItem={renderItem}
         estimatedItemSize={estimatedItemSize}
+        keyExtractor={idExtractor}
         contentContainerStyle={styles.contentContainer}
         horizontal
         showsHorizontalScrollIndicator={false}

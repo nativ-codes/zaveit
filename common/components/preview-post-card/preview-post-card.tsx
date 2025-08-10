@@ -2,7 +2,7 @@ import { IMAGE_PLACEHOLDER, MAX_TAGS_LENGTH } from "@/common/constants";
 import { ACTIVE_OPACITY } from "@/common/constants/ui";
 import { Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
-import { getDomainFromUrl } from "@/common/utils";
+import { getDomainFromUrl, useRefreshPost } from "@/common/utils";
 import { Image } from "expo-image";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -11,6 +11,7 @@ import { styles } from "./preview-post-card.style";
 import { PreviewPostCardPropsType } from "./preview-post-card.type";
 
 function PreviewPostCard({
+  id,
   url,
   title,
   thumbnail,
@@ -18,6 +19,7 @@ function PreviewPostCard({
   onPress,
 }: PreviewPostCardPropsType) {
   const domain = getDomainFromUrl(url);
+  const onError = useRefreshPost(id);
 
   return (
     <TouchableOpacity
@@ -33,6 +35,7 @@ function PreviewPostCard({
         style={styles.image}
         contentFit="cover"
         accessibilityLabel="Thumbnail image"
+        onError={onError}
       />
 
       <Spacer direction="full" size="s8" gap="s4">

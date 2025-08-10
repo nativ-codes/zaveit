@@ -7,4 +7,5 @@ export type HorizontalScrollViewPostsType = {
   onViewAll?: () => void;
   onPostPress: (id: string) => void;
   estimatedItemSize?: number;
-}; 
+  shouldDisplayCount?: boolean;
+};

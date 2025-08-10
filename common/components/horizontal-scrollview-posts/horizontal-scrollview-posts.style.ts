@@ -16,4 +16,9 @@ export default StyleSheet.create({
   itemSeparator: {
     width: Units.s16,
   },
+  titleTextContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Units.s4,
+  },
 });

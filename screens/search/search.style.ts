@@ -19,4 +19,10 @@ export default StyleSheet.create({
     top: 0,
     bottom: 0
   },
+  itemSeparator: {
+    height: Units.s16,
+  },
+  contentContainer: {
+    padding: Units.s16,
+  },
 });

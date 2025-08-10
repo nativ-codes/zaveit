@@ -1,7 +1,7 @@
 import { ACTIVE_OPACITY } from "@/common/constants/ui";
 import { Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
-import { getDomainFromUrl } from "@/common/utils";
+import { getDomainFromUrl, useRefreshPost } from "@/common/utils";
 import { Image } from "expo-image";
 import React from "react";
 import { Text, TouchableOpacity } from "react-native";
@@ -9,11 +9,13 @@ import { styles } from "./preview-post-tile.style";
 import { PreviewPostTilePropsType } from "./preview-post-tile.type";
 
 function PreviewPostTile({
+  id,
   url,
   title,
   thumbnail,
   onPress,
 }: PreviewPostTilePropsType) {
+  const onError = useRefreshPost(id);
   const domain = getDomainFromUrl(url);
 
   return (
@@ -30,6 +32,7 @@ function PreviewPostTile({
           style={styles.image}
           contentFit="cover"
           accessibilityLabel="Thumbnail image"
+          onError={onError}
         />
       )}
 

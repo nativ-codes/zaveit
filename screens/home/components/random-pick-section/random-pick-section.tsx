@@ -21,6 +21,7 @@ function RandomPickSection({ onPostPress }: RandomPickSectionPropsType) {
       posts={[post]}
       onPostPress={onPostPress}
       estimatedItemSize={Units.s256}
+      shouldDisplayCount={false}
     />
   );
 }

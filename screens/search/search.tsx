@@ -5,13 +5,16 @@ import {
   PreviewPost,
   TopBar,
 } from "@/common/components";
+import { Units } from "@/common/constants";
 import { Colors } from "@/common/constants/colors";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
+import { idExtractor } from "@/common/utils";
 import { usePosts } from "@/config/storage/persistent";
 import { PostType } from "@/types";
+import { FlashList } from "@shopify/flash-list";
 import { useRouter } from "expo-router";
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { Text, TextInput, View } from "react-native";
 import TagPostsList from "./components/tag-posts-list/tag-posts-list";
 import styles from "./search.style";
@@ -70,14 +73,19 @@ function SearchScreen() {
     [sortedTags, selectedPrimaryTag]
   );
 
-  const renderFilteredPost = (post: PostType) => (
+  const renderItemSeparator = useCallback(
+    () => <View style={styles.itemSeparator} />,
+    []
+  );
+
+  const renderFilteredPost = ({ item }: { item: PostType }) => (
     <PreviewPost
-      key={post.id}
-      {...post}
+      key={item.id}
+      {...item}
       onPress={() => {
         router.push({
           pathname: "/post-details/[id]",
-          params: { id: post.id },
+          params: { id: item.id },
         });
       }}
     />
@@ -125,9 +133,14 @@ function SearchScreen() {
       </Spacer>
 
       {selectedTags.length > 0 || searchQuery.trim() ? (
-        <Spacer direction="horizontal" size="s16" gap="s16">
-          {filteredPosts.map(renderFilteredPost)}
-        </Spacer>
+        <FlashList
+          data={filteredPosts}
+          keyExtractor={idExtractor}
+          estimatedItemSize={Units.s256}
+          contentContainerStyle={styles.contentContainer}
+          ItemSeparatorComponent={renderItemSeparator}
+          renderItem={renderFilteredPost}
+        />
       ) : sortedTags.length === 0 ? (
         <EmptyPlaceholder
           message="No tags found."

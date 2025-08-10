@@ -1,0 +1,1 @@
+export const idExtractor = (item: any) => item.id;
