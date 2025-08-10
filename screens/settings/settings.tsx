@@ -108,6 +108,13 @@ function SettingsScreen() {
     setAppAuthType();
   };
 
+  const handleOnRemoveData = () => {
+    Alert.alert("Remove data", "Are you sure you want to remove your data? This action cannot be undone.", [
+      { text: "Cancel", style: "cancel" },
+      { text: "Remove", style: "destructive", onPress: clearAllData },
+    ]);
+  };
+
   return (
     <ScreenLayout>
       <Spacer direction="bottom" size="s8">
@@ -165,6 +172,10 @@ function SettingsScreen() {
             <Menu.Item
               onPress={handleOnLogIn}
               label="Connect to your account"
+            />
+            <Menu.Item
+              onPress={handleOnRemoveData}
+              label="Remove data"
             />
           </Menu>
         )}
