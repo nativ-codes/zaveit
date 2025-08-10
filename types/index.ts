@@ -1,3 +1,3 @@
-export * from './legal';
-export * from './posts';
+export * from "./legal";
+export * from "./posts";
 

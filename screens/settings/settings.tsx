@@ -2,6 +2,7 @@ import { Menu, TopBar } from "@/common/components";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { noop } from "@/common/utils";
+import { Analytics } from "@/config/analytics";
 import { useAuth } from "@/config/contexts/auth.context";
 import { setAppAuthType } from "@/config/storage/auth";
 import {
@@ -77,6 +78,7 @@ function SettingsScreen() {
           onPress: async () => {
             try {
               await deleteUser();
+              Analytics.sendEvent(Analytics.events.remove_account);
             } catch (error) {
               console.error("Error deleting user:", error);
             } finally {

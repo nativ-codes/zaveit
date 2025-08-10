@@ -14,6 +14,7 @@ function Button({
   onPress,
   type = ButtonTypeEnum.primary,
   isLoading = false,
+  isDisabled = false,
 }: ButtonPropsType) {
   return (
     <TouchableOpacity
@@ -21,10 +22,10 @@ function Button({
       style={[
         GeneralStyles.actionableContent,
         styles[`buttonType${type}`],
-        isLoading && styles.loading,
+        (isLoading || isDisabled) && styles.loading,
       ]}
       onPress={onPress}
-      disabled={isLoading}
+      disabled={isLoading || isDisabled}
     >
       {isLoading ? (
         <Spacer style={GeneralStyles.directionRow} gap="s16">

@@ -10,6 +10,7 @@ export type ButtonPropsType = {
   type: keyof typeof ButtonTypeEnum;
   onPress: () => void;
   isLoading?: boolean;
+  isDisabled?: boolean;
 };
 
 export const ButtonTextVariantMap = {

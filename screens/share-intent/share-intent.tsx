@@ -11,6 +11,8 @@ import { PostMetadataType, PostType } from "@/types";
 import * as Burnt from "burnt";
 
 import { GeneralStyles } from "@/common/styles";
+import { getDomainFromUrl } from "@/common/utils";
+import { Analytics } from "@/config/analytics";
 import { useRouter } from "expo-router";
 import { useShareIntentContext } from "expo-share-intent";
 import React, { useEffect, useState } from "react";
@@ -33,6 +35,7 @@ function ShareIntentScreen() {
   const [postMetadata, setPostMetadata] = useState<
     PostMetadataType | undefined
   >();
+
   const [tags, setTags] = useState<ParseTagsReturnType>({
     additionalTags: [],
     selectedAdditionalTags: [],
@@ -90,10 +93,15 @@ function ShareIntentScreen() {
           updatedAt: Date.now(),
         };
         await savePost(post);
-      }
 
+        Analytics.sendEvent(Analytics.events.zaved_post, {
+          platform: getDomainFromUrl(postMetadata?.url || ""),
+          mainTags: tags.selectedMainTags.join(","),
+          additionalTags: tags.selectedAdditionalTags.join(","),
+        });
+      }
       resetShareIntent();
-      router.replace("/");
+      router.back();
       Burnt.toast({
         title: "Zaved it successfully!",
         preset: "done",
@@ -132,7 +140,9 @@ function ShareIntentScreen() {
         <Spacer gap="s16" direction="horizontal" size="s16">
           <Button
             label="Zave IT"
+            type="primary"
             onPress={handleSave}
+            isDisabled={!Boolean(tags.selectedMainTags.length)}
             isLoading={!Boolean(tags.mainTags.length)}
           />
         </Spacer>

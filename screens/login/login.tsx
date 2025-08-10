@@ -2,6 +2,7 @@ import { Button } from "@/common/components";
 import { Units } from "@/common/constants";
 import { Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
+import { Analytics } from "@/config/analytics";
 import { setAppAuthType } from "@/config/storage/auth";
 import {
   initializeGoogleSignIn,
@@ -28,7 +29,7 @@ function LoginScreen() {
       const { user } = await signInWithGoogle();
       await syncPosts({ uid: user.uid });
       setAppAuthType("google");
-
+      Analytics.sendEvent(Analytics.events.logged_in);
       if (user) {
         router.replace("/");
       }
