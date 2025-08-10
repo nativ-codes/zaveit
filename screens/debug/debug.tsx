@@ -4,6 +4,7 @@ import { GeneralStyles } from "@/common/styles";
 import { setAppAuthType } from "@/config/storage/auth";
 import {
   clearAllData,
+  removeDuplicatePosts,
 } from "@/config/storage/persistent";
 import React from "react";
 import { Text } from "react-native";
@@ -27,6 +28,7 @@ function DebugScreen() {
       <Spacer direction="horizontal" size="s16" gap="s32">
         <Menu>
           <Menu.Item onPress={clearAllData} label="Clear all data" />
+          <Menu.Item onPress={removeDuplicatePosts} label="Remove duplicate posts" />
           <Menu.Item onPress={handleOnAuthType} label="Reset appAuthType" />
           <Menu.Item
             onPress={handleOnGoogleAuthType}

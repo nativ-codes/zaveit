@@ -97,11 +97,12 @@ export const savePost = async (post: PostType): Promise<void> => {
   if (appAuthType === "google") {
     try {
       await savePostService(post);
-    } catch (error) {
-      console.error("[Posts Service] Error saving post:", {
-        error: error.message,
-      });
-    }
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("[Posts Service] Error saving post:", {
+      error: errorMessage,
+    });
+  }
   }
 };
 
@@ -119,11 +120,12 @@ export const removePost = async (post: PostType): Promise<void> => {
   if (appAuthType === "google") {
     try {
       await removePostService(post);
-    } catch (error) {
-      console.error("[Posts Service] Error removing post:", {
-        error: error.message,
-      });
-    }
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("[Posts Service] Error removing post:", {
+      error: errorMessage,
+    });
+  }
   }
 };
 
@@ -162,4 +164,24 @@ export const useHasPosts = (): boolean => {
   const posts = usePosts();
 
   return useMemo(() => Boolean(posts.length), [posts]);
+};
+
+export const removeDuplicatePosts = (): void => {
+  const posts = getPosts();
+  if (posts.length === 0) {
+    storage.set("posts", JSON.stringify([]));
+  }
+
+  const idToPost = new Map<string, PostType>();
+
+  for (const post of posts) {
+    const existing = idToPost.get(post.id);
+    if (!existing) {
+      idToPost.set(post.id, post);
+      continue;
+    }
+  }
+
+  const deduplicatedPosts = Array.from(idToPost.values());
+  storage.set("posts", JSON.stringify(deduplicatedPosts));
 };
