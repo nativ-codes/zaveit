@@ -91,7 +91,7 @@ export const savePost = async (post: PostType): Promise<void> => {
   posts.push(post);
   storage.set("posts", JSON.stringify(posts));
 
-  if (appAuthType === "google") {
+  if (appAuthType === "google" || appAuthType === "apple") {
     try {
       await savePostService(post);
     } catch (error) {
@@ -115,7 +115,7 @@ export const removePost = async (post: PostType): Promise<void> => {
   const appAuthType = getAppAuthType();
   removePostById(post);
 
-  if (appAuthType === "google") {
+  if (appAuthType === "google" || appAuthType === "apple") {
     try {
       await removePostService(post);
     } catch (error) {

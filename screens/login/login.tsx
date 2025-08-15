@@ -3,7 +3,8 @@ import { Units } from "@/common/constants";
 import { Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { Analytics } from "@/config/analytics";
-import { setAppAuthType } from "@/config/storage/auth";
+import { AppAuthType, setAppAuthType } from "@/config/storage/auth";
+import { signInWithApple } from "@/services/apple-auth.service";
 import {
   initializeGoogleSignIn,
   signInWithGoogle,
@@ -24,14 +25,24 @@ function LoginScreen() {
     initializeGoogleSignIn();
   }, []);
 
-  const handleGoogleSignIn = async () => {
+  const handleSignIn = (authType: AppAuthType) => async () => {
     try {
-      const { user } = await signInWithGoogle();
-      await syncPosts({ uid: user.uid });
-      setAppAuthType("google");
-      Analytics.sendEvent(Analytics.events.logged_in);
-      if (user) {
+      if (authType !== "google" && authType !== "apple") {
+        throw new Error("Invalid auth type");
+      }
+
+      const signByAuthType =
+        authType === "google" ? signInWithGoogle : signInWithApple;
+      const userUUID = await signByAuthType();
+
+      if (userUUID) {
+        console.log("Sign in successful", userUUID);
+        await syncPosts({ uid: userUUID });
+        setAppAuthType(authType);
+        Analytics.sendEvent(Analytics.events.logged_in, { authType });
         router.replace("/");
+      } else {
+        console.error("Sign in failed");
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -85,7 +96,12 @@ function LoginScreen() {
         <Button.Social
           label="Continue with Google"
           iconName="google"
-          onPress={handleGoogleSignIn}
+          onPress={handleSignIn("google")}
+        />
+        <Button.Social
+          label="Continue with Apple"
+          iconName="apple1"
+          onPress={handleSignIn("apple")}
         />
         <TouchableOpacity
           onPress={handleContinueWithoutAccount}

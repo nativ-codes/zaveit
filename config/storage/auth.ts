@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useMMKVString } from "react-native-mmkv";
 import { storage } from "./storage";
 
-export type AppAuthType = "google" | "anonymous" | undefined;
+export type AppAuthType = "google" | "apple" | "anonymous" | undefined;
 
 export const useAppAuthType = (): AppAuthType => {
   const [appAuthType] = useMMKVString("appAuthType", storage);

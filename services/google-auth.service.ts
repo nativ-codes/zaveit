@@ -3,7 +3,7 @@ import {
   GoogleSignin,
   isNoSavedCredentialFoundResponse,
 } from "@react-native-google-signin/google-signin";
-import { createUser } from "./users.service";
+import { createFirestoreUser, UserUUIDType } from "./users.service";
 
 export type GoogleAuthResponseType = {
   user: any;
@@ -18,28 +18,7 @@ export const initializeGoogleSignIn = () => {
   GoogleSignin.configure();
 };
 
-const handleUserCreation = async (firebaseUser: any) => {
-  try {
-    // Create new user in Firestore
-    console.log(
-      "[Google Auth] Creating new user in Firestore:",
-      firebaseUser.uid
-    );
-    const user = {
-      id: firebaseUser.uid,
-      displayName: firebaseUser.displayName,
-      email: firebaseUser.email,
-    };
-    await createUser(user);
-
-    return user;
-  } catch (error) {
-    console.error("[Google Auth] Error in handleUserCreation:", error);
-    throw error;
-  }
-};
-
-export const signInWithGoogle = async (): Promise<GoogleAuthResponseType> => {
+export const signInWithGoogle = async (): Promise<UserUUIDType | null> => {
   try {
     await GoogleSignin.hasPlayServices();
     const response = await GoogleSignin.signInSilently();
@@ -63,36 +42,10 @@ export const signInWithGoogle = async (): Promise<GoogleAuthResponseType> => {
       );
       console.log("[Google Auth] Successfully signed in with Firebase");
 
-      if (userCredential) {
-        console.log(
-          "[Google Auth] User credential:",
-          JSON.stringify(userCredential)
-        );
-
-        // Check if this is a new user using Firebase's isNewUser flag
-        if (userCredential.additionalUserInfo?.isNewUser) {
-          console.log(
-            "[Google Auth] New user detected, creating Firestore record"
-          );
-          await handleUserCreation(userCredential.user);
-        } else {
-          console.log(
-            "[Google Auth] Existing user, skipping Firestore creation"
-          );
-        }
-
-        return {
-          user: userCredential.user,
-        };
-      }
-      return {
-        user: null,
-      };
+      return await createFirestoreUser(userCredential);
     }
 
-    return {
-      user: null,
-    };
+    return null;
   } catch (error: any) {
     console.error("[Google Auth] Error during sign in:", error);
     throw {
@@ -105,8 +58,8 @@ export const signInWithGoogle = async (): Promise<GoogleAuthResponseType> => {
 export const signOut = async () => {
   try {
     await GoogleSignin.signOut();
-    await auth().signOut();
     await GoogleSignin.revokeAccess();
+    await auth().signOut();
   } catch (error) {
     console.error("[Google Auth] Error during sign out:", error);
     throw error;

@@ -18,6 +18,10 @@ function DebugScreen() {
     setAppAuthType("google");
   };
 
+  const handleOnAppleAuthType = () => {
+    setAppAuthType("apple");
+  };
+
   return (
     <ScreenLayout>
       <Spacer direction="bottom" size="s8">
@@ -33,6 +37,10 @@ function DebugScreen() {
           <Menu.Item
             onPress={handleOnGoogleAuthType}
             label="Google appAuthType"
+          />
+          <Menu.Item
+            onPress={handleOnAppleAuthType}
+            label="Apple appAuthType"
           />
         </Menu>
       </Spacer>

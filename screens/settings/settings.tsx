@@ -53,9 +53,9 @@ function SettingsScreen() {
 
   const logOut = async () => {
     try {
-      await signOut();
       setAppAuthType();
       clearAllData();
+      await signOut();
     } catch (error) {
       console.error("Error signing out:", error);
     }
