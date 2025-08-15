@@ -18,7 +18,7 @@ function LegalScreen() {
       <TopBar hasBackButton />
       <Spacer gap="s16" direction="horizontal" size="s16">
         <Text style={GeneralStyles.textTitleScreenPrimary}>{data.title}</Text>
-        <Spacer direction="vertical" size="s16" gap="s16">
+        <Spacer gap="s16">
           <Text style={GeneralStyles.textLabelMediumSecondary}>
             {data.lastUpdated}
           </Text>

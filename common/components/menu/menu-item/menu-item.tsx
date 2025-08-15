@@ -6,13 +6,18 @@ import React from "react";
 import { Text, TouchableOpacity } from "react-native";
 import { MenuItemPropsType } from "./menu-item.type";
 
-function MenuItem({ onPress, label, right }: MenuItemPropsType) {
+function MenuItem({ onPress, label, right, description }: MenuItemPropsType) {
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={ACTIVE_OPACITY}>
       <Spacer direction="full" size="s8">
         <Row
           center={
-            <Text style={GeneralStyles.textLabelLargePrimary}>{label}</Text>
+            <Spacer gap="s8">
+              <Text style={GeneralStyles.textLabelLargePrimary}>{label}</Text>
+              {description && (
+                <Text style={GeneralStyles.textLabelMediumSecondary}>{description}</Text>
+              )}
+            </Spacer>
           }
           right={
             right ? (

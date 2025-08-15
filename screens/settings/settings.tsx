@@ -5,9 +5,7 @@ import { noop } from "@/common/utils";
 import { Analytics } from "@/config/analytics";
 import { useAuth } from "@/config/contexts/auth.context";
 import { setAppAuthType } from "@/config/storage/auth";
-import {
-  clearAllData
-} from "@/config/storage/persistent";
+import { clearAllData } from "@/config/storage/persistent";
 import { signOut } from "@/services/google-auth.service";
 import { deleteUser } from "@/services/users.service";
 import { LegalEnum } from "@/types";
@@ -109,10 +107,18 @@ function SettingsScreen() {
   };
 
   const handleOnRemoveData = () => {
-    Alert.alert("Remove data", "Are you sure you want to remove your data? This action cannot be undone.", [
-      { text: "Cancel", style: "cancel" },
-      { text: "Remove", style: "destructive", onPress: clearAllData },
-    ]);
+    Alert.alert(
+      "Remove data",
+      "Are you sure you want to remove your data? This action cannot be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Remove", style: "destructive", onPress: clearAllData },
+      ]
+    );
+  };
+
+  const handleOnPreferencesPress = () => {
+    router.push("/preferences");
   };
 
   return (
@@ -126,6 +132,7 @@ function SettingsScreen() {
       </Spacer>
       <Spacer direction="horizontal" size="s16" gap="s32">
         <Menu>
+          <Menu.Item onPress={handleOnPreferencesPress} label="Preferences" />
           <Menu.Item
             onPress={noop}
             label="Manage main tags"
@@ -173,10 +180,7 @@ function SettingsScreen() {
               onPress={handleOnLogIn}
               label="Connect to your account"
             />
-            <Menu.Item
-              onPress={handleOnRemoveData}
-              label="Remove data"
-            />
+            <Menu.Item onPress={handleOnRemoveData} label="Remove data" />
           </Menu>
         )}
         <Text
@@ -185,7 +189,7 @@ function SettingsScreen() {
             GeneralStyles.textCenter
           )}
         >
-          ZaveIT v{Application.nativeApplicationVersion}
+          ZaveIt v{Application.nativeApplicationVersion}
         </Text>
       </Spacer>
     </ScreenLayout>

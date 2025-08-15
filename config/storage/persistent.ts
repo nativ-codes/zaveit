@@ -1,9 +1,6 @@
 import { MAX_HORIZONTAL_SCROLLVIEW_POSTS } from "@/common/constants";
 import { getRandomPick, getSortedTags } from "@/screens/search/search.util";
-import {
-  removePostService,
-  savePostService
-} from "@/services/posts.service";
+import { removePostService, savePostService } from "@/services/posts.service";
 import { PostType } from "@/types/posts";
 import { useMemo } from "react";
 import { useMMKVString } from "react-native-mmkv";
@@ -97,12 +94,13 @@ export const savePost = async (post: PostType): Promise<void> => {
   if (appAuthType === "google") {
     try {
       await savePostService(post);
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error("[Posts Service] Error saving post:", {
-      error: errorMessage,
-    });
-  }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      console.error("[Posts Service] Error saving post:", {
+        error: errorMessage,
+      });
+    }
   }
 };
 
@@ -120,12 +118,13 @@ export const removePost = async (post: PostType): Promise<void> => {
   if (appAuthType === "google") {
     try {
       await removePostService(post);
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error("[Posts Service] Error removing post:", {
-      error: errorMessage,
-    });
-  }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      console.error("[Posts Service] Error removing post:", {
+        error: errorMessage,
+      });
+    }
   }
 };
 
@@ -184,4 +183,50 @@ export const removeDuplicatePosts = (): void => {
 
   const deduplicatedPosts = Array.from(idToPost.values());
   storage.set("posts", JSON.stringify(deduplicatedPosts));
+};
+
+type PreferencesType = {
+  isAnalyticsEnabled: boolean | undefined;
+};
+
+const getIsAnalyticsEnabledFromPreferences = (
+  preferences: PreferencesType
+): boolean => {
+  return (
+    preferences.isAnalyticsEnabled ||
+    preferences.isAnalyticsEnabled === undefined
+  );
+};
+
+export const usePreferences = (): PreferencesType => {
+  const [preferencesRaw] = useMMKVString("preferences", storage);
+
+  return useMemo(() => JSON.parse(preferencesRaw || "{}"), [preferencesRaw]);
+};
+
+export const useIsAnalyticsEnabled = (): boolean => {
+  const preferences = usePreferences();
+
+  return useMemo(
+    () => getIsAnalyticsEnabledFromPreferences(preferences),
+    [preferences]
+  );
+};
+
+export const getPreferences = (): PreferencesType => {
+  const preferencesRaw = storage.getString("preferences");
+  return preferencesRaw
+    ? JSON.parse(preferencesRaw)
+    : { isAnalyticsEnabled: undefined };
+};
+
+export const setIsAnalyticsEnabled = (isAnalyticsEnabled: boolean): void => {
+  const preferences = getPreferences();
+  preferences.isAnalyticsEnabled = isAnalyticsEnabled;
+  storage.set("preferences", JSON.stringify(preferences));
+};
+
+export const getIsAnalyticsEnabled = (): boolean => {
+  const preferences = getPreferences();
+  return getIsAnalyticsEnabledFromPreferences(preferences);
 };

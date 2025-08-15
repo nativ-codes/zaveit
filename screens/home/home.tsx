@@ -37,7 +37,7 @@ function HomeScreen() {
         ) : (
           <EmptyPlaceholder
             message="You haven't zaved any posts yet."
-            instruction="Tap Share → Choose ZaveIT"
+            instruction="Tap Share → Choose ZaveIt"
           />
         )}
       </Spacer>

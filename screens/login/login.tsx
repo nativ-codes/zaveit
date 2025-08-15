@@ -61,7 +61,7 @@ function LoginScreen() {
             style={styles.logo}
           />
           <Spacer gap="s8" style={GeneralStyles.centerContent}>
-            <Text style={GeneralStyles.textTitleScreenPrimary}>ZaveIT</Text>
+            <Text style={GeneralStyles.textTitleScreenPrimary}>ZaveIt</Text>
             <Text
               style={StyleSheet.compose(
                 GeneralStyles.textLabelLargeSecondary,

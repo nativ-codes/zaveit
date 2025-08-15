@@ -23,7 +23,7 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <AuthProvider>
           <MainStack />
-          <StatusBar style="auto" />
+          <StatusBar style="dark" />
         </AuthProvider>
       </SafeAreaProvider>
     </ShareIntentProvider>

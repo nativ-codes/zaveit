@@ -1,14 +1,17 @@
 import { MixpanelProperties } from 'mixpanel-react-native';
+import { getIsAnalyticsEnabled } from '../storage/persistent';
 import { mixpanelInstance } from './mixpanel';
 
 enum EventTypeEnum {
 	zaved_post = 'zaved_post',
 	logged_in = 'logged_in',
-	remove_account = 'remove_account'
+	remove_account = 'remove_account',
+	analytics_enabled = 'analytics_enabled'
 }
 
 const sendEvent = (eventType: EventTypeEnum, data?: MixpanelProperties) => {
-	mixpanelInstance.track(eventType, data);
+	const isAnalyticsEnabled = getIsAnalyticsEnabled();
+	isAnalyticsEnabled && mixpanelInstance.track(eventType, data);
 };
 
 export default {
