@@ -3,7 +3,7 @@ import { Units } from "@/common/constants";
 import { Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { Analytics } from "@/config/analytics";
-import { AppAuthType, setAppAuthType } from "@/config/storage/auth";
+import { AppAuthType, setAppAuthType, setInitialUserId } from "@/config/storage/auth";
 import { signInWithApple } from "@/services/apple-auth.service";
 import {
   initializeGoogleSignIn,
@@ -36,9 +36,9 @@ function LoginScreen() {
       const userUUID = await signByAuthType();
 
       if (userUUID) {
-        console.log("Sign in successful", userUUID);
         await syncPosts({ uid: userUUID });
         setAppAuthType(authType);
+        setInitialUserId();
         Analytics.sendEvent(Analytics.events.logged_in, { authType });
         router.replace("/");
       } else {

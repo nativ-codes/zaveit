@@ -3,6 +3,7 @@ import { getMetadata } from "@/screens/share-intent/share-intent.utils";
 import { useRouter } from "expo-router";
 import { useShareIntentContext } from "expo-share-intent";
 import { useEffect, useState } from "react";
+import { saveImageFromUrl } from "./files";
 
 export const useShareIntent = () => {
   const router = useRouter();
@@ -23,7 +24,7 @@ export const useRefreshPost = (id: string) => {
       try {
         const posts = getPosts();
         const post = posts.find((p) => p.id === id);
-  
+
         if (!post) {
           return;
         }
@@ -31,11 +32,12 @@ export const useRefreshPost = (id: string) => {
         const metadata = await getMetadata({
           webUrl: post.url,
         });
-  
+
         if (metadata) {
           updatePost({
             ...post,
             ...metadata,
+            thumbnail: await saveImageFromUrl(metadata.thumbnail, post.id) || "",
             updatedAt: Date.now(),
           });
         }

@@ -1,5 +1,5 @@
 import { Mixpanel } from "mixpanel-react-native";
-import DeviceInfo from "react-native-device-info";
+import { getUserId } from "../storage/auth";
 
 const trackAutomaticEvents = false;
 
@@ -9,6 +9,11 @@ const mixpanelInstance = new Mixpanel(
 );
 mixpanelInstance.init();
 mixpanelInstance.setServerURL("https://api-eu.mixpanel.com");
-mixpanelInstance.identify(DeviceInfo.getDeviceId());
 
-export { mixpanelInstance };
+function setMixpanelUserId() {
+  const userId = getUserId();
+
+  mixpanelInstance?.identify(userId);
+}
+
+export { mixpanelInstance, setMixpanelUserId };

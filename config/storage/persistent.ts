@@ -1,4 +1,5 @@
 import { MAX_HORIZONTAL_SCROLLVIEW_POSTS } from "@/common/constants";
+import { deleteImage } from "@/common/utils/files";
 import { getRandomPick, getSortedTags } from "@/screens/search/search.util";
 import { removePostService, savePostService } from "@/services/posts.service";
 import { PostType } from "@/types/posts";
@@ -114,6 +115,7 @@ export const updatePost = async (post: PostType): Promise<void> => {
 export const removePost = async (post: PostType): Promise<void> => {
   const appAuthType = getAppAuthType();
   removePostById(post);
+  deleteImage(post.thumbnail);
 
   if (appAuthType === "google" || appAuthType === "apple") {
     try {

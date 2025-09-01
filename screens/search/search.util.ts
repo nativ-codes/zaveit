@@ -75,9 +75,11 @@ type GetPostsForTagType = {
 export const getPostsForTag = ({ posts, tag }: GetPostsForTagType) => {
   if (!posts || posts.length === 0) return [];
 
-  return posts.filter(
+  const filteredPosts = posts.filter(
     (post: PostType) => post.tags && post.tags.includes(tag)
   );
+
+  return [...filteredPosts].reverse();
 };
 
 export const getRandomPick = (posts: PostType[]) => {

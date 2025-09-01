@@ -1,5 +1,6 @@
 import { SCREEN_OPTIONS } from "@/common/constants";
 import { useShareIntent } from "@/common/utils";
+import { setMixpanelUserId } from "@/config/analytics";
 import { useAuth } from "@/config/contexts/auth.context";
 import { useAppAuthType } from "@/config/storage/auth";
 import { router, Stack } from "expo-router";
@@ -20,9 +21,9 @@ function MainStack() {
   useEffect(() => {
     if (isMounted && !isLoading) {
       if (isAuthenticated || Boolean(appAuthType)) {
+        setMixpanelUserId();
         router.replace("/");
       } else {
-        console.log("redirecting to login");
         router.replace("/login");
       }
     }

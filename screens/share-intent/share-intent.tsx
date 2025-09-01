@@ -12,6 +12,7 @@ import * as Burnt from "burnt";
 
 import { GeneralStyles } from "@/common/styles";
 import { getDomainFromUrl } from "@/common/utils";
+import { saveImageFromUrl } from "@/common/utils/files";
 import { Analytics } from "@/config/analytics";
 import { useRouter } from "expo-router";
 import { useShareIntentContext } from "expo-share-intent";
@@ -42,6 +43,10 @@ function ShareIntentScreen() {
     selectedMainTags: [],
     mainTags: [],
   });
+  const [isLoading, setIsLoading] = useState(false);
+
+  const isSaveDisabled = !Boolean(tags.selectedMainTags.length) || isLoading;
+  const isSaveLoading = !Boolean(tags.mainTags.length) || isLoading;
 
   const handleOnError = (error: Error) => {
     console.error(safelyPrintError(error));
@@ -82,17 +87,21 @@ function ShareIntentScreen() {
   const handleSave = async () => {
     try {
       if (postMetadata?.url) {
+        const postId = uuid();
+        
         const post: PostType = {
           id: uuid(),
           url: postMetadata?.url || "",
           title: postMetadata?.title || "",
           author: postMetadata?.author || "",
-          thumbnail: postMetadata?.thumbnail || "",
+          thumbnail: await saveImageFromUrl(postMetadata?.thumbnail, postId) || "",
           tags: [...tags.selectedMainTags, ...tags.selectedAdditionalTags],
           timestamp: Date.now(),
           updatedAt: Date.now(),
         };
+        setIsLoading(true);
         await savePost(post);
+        setIsLoading(false);
 
         Analytics.sendEvent(Analytics.events.zaved_post, {
           platform: getDomainFromUrl(postMetadata?.url || ""),
@@ -139,11 +148,11 @@ function ShareIntentScreen() {
       footer={
         <Spacer gap="s16" direction="horizontal" size="s16">
           <Button
-            label="Zave IT"
+            label="ZaveIt"
             type="primary"
             onPress={handleSave}
-            isDisabled={!Boolean(tags.selectedMainTags.length)}
-            isLoading={!Boolean(tags.mainTags.length)}
+            isDisabled={isSaveDisabled}
+            isLoading={isSaveLoading}
           />
         </Spacer>
       }
