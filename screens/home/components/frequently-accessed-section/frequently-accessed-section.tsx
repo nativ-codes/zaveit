@@ -3,7 +3,7 @@ import {
   PreviewPostCard,
 } from "@/common/components";
 import { Units } from "@/common/constants";
-import { useFrequentlyAccessedPosts } from "@/config/storage/persistent";
+import { useFrequentlyAccessedPosts } from "@/config/storage";
 import React from "react";
 import { FrequentlyAccessedSectionPropsType } from "./frequently-accessed-section.type";
 

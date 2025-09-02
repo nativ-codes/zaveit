@@ -6,7 +6,7 @@ import {
 } from "@/common/components";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { safelyPrintError, toggleTag } from "@/common/utils/misc";
-import { savePost } from "@/config/storage/persistent";
+import { savePost } from "@/config/storage";
 import { PostMetadataType, PostType } from "@/types";
 import * as Burnt from "burnt";
 

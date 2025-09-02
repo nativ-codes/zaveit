@@ -1,4 +1,4 @@
-import { getPosts, updatePost } from "@/config/storage/persistent";
+import { getPosts, updatePost } from "@/config/storage";
 import { getMetadata } from "@/screens/share-intent/share-intent.utils";
 import { useRouter } from "expo-router";
 import { useShareIntentContext } from "expo-share-intent";

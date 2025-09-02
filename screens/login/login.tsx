@@ -3,13 +3,14 @@ import { Units } from "@/common/constants";
 import { Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { Analytics } from "@/config/analytics";
-import { AppAuthType, setAppAuthType, setInitialUserId } from "@/config/storage/auth";
+import { setAppAuthType, setInitialUserId } from "@/config/storage";
 import { signInWithApple } from "@/services/apple-auth.service";
 import {
   initializeGoogleSignIn,
   signInWithGoogle,
 } from "@/services/google-auth.service";
 import { syncPosts } from "@/services/posts.service";
+import { AppAuthType } from "@/types";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import React, { useEffect } from "react";

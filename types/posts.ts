@@ -23,4 +23,13 @@ export type PostType = {
   tags: string[];
 };
 
+export type FrequentlyAccessedPostsType = Record<string, number>;
+
+export type ThumbnailUrlsType = Record<string, ThumbnailType>;
+
+export type ThumbnailType = {
+  id: string;
+  url: string;
+};
+
 export type PostMetadataType = Omit<PostType, "id" | "timestamp" | "tags" | "updatedAt">;

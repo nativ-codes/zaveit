@@ -1,4 +1,4 @@
-import { getPosts, savePosts, updatePost } from "@/config/storage/persistent";
+import { getPosts, savePosts, updatePost } from "@/config/storage";
 import { checkSocialPlatform, getMetadata } from "@/screens/share-intent/share-intent.utils";
 import { PostType } from "@/types";
 import auth from "@react-native-firebase/auth";

@@ -2,7 +2,7 @@ import { SCREEN_OPTIONS } from "@/common/constants";
 import { useShareIntent } from "@/common/utils";
 import { setMixpanelUserId } from "@/config/analytics";
 import { useAuth } from "@/config/contexts/auth.context";
-import { useAppAuthType } from "@/config/storage/auth";
+import { useAppAuthType } from "@/config/storage";
 import { router, Stack } from "expo-router";
 import { useEffect, useState } from "react";
 

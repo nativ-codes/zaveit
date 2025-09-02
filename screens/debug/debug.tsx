@@ -1,11 +1,12 @@
 import { Menu, TopBar } from "@/common/components";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
-import { setAppAuthType } from "@/config/storage/auth";
+import { deleteAllImages } from "@/common/utils/files";
 import {
   clearAllData,
   removeDuplicatePosts,
-} from "@/config/storage/persistent";
+  setAppAuthType,
+} from "@/config/storage";
 import React from "react";
 import { Text } from "react-native";
 
@@ -32,6 +33,7 @@ function DebugScreen() {
       <Spacer direction="horizontal" size="s16" gap="s32">
         <Menu>
           <Menu.Item onPress={clearAllData} label="Clear all data" />
+          <Menu.Item onPress={deleteAllImages} label="Delete all images" />
           <Menu.Item onPress={removeDuplicatePosts} label="Remove duplicate posts" />
           <Menu.Item onPress={handleOnAuthType} label="Reset appAuthType" />
           <Menu.Item

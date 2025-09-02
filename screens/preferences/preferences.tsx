@@ -2,10 +2,7 @@ import { Menu, TopBar } from "@/common/components";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { Analytics } from "@/config/analytics";
-import {
-  setIsAnalyticsEnabled,
-  useIsAnalyticsEnabled,
-} from "@/config/storage/persistent";
+import { setIsAnalyticsEnabled, useIsAnalyticsEnabled } from "@/config/storage";
 
 import React from "react";
 import { Switch, Text } from "react-native";

@@ -3,7 +3,7 @@ import { Units } from "@/common/constants";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { idExtractor } from "@/common/utils";
-import { usePosts } from "@/config/storage/persistent";
+import { usePosts } from "@/config/storage";
 import { PostType } from "@/types";
 import { FlashList } from "@shopify/flash-list";
 import { useRouter } from "expo-router";

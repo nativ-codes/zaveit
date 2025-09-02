@@ -10,7 +10,7 @@ import {
   increasePostAccessCount,
   removePost,
   usePosts,
-} from "@/config/storage/persistent";
+} from "@/config/storage";
 import { PostType } from "@/types";
 import * as Linking from "expo-linking";
 import { router, useLocalSearchParams } from "expo-router";

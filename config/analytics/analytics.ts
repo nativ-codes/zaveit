@@ -1,5 +1,5 @@
 import { MixpanelProperties } from 'mixpanel-react-native';
-import { getIsAnalyticsEnabled } from '../storage/persistent';
+import { getIsAnalyticsEnabled } from '../storage/preferences';
 import { mixpanelInstance } from './mixpanel';
 
 enum EventTypeEnum {

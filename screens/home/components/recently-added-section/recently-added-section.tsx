@@ -3,7 +3,7 @@ import {
   PreviewPostCard,
 } from "@/common/components";
 import { Units } from "@/common/constants/units";
-import { useRecentlyAddedPosts } from "@/config/storage/persistent";
+import { useRecentlyAddedPosts } from "@/config/storage";
 import React from "react";
 import { RecentlyAddedSectionPropsType } from "./recently-added-section.type";
 

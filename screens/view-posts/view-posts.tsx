@@ -1,7 +1,7 @@
 import { PreviewPost, TopBar } from "@/common/components";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
-import { usePosts } from "@/config/storage/persistent";
+import { usePosts } from "@/config/storage";
 import { PostType } from "@/types";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useMemo } from "react";

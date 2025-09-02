@@ -4,7 +4,7 @@ import {
   PLATFORM_CONFIGS,
 } from "@/common/constants";
 import { getIsEmpty } from "@/common/utils";
-import { getTags } from "@/config/storage/persistent";
+import { getTags } from "@/config/storage";
 import { getSuggestedTags } from "@/services/general.service";
 import { PlatformConfig, PostMetadataType, SocialPlatform } from "@/types";
 import { ShareIntent } from "expo-share-intent";

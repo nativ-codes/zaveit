@@ -1,7 +1,7 @@
 import { EmptyPlaceholder, TopBar } from "@/common/components";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
-import { useHasPosts } from "@/config/storage/persistent";
+import { useHasPosts } from "@/config/storage";
 import { router } from "expo-router";
 import React from "react";
 import { Text } from "react-native";
