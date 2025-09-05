@@ -1,9 +1,10 @@
 import { Menu, TopBar } from "@/common/components";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
-import { noop } from "@/common/utils";
+import { noop, safelyPrintError } from "@/common/utils";
 import { Analytics } from "@/config/analytics";
 import { useAuth } from "@/config/contexts/auth.context";
+import { ErrorHandler } from "@/config/errors";
 import { clearAllData, setAppAuthType } from "@/config/storage";
 import { signOut } from "@/services/google-auth.service";
 import { deleteUser } from "@/services/users.service";
@@ -56,7 +57,10 @@ function SettingsScreen() {
       clearAllData();
       await signOut();
     } catch (error) {
-      console.error("Error signing out:", error);
+      ErrorHandler.logError({
+        location: "logOut",
+        error: safelyPrintError(error),
+      });
     }
   };
 
@@ -77,7 +81,10 @@ function SettingsScreen() {
               await deleteUser();
               Analytics.sendEvent(Analytics.events.remove_account);
             } catch (error) {
-              console.error("Error deleting user:", error);
+              ErrorHandler.logError({
+                location: "handleOnRemoveAccount",
+                error: safelyPrintError(error),
+              });
             } finally {
               logOut();
             }

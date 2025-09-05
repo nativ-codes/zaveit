@@ -1,14 +1,16 @@
 import { ACTIVE_OPACITY, TWO_SECONDS, Units } from "@/common/constants";
 import { Colors } from "@/common/constants/colors";
+import PostImage from "@/common/containers/post-image/post-image";
 import { Row, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
-import { formatTimestampToDateString, useRefreshPost } from "@/common/utils";
+import { formatTimestampToDateString, safelyPrintError } from "@/common/utils";
+import { ErrorHandler } from "@/config/errors";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import * as Burnt from "burnt";
 import * as Clipboard from "expo-clipboard";
 import { router } from "expo-router";
 import React from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import TagItem from "../tag-item/tag-item";
 import styles from "./post-details.style";
 import { PostDetailsPropsType } from "./post-details.type";
@@ -18,12 +20,9 @@ function PostDetails({
   title,
   author,
   url,
-  thumbnail,
   tags,
   timestamp,
 }: PostDetailsPropsType) {
-  const handleOnError = useRefreshPost(id);
-
   const handleOnTagPress = (tag: string) => {
     router.push({
       pathname: "/view-posts",
@@ -42,20 +41,16 @@ function PostDetails({
         haptic: "success",
       });
     } catch (error) {
-      console.error("Error copying to clipboard:", error);
+      ErrorHandler.logError({
+        location: "handleOnCopyToClipboard",
+        error: safelyPrintError(error),
+      });
     }
   };
 
   return (
     <Spacer gap="s16">
-      {thumbnail && (
-        <Image
-          source={{ uri: thumbnail }}
-          onError={handleOnError}
-          style={styles.image}
-          resizeMode="cover"
-        />
-      )}
+      <PostImage id={id} style={styles.image} />
       <Spacer direction="horizontal" size="s16" gap="s16">
         <Spacer gap="s8">
           {title && (

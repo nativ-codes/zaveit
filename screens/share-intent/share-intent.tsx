@@ -14,6 +14,7 @@ import { GeneralStyles } from "@/common/styles";
 import { getDomainFromUrl } from "@/common/utils";
 import { saveImageFromUrl } from "@/common/utils/files";
 import { Analytics } from "@/config/analytics";
+import { ErrorHandler } from "@/config/errors";
 import { useRouter } from "expo-router";
 import { useShareIntentContext } from "expo-share-intent";
 import React, { useEffect, useState } from "react";
@@ -49,7 +50,10 @@ function ShareIntentScreen() {
   const isSaveLoading = !Boolean(tags.mainTags.length) || isLoading;
 
   const handleOnError = (error: Error) => {
-    console.error(safelyPrintError(error));
+    ErrorHandler.logError({
+      location: "handleOnError",
+      error: safelyPrintError(error),
+    });
     Burnt.toast({
       title: "Unable to fetch metadata",
       message: "Please try again later.",
@@ -59,7 +63,6 @@ function ShareIntentScreen() {
     });
     resetShareIntent();
     router.replace("/");
-    // TODO: Add error logging
   };
 
   useEffect(() => {
@@ -88,13 +91,14 @@ function ShareIntentScreen() {
     try {
       if (postMetadata?.url) {
         const postId = uuid();
-        
+
         const post: PostType = {
           id: uuid(),
           url: postMetadata?.url || "",
           title: postMetadata?.title || "",
           author: postMetadata?.author || "",
-          thumbnail: await saveImageFromUrl(postMetadata?.thumbnail, postId) || "",
+          thumbnail:
+            (await saveImageFromUrl(postMetadata?.thumbnail, postId)) || "",
           tags: [...tags.selectedMainTags, ...tags.selectedAdditionalTags],
           timestamp: Date.now(),
           updatedAt: Date.now(),

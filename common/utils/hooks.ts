@@ -1,9 +1,11 @@
+import { ErrorHandler } from "@/config/errors";
 import { getPosts, updatePost } from "@/config/storage";
 import { getMetadata } from "@/screens/share-intent/share-intent.utils";
 import { useRouter } from "expo-router";
 import { useShareIntentContext } from "expo-share-intent";
 import { useEffect, useState } from "react";
 import { saveImageFromUrl } from "./files";
+import { safelyPrintError } from "./misc";
 
 export const useShareIntent = () => {
   const router = useRouter();
@@ -42,7 +44,13 @@ export const useRefreshPost = (id: string) => {
           });
         }
       } catch (error) {
-        console.error("Error refreshing post", error);
+        ErrorHandler.logError({
+          location: "handleRefreshPost",
+          error: safelyPrintError(error),
+          metadata: {
+            id,
+          },
+        });
       } finally {
         console.log("Refreshed post", id);
       }

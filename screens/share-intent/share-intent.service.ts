@@ -1,4 +1,5 @@
 import { safelyPrintError } from "@/common/utils";
+import { ErrorHandler } from "@/config/errors";
 import {
   fetchLinkPreview,
   fetchLocalLinkPreview,
@@ -51,7 +52,13 @@ export const getOEmbedMetadata = async ({
       url: url || "",
     };
   } catch (error) {
-    console.log("getOEmbedMetadata", safelyPrintError(error));
+    ErrorHandler.logError({
+      location: "getOEmbedMetadata",
+      error: safelyPrintError(error),
+      metadata: {
+        url,
+      },
+    });
     return undefined;
   }
 };
@@ -76,7 +83,13 @@ export const getLinkPreviewMetadata = async ({
       url: url || "",
     };
   } catch (error) {
-    console.log("getLinkPreviewMetadata", safelyPrintError(error));
+    ErrorHandler.logError({
+      location: "getLinkPreviewMetadata",
+      error: safelyPrintError(error),
+      metadata: {
+        url,
+      },
+    });
     return undefined;
   }
 };
@@ -109,7 +122,13 @@ export const getLocalLinkPreviewMetadata = async ({
       thumbnail: data.thumbnail || data.image || "",
     };
   } catch (error) {
-    console.log("getLocalLinkPreviewMetadata", safelyPrintError(error));
+    ErrorHandler.logError({
+      location: "getLocalLinkPreviewMetadata",
+      error: safelyPrintError(error),
+      metadata: {
+        url,
+      },
+    });
     return undefined;
   }
 };

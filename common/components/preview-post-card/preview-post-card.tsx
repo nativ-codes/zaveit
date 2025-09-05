@@ -1,9 +1,9 @@
-import { IMAGE_PLACEHOLDER, MAX_TAGS_LENGTH } from "@/common/constants";
+import { MAX_TAGS_LENGTH } from "@/common/constants";
 import { ACTIVE_OPACITY } from "@/common/constants/ui";
+import PostImage from "@/common/containers/post-image/post-image";
 import { Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
-import { getDomainFromUrl, useRefreshPost } from "@/common/utils";
-import { Image } from "expo-image";
+import { getDomainFromUrl } from "@/common/utils";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import TagItem from "../tag-item/tag-item";
@@ -14,12 +14,10 @@ function PreviewPostCard({
   id,
   url,
   title,
-  thumbnail,
   tags,
   onPress,
 }: PreviewPostCardPropsType) {
   const domain = getDomainFromUrl(url);
-  const onError = useRefreshPost(id);
 
   return (
     <TouchableOpacity
@@ -29,13 +27,9 @@ function PreviewPostCard({
       accessibilityRole="button"
       accessibilityLabel={`View details for ${title || url}`}
     >
-      <Image
-        source={{ uri: thumbnail }}
-        placeholder={IMAGE_PLACEHOLDER}
+      <PostImage
+        id={id}
         style={styles.image}
-        contentFit="cover"
-        accessibilityLabel="Thumbnail image"
-        onError={onError}
       />
 
       <Spacer direction="full" size="s8" gap="s4">

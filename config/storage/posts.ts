@@ -1,6 +1,8 @@
+import { safelyPrintError } from "@/common/utils";
 import { deleteAllImages, deleteImage } from "@/common/utils/files";
 import { removePostService, savePostService } from "@/services/posts.service";
 import { FrequentlyAccessedPostsType, PostType } from "@/types/posts";
+import { ErrorHandler } from "../errors";
 import { getAppAuthType } from "./auth";
 import { storage } from "./storage";
 
@@ -40,10 +42,12 @@ export const savePost = async (post: PostType): Promise<void> => {
     try {
       await savePostService(post);
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      console.error("[Posts Service] Error saving post:", {
-        error: errorMessage,
+      ErrorHandler.logError({
+        location: "savePost",
+        error: safelyPrintError(error),
+        metadata: {
+          post,
+        },
       });
     }
   }
@@ -65,10 +69,12 @@ export const removePost = async (post: PostType): Promise<void> => {
     try {
       await removePostService(post);
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      console.error("[Posts Service] Error removing post:", {
-        error: errorMessage,
+      ErrorHandler.logError({
+        location: "removePost",
+        error: safelyPrintError(error),
+        metadata: {
+          post,
+        },
       });
     }
   }

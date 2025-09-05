@@ -2,7 +2,9 @@ import { Button } from "@/common/components";
 import { Units } from "@/common/constants";
 import { Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
+import { safelyPrintError } from "@/common/utils";
 import { Analytics } from "@/config/analytics";
+import { ErrorHandler } from "@/config/errors";
 import { setAppAuthType, setInitialUserId } from "@/config/storage";
 import { signInWithApple } from "@/services/apple-auth.service";
 import {
@@ -46,7 +48,13 @@ function LoginScreen() {
         console.error("Sign in failed");
       }
     } catch (error) {
-      console.error("Login error:", error);
+      ErrorHandler.logError({
+        location: "handleSignIn",
+        error: safelyPrintError(error),
+        metadata: {
+          authType,
+        },
+      });
     }
   };
 

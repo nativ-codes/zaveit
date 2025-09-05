@@ -47,7 +47,6 @@ export const signInWithGoogle = async (): Promise<UserUUIDType | null> => {
 
     return null;
   } catch (error: any) {
-    console.error("[Google Auth] Error during sign in:", error);
     throw {
       code: error.code,
       message: error.message,
@@ -61,7 +60,6 @@ export const signOut = async () => {
     await GoogleSignin.revokeAccess();
     await auth().signOut();
   } catch (error) {
-    console.error("[Google Auth] Error during sign out:", error);
     throw error;
   }
 };

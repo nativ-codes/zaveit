@@ -3,6 +3,8 @@ import { Colors } from "@/common/constants/colors";
 import { Units } from "@/common/constants/units";
 import { Row, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
+import { safelyPrintError } from "@/common/utils";
+import { ErrorHandler } from "@/config/errors";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import * as Burnt from "burnt";
 import * as Clipboard from "expo-clipboard";
@@ -37,7 +39,10 @@ function UpdatePostDetails({
         haptic: "success",
       });
     } catch (error) {
-      console.error("Error copying to clipboard:", error);
+      ErrorHandler.logError({
+        location: "handleOnCopyToClipboard",
+        error: safelyPrintError(error),
+      });
     }
   };
 

@@ -1,5 +1,5 @@
+import { getUserId } from "@/config/storage";
 import { Mixpanel } from "mixpanel-react-native";
-import { getUserId } from "../storage/auth";
 
 const trackAutomaticEvents = false;
 

@@ -1,6 +1,8 @@
+import { safelyPrintError } from '@/common/utils';
 import { UserType } from '@/services/users.service';
 import auth from '@react-native-firebase/auth';
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { ErrorHandler } from '../errors';
 
 type AuthContextType = {
   user: UserType | null;
@@ -38,7 +40,10 @@ function AuthProvider({ children }: AuthProviderPropsType) {
           setIsAuthenticated(false);
         }
       } catch (error) {
-        console.error('[Auth Context] Error handling user data:', error);
+        ErrorHandler.logError({
+          location: "handleAuthStateChanged",
+          error: safelyPrintError(error),
+        });
         setUser(null);
         setIsAuthenticated(false);
       } finally {

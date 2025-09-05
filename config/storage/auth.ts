@@ -14,6 +14,7 @@ export const setAppAuthType = (appAuthType?: AppAuthType) => {
 
 export const setInitialUserId = () => {
   const newUserId = uuid();
+  console.log("newUserId", newUserId, storage);
   storage.set("userId", newUserId);
 
   return newUserId;

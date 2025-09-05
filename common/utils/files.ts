@@ -1,4 +1,6 @@
+import { ErrorHandler } from "@/config/errors";
 import * as FileSystem from "expo-file-system";
+import { safelyPrintError } from "./misc";
 
 export const saveImageFromUrl = async (url: string, id: string) => {
   const localUri = `${FileSystem.documentDirectory}${id}.jpg`;
@@ -13,8 +15,14 @@ export const saveImageFromUrl = async (url: string, id: string) => {
     await FileSystem.downloadAsync(url, localUri);
 
     return localUri;
-  } catch (e) {
-    console.error("Image download failed", e);
+  } catch (error) {
+    ErrorHandler.logError({
+      location: "saveImageFromUrl",
+      error: safelyPrintError(error),
+      metadata: {
+        url,
+      },
+    });
     return null;
   }
 }
@@ -22,8 +30,14 @@ export const saveImageFromUrl = async (url: string, id: string) => {
 export const deleteImage = async (localUri: string) => {
   try {
     await FileSystem.deleteAsync(localUri, { idempotent: true });
-  } catch (e) {
-    console.error("Error deleting file:", e);
+  } catch (error) {
+    ErrorHandler.logError({
+      location: "deleteImage",
+      error: safelyPrintError(error),
+      metadata: {
+        localUri,
+      },
+    });
   }
 }
 
@@ -32,7 +46,10 @@ export const deleteAllImages = async () => {
     await FileSystem.deleteAsync(FileSystem.documentDirectory as string, {
       idempotent: true,
     });
-  } catch (e) {
-    console.error("Error deleting all files:", e);
+  } catch (error) {
+    ErrorHandler.logError({
+      location: "deleteAllImages",
+      error: safelyPrintError(error),
+    });
   }
 };

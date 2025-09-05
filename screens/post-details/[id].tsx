@@ -6,6 +6,8 @@ import {
 } from "@/common/components";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
+import { safelyPrintError } from "@/common/utils";
+import { ErrorHandler } from "@/config/errors";
 import {
   increasePostAccessCount,
   removePost,
@@ -37,7 +39,13 @@ function PostDetailsScreen() {
     try {
       await Linking.openURL(post.url);
     } catch (error) {
-      console.error("Error opening URL in browser:", error);
+      ErrorHandler.logError({
+        location: "handleOpenInBrowser",
+        error: safelyPrintError(error),
+        metadata: {
+          post,
+        },
+      });
     }
   };
 
