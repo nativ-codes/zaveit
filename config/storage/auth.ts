@@ -5,10 +5,13 @@ import { storage } from "./storage";
 export const getAppAuthType = (): AppAuthType => {
   const appAuthType = storage.getString("appAuthType");
 
+  console.log(">> ! getAppAuthType", appAuthType);
+
   return appAuthType as AppAuthType;
 };
 
 export const setAppAuthType = (appAuthType?: AppAuthType) => {
+  console.log(">> ! setAppAuthType", appAuthType);
   storage.set("appAuthType", appAuthType || "");
 };
 

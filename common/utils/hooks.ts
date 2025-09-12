@@ -4,8 +4,8 @@ import { getMetadata } from "@/screens/share-intent/share-intent.utils";
 import { useRouter } from "expo-router";
 import { useShareIntentContext } from "expo-share-intent";
 import { useEffect, useState } from "react";
+import { safelyPrintError } from "./error-parsers";
 import { saveImageFromUrl } from "./files";
-import { safelyPrintError } from "./misc";
 
 export const useShareIntent = () => {
   const router = useRouter();

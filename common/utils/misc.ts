@@ -1,6 +1,7 @@
 import { ErrorHandler } from "@/config/errors";
 import { getPosts, setThumbnailUrl } from "@/config/storage";
 import { getMetadata } from "@/screens/share-intent/share-intent.utils";
+import { safelyPrintError } from "./error-parsers";
 import { saveImageFromUrl } from "./files";
 
 export const noop = () => {};
@@ -12,14 +13,6 @@ type ToggleTagType = {
 
 export const toggleTag = ({ tags, tag }: ToggleTagType) =>
   tags.includes(tag) ? tags.filter((t) => t !== tag) : [...(tags || []), tag];
-
-export const safelyPrintError = (
-  error: any,
-  defaultMessage: string = ""
-): string =>
-  typeof error === "string"
-    ? error
-    : error?.message || defaultMessage || "An error occurred";
 
 export const updateThumbnail = async (id: string): Promise<string> => {
   const posts = getPosts();
@@ -35,9 +28,7 @@ export const updateThumbnail = async (id: string): Promise<string> => {
     });
 
     if (metadata) {
-      console.log(">> metadata", metadata.thumbnail);
       const thumbnailUrl = (await saveImageFromUrl(metadata.thumbnail, post.id)) || "";
-      console.log(">> thumbnailUrl", thumbnailUrl);
       setThumbnailUrl({id, url: thumbnailUrl});
       
       return thumbnailUrl;

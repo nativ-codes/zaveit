@@ -1,3 +1,6 @@
+// prettier-ignore
+import '@/config/storage/storage';
+
 import MainStack from "@/common/containers/main-stack/main-stack";
 import AuthProvider from "@/config/contexts/auth.context";
 import { useFonts } from "expo-font";

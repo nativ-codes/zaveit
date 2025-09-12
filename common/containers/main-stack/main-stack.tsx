@@ -11,6 +11,7 @@ function MainStack() {
   const appAuthType = useAppAuthType();
 
   const [isMounted, setIsMounted] = useState(false);
+  const shouldBeRedirectedToHome = isAuthenticated || Boolean(appAuthType);
 
   useShareIntent();
 
@@ -20,14 +21,15 @@ function MainStack() {
 
   useEffect(() => {
     if (isMounted && !isLoading) {
-      if (isAuthenticated || Boolean(appAuthType)) {
+      if (shouldBeRedirectedToHome) {
+        console.log(">> ! shouldBeRedirectedToHome");
         setMixpanelUserId();
         router.replace("/");
       } else {
         router.replace("/login");
       }
     }
-  }, [isAuthenticated, isLoading, isMounted, appAuthType]);
+  }, [shouldBeRedirectedToHome, isLoading, isMounted]);
 
   return (
     <Stack screenOptions={SCREEN_OPTIONS}>

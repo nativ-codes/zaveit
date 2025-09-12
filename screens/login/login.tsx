@@ -11,7 +11,7 @@ import {
   initializeGoogleSignIn,
   signInWithGoogle,
 } from "@/services/google-auth.service";
-import { syncPosts } from "@/services/posts.service";
+import { syncPosts } from "@/services/login.service";
 import { AppAuthType } from "@/types";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";

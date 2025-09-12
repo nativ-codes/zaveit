@@ -1,4 +1,4 @@
-import { safelyPrintError } from "@/common/utils";
+import { safelyPrintError } from "@/common/utils/error-parsers";
 import { deleteAllImages, deleteImage } from "@/common/utils/files";
 import { removePostService, savePostService } from "@/services/posts.service";
 import { FrequentlyAccessedPostsType, PostType } from "@/types/posts";

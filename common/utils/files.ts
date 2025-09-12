@@ -1,6 +1,6 @@
 import { ErrorHandler } from "@/config/errors";
 import * as FileSystem from "expo-file-system";
-import { safelyPrintError } from "./misc";
+import { safelyPrintError } from "./error-parsers";
 
 export const saveImageFromUrl = async (url: string, id: string) => {
   const localUri = `${FileSystem.documentDirectory}${id}.jpg`;

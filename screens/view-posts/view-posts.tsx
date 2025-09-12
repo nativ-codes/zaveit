@@ -23,9 +23,9 @@ function ViewPostsScreen() {
   const renderItem = (post: PostType) => (
     <PreviewPost
       key={post.id}
+      id={post.id}
       url={post.url}
       title={post.title}
-      thumbnail={post.thumbnail}
       tags={post.tags}
       onPress={() =>
         router.push({

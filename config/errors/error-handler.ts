@@ -1,4 +1,4 @@
-import { safelyPrintError } from "@/common/utils";
+import { safelyPrintError } from "@/common/utils/error-parsers";
 
 type LogErrorType = {
   location: string;

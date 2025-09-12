@@ -20,6 +20,7 @@ export const getPreferences = (): PreferencesType => {
 export const setIsAnalyticsEnabled = (isAnalyticsEnabled: boolean): void => {
   const preferences = getPreferences();
   preferences.isAnalyticsEnabled = isAnalyticsEnabled;
+  console.log(">> ! preferences", preferences);
   storage.set("preferences", JSON.stringify(preferences));
 };
 

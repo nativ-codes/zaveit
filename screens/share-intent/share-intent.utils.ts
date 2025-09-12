@@ -3,7 +3,9 @@ import {
   MAIN_TAGS,
   PLATFORM_CONFIGS,
 } from "@/common/constants";
-import { getIsEmpty } from "@/common/utils";
+import { safelyPrintError } from "@/common/utils/error-parsers";
+import { getIsEmpty } from "@/common/utils/validators";
+import { ErrorHandler } from "@/config/errors";
 import { getTags } from "@/config/storage";
 import { getSuggestedTags } from "@/services/general.service";
 import { PlatformConfig, PostMetadataType, SocialPlatform } from "@/types";
@@ -103,10 +105,10 @@ export const getMetadata = async (
 
     if (data) {
       return data;
-    }
+    } 
   }
 
-  if (!getIsEmpty(shareIntent.meta)) {
+  if (shareIntent?.meta && !getIsEmpty(shareIntent?.meta)) {
     return {
       url: shareIntent.webUrl || "",
       title: shareIntent.meta?.title || shareIntent.webUrl || "",
@@ -141,5 +143,12 @@ export const getMetadata = async (
     };
   }
 
+  ErrorHandler.logError({
+    location: "getMetadata",
+    error: safelyPrintError(new Error("URL not supported")),
+    metadata: {
+      url: shareIntent.webUrl,
+    },
+  });
   throw new Error("URL not supported");
 };
