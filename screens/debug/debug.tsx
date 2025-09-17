@@ -13,13 +13,11 @@ import { Text } from "react-native";
 import { useMMKVString } from "react-native-mmkv";
 
 function DebugScreen() {
+  const [name, setName] = useMMKVString("name", storage);
 
-    const [name, setName] = useMMKVString("name", storage);
-
-    const handleOnNameChange = () => {
-      setName(Math.random().toString());
-    };
-
+  const handleOnNameChange = () => {
+    setName(Math.random().toString());
+  };
 
   const handleOnAuthType = () => {
     setAppAuthType();
@@ -42,10 +40,7 @@ function DebugScreen() {
       </Spacer>
       <Spacer direction="horizontal" size="s16" gap="s32">
         <Menu>
-          <Menu.Item
-            onPress={handleOnNameChange}
-            label={`Random: ${name}`}
-          />
+          <Menu.Item onPress={handleOnNameChange} label={`Random: ${name}`} />
           <Menu.Item onPress={clearAllData} label="Clear all data" />
           <Menu.Item onPress={deleteAllImages} label="Delete all images" />
           <Menu.Item

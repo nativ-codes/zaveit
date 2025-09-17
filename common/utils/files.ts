@@ -4,6 +4,7 @@ import { safelyPrintError } from "./error-parsers";
 
 export const saveImageFromUrl = async (url: string, id: string) => {
   const localUri = `${FileSystem.documentDirectory}${id}.jpg`;
+  console.log("localUri", FileSystem.documentDirectory);
 
   try {
     // Ensure the directory exists before downloading

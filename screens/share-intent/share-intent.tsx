@@ -5,7 +5,8 @@ import {
   UpdatePostDetails,
 } from "@/common/components";
 import { ScreenLayout, Spacer } from "@/common/layouts";
-import { safelyPrintError, toggleTag } from "@/common/utils/misc";
+import { safelyPrintError } from "@/common/utils/error-parsers";
+import { toggleTag } from "@/common/utils/misc";
 import { savePost } from "@/config/storage";
 import { PostMetadataType, PostType } from "@/types";
 import * as Burnt from "burnt";
@@ -101,7 +102,6 @@ function ShareIntentScreen() {
             (await saveImageFromUrl(postMetadata?.thumbnail, postId)) || "",
           tags: [...tags.selectedMainTags, ...tags.selectedAdditionalTags],
           timestamp: Date.now(),
-          updatedAt: Date.now(),
         };
         setIsLoading(true);
         await savePost(post);

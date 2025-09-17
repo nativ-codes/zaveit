@@ -19,7 +19,6 @@ export type PostType = {
   author: string;
   thumbnail: string;
   timestamp: number;
-  updatedAt: number;
   tags: string[];
 };
 
@@ -32,4 +31,4 @@ export type ThumbnailType = {
   url: string;
 };
 
-export type PostMetadataType = Omit<PostType, "id" | "timestamp" | "tags" | "updatedAt">;
+export type PostMetadataType = Omit<PostType, "id" | "timestamp" | "tags">;
