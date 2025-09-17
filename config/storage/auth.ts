@@ -11,14 +11,14 @@ export const getAppAuthType = (): AppAuthType => {
 };
 
 export const setAppAuthType = (appAuthType?: AppAuthType) => {
-  console.log(">> ! setAppAuthType", appAuthType);
   storage.set("appAuthType", appAuthType || "");
+  console.log(">> ! setAppAuthType", storage);
 };
 
 export const setInitialUserId = () => {
   const newUserId = uuid();
-  console.log("newUserId", newUserId, storage);
-  storage.set("userId", newUserId);
+  // storage.set("userId", newUserId);
+  console.log("newUserId", storage);
 
   return newUserId;
 };

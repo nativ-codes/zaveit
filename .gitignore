@@ -45,3 +45,4 @@ keys/
 core/
 general.service.ts
 mcp.json
+.cursor/mcp.json

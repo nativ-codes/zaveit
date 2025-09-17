@@ -1,5 +1,5 @@
 // prettier-ignore
-import '@/config/storage/storage';
+import "@/config/storage/storage";
 
 import MainStack from "@/common/containers/main-stack/main-stack";
 import AuthProvider from "@/config/contexts/auth.context";
@@ -9,6 +9,11 @@ import { StatusBar } from "expo-status-bar";
 import "react-native-get-random-values";
 import "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+
+if (__DEV__) {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  require("../dev/reactotron-config");
+}
 
 export default function RootLayout() {
   const [loaded] = useFonts({

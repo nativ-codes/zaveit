@@ -43,9 +43,20 @@ export const deleteImage = async (localUri: string) => {
 
 export const deleteAllImages = async () => {
   try {
-    await FileSystem.deleteAsync(FileSystem.documentDirectory as string, {
-      idempotent: true,
-    });
+    const directoryInfo = await FileSystem.getInfoAsync(FileSystem.documentDirectory as string);
+    
+    if (directoryInfo.exists) {
+      const files = await FileSystem.readDirectoryAsync(FileSystem.documentDirectory as string);
+      const imageFiles = files.filter(file => file.endsWith('.jpg'));
+      
+      await Promise.all(
+        imageFiles.map(file => 
+          FileSystem.deleteAsync(`${FileSystem.documentDirectory}${file}`, {
+            idempotent: true,
+          })
+        )
+      );
+    }
   } catch (error) {
     ErrorHandler.logError({
       location: "deleteAllImages",

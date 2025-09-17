@@ -82,6 +82,8 @@ export const removePost = async (post: PostType): Promise<void> => {
 
 export const savePosts = (posts: PostType[]): void => {
   const previousPosts = getPosts();
+  console.log("[Save Posts] Previous posts", previousPosts);
+  console.log("[Save Posts] Posts", storage);
   storage.set("posts", JSON.stringify([...previousPosts, ...posts]));
 };
 

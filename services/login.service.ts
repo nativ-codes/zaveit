@@ -57,8 +57,8 @@ export const syncPosts = async ({ uid }: SyncPostsPropsType) => {
       ...doc.data(),
     }));
 
-    console.log("[Sync Lists] Local posts");
     const localPosts = getPosts();
+    console.log("[Sync Lists] Local posts", localPosts);
     localPosts.length && savePostsService(localPosts);
 
     console.log("[Sync Lists] Found lists:", lists);
