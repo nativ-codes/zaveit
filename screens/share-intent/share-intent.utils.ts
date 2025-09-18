@@ -52,18 +52,18 @@ export const parseTags = async (
 
   // Filter suggested tags that are also in MAIN_TAGS
   const selectedMainTags = suggestedTags.filter((tag) =>
-    MAIN_TAGS.includes(tag.toLowerCase())
+    MAIN_TAGS.includes(tag.toLowerCase() as (typeof MAIN_TAGS)[number])
   );
 
   // Filter suggested tags that are NOT in MAIN_TAGS
   const selectedAdditionalTags = suggestedTags.filter(
-    (tag) => !MAIN_TAGS.includes(tag.toLowerCase())
+    (tag) => !MAIN_TAGS.includes(tag.toLowerCase() as (typeof MAIN_TAGS)[number])
   );
 
   // Filter local tags that are NOT in MAIN_TAGS and make them unique
   const localAdditionalTags = [
     ...new Set(
-      localTags.filter((tag) => !MAIN_TAGS.includes(tag.toLowerCase()))
+      localTags.filter((tag) => !MAIN_TAGS.includes(tag.toLowerCase() as (typeof MAIN_TAGS)[number]))
     ),
   ];
 
