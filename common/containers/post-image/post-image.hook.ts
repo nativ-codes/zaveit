@@ -18,6 +18,8 @@ export const useTryThumbnailUrl = (
   useEffect(() => {
     if (!thumbnailUrl) {
       updateThumbnail(id).then(setUpdatedThumbnailUrl);
+    } else {
+      setUpdatedThumbnailUrl('');
     }
   }, [id, thumbnailUrl]);
 

@@ -3,7 +3,7 @@ import { storage } from "./storage";
 
 export const setThumbnailUrl = ({ id, url }: ThumbnailType): void => {
   const thumbnailData = JSON.stringify({ id, url });
-  console.log("!!!!!!!!!>>>>", `thumbnailUrls.${id}`, thumbnailData);
+
   storage.set(`thumbnailUrls.${id}`, thumbnailData);
 };
 

@@ -93,7 +93,7 @@ function StorageViewer() {
       const isExpanded = expandedItems.has(item.key);
 
       return (
-        <>
+        <View key={item.key}>
           <Menu.Item
             label={item.key}
             description={`${item.type} • ${item.value?.length || 0} chars`}
@@ -107,7 +107,7 @@ function StorageViewer() {
               </Text>
             </View>
           )}
-        </>
+        </View>
       );
     },
     [expandedItems, toggleExpanded, formatValue]
