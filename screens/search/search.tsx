@@ -83,7 +83,7 @@ function SearchScreen() {
       {...item}
       onPress={() => {
         router.push({
-          pathname: "/post-details/[id]",
+          pathname: "/post-details",
           params: { id: item.id },
         });
       }}

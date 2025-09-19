@@ -30,9 +30,7 @@ import {
   ParseTagsReturnType,
 } from "./share-intent.utils";
 
-// TODO check if there are shareIntents
 function ShareIntentScreen() {
-  console.log("ShareIntentScreen");
   const { shareIntent, resetShareIntent } = useShareIntentContext();
   const { url } = useLocalSearchParams<ShareIntentPropsType>();
 
@@ -72,7 +70,6 @@ function ShareIntentScreen() {
 
   useEffect(() => {
     const fetchMetadata = async () => {
-      console.log("fetchMetadata", shareIntent, url);
       if (!shareIntent?.webUrl && !url) {
         return;
       }

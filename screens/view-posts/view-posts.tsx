@@ -28,7 +28,7 @@ function ViewPostsScreen() {
       onRemove={() => removePost(post)}
       onPress={() =>
         router.push({
-          pathname: "/post-details/[id]",
+          pathname: "/post-details",
           params: { id: post.id },
         })
       }

@@ -17,7 +17,7 @@ function HomeScreen() {
 
   const handleOnPostPress = (postId: string) => {
     router.push({
-      pathname: "/post-details/[id]",
+      pathname: "/post-details",
       params: { id: postId },
     });
   };

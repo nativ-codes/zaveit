@@ -20,8 +20,8 @@ import React, { useEffect } from "react";
 import { Alert, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getPostDetails } from "../search/search.util";
-import styles from "./[id].style";
-import { PostDetailsPropsType } from "./[id].type";
+import styles from "./post-details.style";
+import { PostDetailsPropsType } from "./post-details.type";
 
 function PostDetailsScreen() {
   const { id } = useLocalSearchParams<PostDetailsPropsType>();
