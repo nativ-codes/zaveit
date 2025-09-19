@@ -15,11 +15,15 @@ export const getSortedTags = (posts: PostType[]) => {
 };
 
 export const getSortedMainTags = (tags: string[]) => {
-  return tags.filter((tag) => MAIN_TAGS.includes(tag));
+  return tags.filter((tag) =>
+    MAIN_TAGS.includes(tag as (typeof MAIN_TAGS)[number])
+  );
 };
 
 export const getPrimaryTags = (tags: string[]) => {
-  return tags.filter((tag) => MAIN_TAGS.includes(tag));
+  return tags.filter((tag) =>
+    MAIN_TAGS.includes(tag as (typeof MAIN_TAGS)[number])
+  );
 };
 
 type GetSecondaryTagsType = {

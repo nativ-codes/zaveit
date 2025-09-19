@@ -1,4 +1,6 @@
-export const TAB_BAR_ITEMS = [
+import { TabBarItemType } from "./tab-bar.type";
+
+const baseTabBarItems: TabBarItemType[] = [
   {
     name: "index",
     label: "HOME",
@@ -17,10 +19,15 @@ export const TAB_BAR_ITEMS = [
     iconFocused: "cog",
     iconUnfocused: "cog-outline",
   },
-  __DEV__ && {
-    name: "debug",
-    label: "DEBUG",
-    iconFocused: "bug",
-    iconUnfocused: "bug-outline",
-  },
-].filter(Boolean);
+];
+
+const debugTabBarItems: TabBarItemType[] = [{
+  name: "debug",
+  label: "DEBUG",
+  iconFocused: "bug",
+  iconUnfocused: "bug-outline",
+}];
+
+export const TAB_BAR_ITEMS: TabBarItemType[] = __DEV__ 
+  ? [...baseTabBarItems, ...debugTabBarItems] 
+  : baseTabBarItems;

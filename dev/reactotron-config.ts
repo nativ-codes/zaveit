@@ -3,7 +3,9 @@ import type { ReactotronReactNative } from "reactotron-react-native";
 import Reactotron from "reactotron-react-native";
 import mmkvPlugin from "reactotron-react-native-mmkv";
 
-Reactotron.configure()
+Reactotron.configure({
+  name: "ZaveIt",
+})
   .useReactNative()
   .use(mmkvPlugin<ReactotronReactNative>({ storage }))
   .connect();

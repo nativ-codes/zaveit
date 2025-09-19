@@ -4,9 +4,9 @@ import Icon from "@expo/vector-icons/Feather";
 import React from "react";
 import { TouchableOpacity, View } from "react-native";
 import Animated, {
-    interpolate,
-    useAnimatedStyle,
-    useSharedValue,
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
 } from "react-native-reanimated";
 import { SwipeRow } from "react-native-swipe-list-view";
 import styles from "./swipe-preview-post.style";
@@ -52,6 +52,8 @@ function SwipePreviewPost({
       disableRightSwipe
       stopRightSwipe={-RIGHT_OFFSET}
       onSwipeValueChange={handleOnSwipeValueChange}
+      // weird, i know, but this is a workaround to fix the type error
+      {...({} as any)}
     >
       <View style={styles.container}>
         <Animated.View style={animatedStyle}>

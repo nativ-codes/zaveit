@@ -32,7 +32,8 @@ function AuthProvider({ children }: AuthProviderPropsType) {
       try {
         if (firebaseUser) {
           console.log('[Auth Context] Firebase user authenticated:', firebaseUser);
-          setUser(firebaseUser);
+          setUser(firebaseUser as unknown as UserType);
+          console.log("[Auth Context] User:", firebaseUser);
           setIsAuthenticated(true);
         } else {
           console.log('[Auth Context] No Firebase user');
