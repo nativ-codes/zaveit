@@ -10,7 +10,7 @@ export default StyleSheet.create({
     color: Colors.text.primary,
     ...GeneralStyles.actionableContent,
     ...GeneralStyles.shadow,
-    paddingRight: Units.s64,
+    paddingRight: Units.s80,
     height: Units.s64,
   },
   clearButton: {

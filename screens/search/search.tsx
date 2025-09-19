@@ -1,4 +1,9 @@
-import { EmptyPlaceholder, HorizontalScrollViewTags, PreviewPost, TopBar } from "@/common/components";
+import {
+  EmptyPlaceholder,
+  HorizontalScrollViewTags,
+  PreviewPost,
+  TopBar,
+} from "@/common/components";
 import { Units } from "@/common/constants";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
@@ -89,6 +94,27 @@ function SearchScreen() {
     setSearchQuery("");
   };
 
+  const renderFilteredPosts = () => {
+    if (filteredPosts.length === 0) {
+      return (
+        <EmptyPlaceholder
+          message="No posts found."
+          instruction="Try adding more content."
+        />
+      );
+    }
+    return (
+      <FlashList
+        data={filteredPosts}
+        keyExtractor={idExtractor}
+        estimatedItemSize={Units.s256}
+        contentContainerStyle={styles.contentContainer}
+        ItemSeparatorComponent={renderItemSeparator}
+        renderItem={renderFilteredPost}
+      />
+    );
+  };
+
   return (
     <ScreenLayout>
       <Spacer direction="bottom" size="s8">
@@ -99,11 +125,14 @@ function SearchScreen() {
         />
       </Spacer>
       <Spacer direction="bottom" gap="s16" size="s32">
-        <SearchInput
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          onClear={handleOnClearSearch}
-        />
+        <Spacer direction="horizontal" size="s16">
+          <SearchInput
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            isActionVisible={Boolean(searchQuery.length)}
+            onAction={handleOnClearSearch}
+          />
+        </Spacer>
 
         <HorizontalScrollViewTags
           primaryTags={primaryTags}
@@ -116,14 +145,7 @@ function SearchScreen() {
       </Spacer>
 
       {selectedTags.length > 0 || searchQuery.trim() ? (
-        <FlashList
-          data={filteredPosts}
-          keyExtractor={idExtractor}
-          estimatedItemSize={Units.s256}
-          contentContainerStyle={styles.contentContainer}
-          ItemSeparatorComponent={renderItemSeparator}
-          renderItem={renderFilteredPost}
-        />
+        renderFilteredPosts()
       ) : sortedTags.length === 0 ? (
         <EmptyPlaceholder
           message="No tags found."

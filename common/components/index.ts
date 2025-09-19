@@ -1,3 +1,4 @@
+export { default as AddPostModal } from "./add-post-modal/add-post-modal";
 export { default as Button } from "./button/button";
 export { default as EmptyPlaceholder } from "./empty-placeholder/empty-placeholder";
 export { default as HorizontalScrollViewPosts } from "./horizontal-scrollview-posts/horizontal-scrollview-posts";

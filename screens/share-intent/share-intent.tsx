@@ -16,13 +16,14 @@ import { getDomainFromUrl } from "@/common/utils";
 import { saveImageFromUrl } from "@/common/utils/files";
 import { Analytics } from "@/config/analytics";
 import { ErrorHandler } from "@/config/errors";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useShareIntentContext } from "expo-share-intent";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { v4 as uuid } from "uuid";
 import styles from "./share-intent.style";
+import { ShareIntentPropsType } from "./share-intent.type";
 import {
   getMetadata,
   parseTags,
@@ -33,8 +34,11 @@ import {
 function ShareIntentScreen() {
   console.log("ShareIntentScreen");
   const { shareIntent, resetShareIntent } = useShareIntentContext();
+  const { url } = useLocalSearchParams<ShareIntentPropsType>();
+
   const router = useRouter();
   const insets = useSafeAreaInsets();
+
   const [postMetadata, setPostMetadata] = useState<
     PostMetadataType | undefined
   >();
@@ -68,12 +72,15 @@ function ShareIntentScreen() {
 
   useEffect(() => {
     const fetchMetadata = async () => {
-      if (!shareIntent?.webUrl) {
+      console.log("fetchMetadata", shareIntent, url);
+      if (!shareIntent?.webUrl && !url) {
         return;
       }
 
       try {
-        const data = await getMetadata(shareIntent);
+        const data = await getMetadata(
+          shareIntent.webUrl ? shareIntent : { webUrl: url }
+        );
         setPostMetadata(data);
 
         if (data?.title) {
@@ -86,7 +93,7 @@ function ShareIntentScreen() {
     };
 
     fetchMetadata();
-  }, [shareIntent]);
+  }, [shareIntent, url]);
 
   const handleSave = async () => {
     try {

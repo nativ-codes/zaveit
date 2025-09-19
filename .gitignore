@@ -46,3 +46,4 @@ core/
 general.service.ts
 mcp.json
 .cursor/mcp.json
+metadata.php

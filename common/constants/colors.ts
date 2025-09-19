@@ -7,6 +7,7 @@ export const Colors = {
   primaryDisabled: "#869dfd",
   shadow: "#9397A0",
   skeleton: "#E1E5E9",
+  overlay: "#0000004D",
 
   // Text colors
   text: {
