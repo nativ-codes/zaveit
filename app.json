@@ -2,13 +2,14 @@
   "expo": {
     "name": "ZaveIt",
     "slug": "zaveit",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "zaveit",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
+      "buildNumber": "2",
       "supportsTablet": true,
       "bundleIdentifier": "com.nativcodes.zaveit",
       "googleServicesFile": "./keys/GoogleService-Info.plist",
@@ -24,6 +25,7 @@
       }
     },
     "android": {
+      "versionCode": "2",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"

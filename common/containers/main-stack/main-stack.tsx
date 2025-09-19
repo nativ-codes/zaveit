@@ -22,7 +22,6 @@ function MainStack() {
   useEffect(() => {
     if (isMounted && !isLoading) {
       if (shouldBeRedirectedToHome) {
-        console.log(">> ! shouldBeRedirectedToHome");
         setMixpanelUserId();
         router.replace("/");
       } else {

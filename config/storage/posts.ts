@@ -1,3 +1,4 @@
+import { getUniqueBy } from "@/common/utils/arrays";
 import { safelyPrintError } from "@/common/utils/error-parsers";
 import { deleteAllImages, deleteImage } from "@/common/utils/files";
 import { removePostService, savePostService } from "@/services/posts.service";
@@ -82,9 +83,13 @@ export const removePost = async (post: PostType): Promise<void> => {
 
 export const savePosts = (posts: PostType[]): void => {
   const previousPosts = getPosts();
-  console.log("[Save Posts] Previous posts", previousPosts);
-  console.log("[Save Posts] Posts", storage);
-  storage.set("posts", JSON.stringify([...previousPosts, ...posts]));
+
+  const uniquePosts = getUniqueBy({
+    array: [...previousPosts, ...posts],
+    key: "id",
+  });
+
+  storage.set("posts", JSON.stringify(uniquePosts));
 };
 
 export const removePostById = (post: PostType): void => {

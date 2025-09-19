@@ -1,7 +1,9 @@
 import { MAX_HORIZONTAL_SCROLLVIEW_POSTS } from "@/common/constants";
 import { getRandomPick } from "@/screens/search/search.util";
+import { syncPosts } from "@/services/login.service";
 import { FrequentlyAccessedPostsType, PostType } from "@/types/posts";
-import { useMemo } from "react";
+import auth from "@react-native-firebase/auth";
+import { useEffect, useMemo } from "react";
 import { useMMKVString } from "react-native-mmkv";
 import { getPosts } from "./posts";
 import { storage } from "./storage";
@@ -59,6 +61,15 @@ export const usePosts = (): PostType[] => {
 
 export const useHasPosts = (): boolean => {
   const posts = usePosts();
+
+  useEffect(() => {
+    if(!posts.length) {
+      const userUUID = auth()?.currentUser?.uid;
+      if (userUUID) {
+        syncPosts({ uid: userUUID });
+      }
+    }
+  }, []);
 
   return useMemo(() => Boolean(posts.length), [posts]);
 };

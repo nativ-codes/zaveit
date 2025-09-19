@@ -11,7 +11,6 @@ import {
   initializeGoogleSignIn,
   signInWithGoogle,
 } from "@/services/google-auth.service";
-import { syncPosts } from "@/services/login.service";
 import { AppAuthType } from "@/types";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
@@ -39,7 +38,6 @@ function LoginScreen() {
       const userUUID = await signByAuthType();
 
       if (userUUID) {
-        await syncPosts({ uid: userUUID });
         setAppAuthType(authType);
         setInitialUserId();
         Analytics.sendEvent(Analytics.events.logged_in, { authType });
@@ -96,11 +94,9 @@ function LoginScreen() {
       <Spacer
         direction="horizontal"
         size="s16"
-        style={{
-          gap: Units.s16,
-          alignItems: "center",
+        style={StyleSheet.compose(styles.buttonsWrapper, {
           paddingBottom: insets.bottom + Units.s16,
-        }}
+        })}
       >
         <Button.Social
           label="Continue with Google"

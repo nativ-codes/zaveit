@@ -1,4 +1,4 @@
-import { PreviewPost, TopBar } from "@/common/components";
+import { EmptyPlaceholder, PreviewPost, TopBar } from "@/common/components";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { usePosts } from "@/config/storage";
@@ -46,7 +46,14 @@ function ViewPostsScreen() {
       </Spacer>
 
       <Spacer direction="horizontal" size="s16" gap="s16">
-        {filteredPosts.map(renderItem)}
+        {filteredPosts.length > 0 ? (
+          filteredPosts.map(renderItem)
+        ) : (
+          <EmptyPlaceholder
+            message="No posts found"
+            instruction="Try adding more posts"
+          />
+        )}
       </Spacer>
     </ScreenLayout>
   );

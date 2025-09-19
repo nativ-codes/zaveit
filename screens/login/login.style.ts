@@ -10,4 +10,8 @@ export default StyleSheet.create({
     width: Units.s128,
     height: Units.s128,
   },
+  buttonsWrapper: {
+    gap: Units.s16,
+    alignItems: "center",
+  },
 });
