@@ -1,7 +1,8 @@
-import { EmptyPlaceholder, PreviewPost, TopBar } from "@/common/components";
+import { EmptyPlaceholder, TopBar } from "@/common/components";
+import SwipePreviewPost from "@/common/components/swipe-preview-post/swipe-preview-post";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
-import { usePosts } from "@/config/storage";
+import { removePost, usePosts } from "@/config/storage";
 import { PostType } from "@/types";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useMemo } from "react";
@@ -21,12 +22,10 @@ function ViewPostsScreen() {
   );
 
   const renderItem = (post: PostType) => (
-    <PreviewPost
+    <SwipePreviewPost
       key={post.id}
-      id={post.id}
-      url={post.url}
-      title={post.title}
-      tags={post.tags}
+      post={post}
+      onRemove={() => removePost(post)}
       onPress={() =>
         router.push({
           pathname: "/post-details/[id]",

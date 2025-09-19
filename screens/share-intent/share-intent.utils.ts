@@ -97,14 +97,20 @@ export const getMetadata = async (
   }
   
   const platformConfig = checkSocialPlatform(shareIntent.webUrl);
+  console.log("platformConfig", platformConfig);
   if (platformConfig) {
     const data = await getOEmbedMetadata({
       platformConfig: platformConfig as PlatformConfig,
       url: shareIntent.webUrl,
     });
-
+    console.log("data", data);
     if (data) {
-      return data;
+      return {
+        url: shareIntent.webUrl || "",
+        title: data.title || shareIntent.webUrl || "",
+        author: data.author || "",
+        thumbnail: data.thumbnail_url || data.thumbnail || IMAGE_PLACEHOLDER,
+      };
     } 
   }
 

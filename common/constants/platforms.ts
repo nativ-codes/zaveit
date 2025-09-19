@@ -4,8 +4,7 @@ export const PLATFORM_CONFIGS: Record<SocialPlatform, PlatformConfig> = {
   [SocialPlatform.TIKTOK]: {
     platform: SocialPlatform.TIKTOK,
     domains: ["tiktok.com", "vm.tiktok.com"],
-    oembedEndpoint: "https://www.tiktok.com/oembed",
-    expiresAt: 1000 * 60 * 60 * 24 * 7, // 7 days
+    oembedEndpoint: "https://www.tiktok.com/oembed"
   },
   [SocialPlatform.REDDIT]: {
     platform: SocialPlatform.REDDIT,
@@ -14,7 +13,7 @@ export const PLATFORM_CONFIGS: Record<SocialPlatform, PlatformConfig> = {
   },
   [SocialPlatform.YOUTUBE]: {
     platform: SocialPlatform.YOUTUBE,
-    domains: ["youtube.com", "youtu.be"],
+    domains: ["youtube.com", "youtu.be", 'm.youtube.com'],
     oembedEndpoint: "https://www.youtube.com/oembed"
   },
   [SocialPlatform.UNKNOWN]: {

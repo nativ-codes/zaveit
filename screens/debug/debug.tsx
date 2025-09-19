@@ -8,12 +8,15 @@ import {
   setAppAuthType,
 } from "@/config/storage";
 import { storage } from "@/config/storage/storage";
-import React from "react";
+import React, { useState } from "react";
 import { Text } from "react-native";
 import { useMMKVString } from "react-native-mmkv";
+import { v4 as uuid } from "uuid";
+import { getDefaultMappings } from "./debug.util";
 
 function DebugScreen() {
   const [name, setName] = useMMKVString("name", storage);
+  const [mappings, setMappings] = useState(getDefaultMappings());
 
   const handleOnNameChange = () => {
     setName(Math.random().toString());
@@ -29,6 +32,13 @@ function DebugScreen() {
 
   const handleOnAppleAuthType = () => {
     setAppAuthType("apple");
+  };
+
+  const handleOnAddMapping = () => {
+    const id = uuid();
+    const key = `mappings.${id}`;
+    storage.set(key, id);
+    setMappings([key, ...mappings]);
   };
 
   return (
@@ -56,6 +66,20 @@ function DebugScreen() {
             onPress={handleOnAppleAuthType}
             label="Apple appAuthType"
           />
+        </Menu>
+        <Menu>
+          <Spacer direction={["left", "bottom"]} size="s8">
+            <Text style={GeneralStyles.textLabelMediumSecondary}>
+              MMKV Playground
+            </Text>
+          </Spacer>
+          <Menu.Item onPress={handleOnAddMapping} label="Add mapping" />
+          <Text>Mappings:</Text>
+          <Spacer direction="left" size="s16">
+            {mappings.map((value: string) => (
+              <Text key={value}>- {value}</Text>
+            ))}
+          </Spacer>
         </Menu>
       </Spacer>
     </ScreenLayout>

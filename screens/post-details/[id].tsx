@@ -6,7 +6,7 @@ import {
 } from "@/common/components";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
-import { safelyPrintError } from "@/common/utils";
+import { safelyPrintError, updateThumbnail } from "@/common/utils";
 import { ErrorHandler } from "@/config/errors";
 import {
   increasePostAccessCount,
@@ -81,11 +81,15 @@ function PostDetailsScreen() {
             onPress={handleOnRemovePost}
             theme="error"
           />
-          <Button
-            type="primary"
-            label="Open"
-            onPress={handleOpenInBrowser}
+          <Button.Icon
+            iconName="share"
+            onPress={async () => {
+              const thumbnail = await updateThumbnail(id);
+              console.log("thumbnail", thumbnail);
+            }}
+            theme="error"
           />
+          <Button type="primary" label="Open" onPress={handleOpenInBrowser} />
         </Spacer>
       }
     >

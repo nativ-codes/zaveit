@@ -15,7 +15,7 @@ function PreviewPost({
   url,
   title,
   tags,
-  onPress,
+  onPress
 }: PreviewPostPropsType) {
   const domain = getDomainFromUrl(url);
 

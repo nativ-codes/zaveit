@@ -9,7 +9,6 @@ export interface PlatformConfig {
   platform: SocialPlatform;
   domains: string[];
   oembedEndpoint: string;
-  expiresAt?: number;
 }
 
 export type PostType = {

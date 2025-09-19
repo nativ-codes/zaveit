@@ -10,7 +10,8 @@ import { PlatformConfig } from "@/types";
 type GetOEmbedMetadataReturnType = {
   author: string;
   title: string;
-  thumbnail: string;
+  thumbnail?: string;
+  thumbnail_url?: string;
   url: string;
 };
 

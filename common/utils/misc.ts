@@ -24,7 +24,7 @@ export const updateThumbnail = async (id: string): Promise<string> => {
 
   try {
     const metadata = await getMetadata({
-      webUrl: post.url,
+      webUrl: post.url
     });
 
     if (metadata) {
