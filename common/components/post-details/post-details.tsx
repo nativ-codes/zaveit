@@ -9,7 +9,7 @@ import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import * as Burnt from "burnt";
 import * as Clipboard from "expo-clipboard";
 import { router } from "expo-router";
-import React from "react";
+import React, { memo } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import TagItem from "../tag-item/tag-item";
 import styles from "./post-details.style";
@@ -50,7 +50,7 @@ function PostDetails({
 
   return (
     <Spacer gap="s16">
-      <PostImage title={title} id={id} style={styles.image} />
+      <PostImage id={id} style={styles.image} />
       <Spacer direction="horizontal" size="s16" gap="s16">
         <Spacer gap="s8">
           {title && (
@@ -117,4 +117,4 @@ function PostDetails({
   );
 }
 
-export default PostDetails;
+export default memo(PostDetails);

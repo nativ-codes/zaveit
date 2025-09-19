@@ -1,24 +1,12 @@
-import { ThumbnailType, ThumbnailUrlsType } from "@/types/posts";
+import { ThumbnailType } from "@/types/posts";
 import { storage } from "./storage";
 
-export const getThumbnailUrls = (): ThumbnailUrlsType => {
-  const posts = storage.getString("thumbnailUrls");
-  return posts ? JSON.parse(posts) : {};
-};
-
-export const getThumbnailUrl = (id: string): ThumbnailType => {
-  const thumbnailUrls = getThumbnailUrls();
-  return thumbnailUrls[id];
-};
-
 export const setThumbnailUrl = ({ id, url }: ThumbnailType): void => {
-  const thumbnailUrls = getThumbnailUrls();
-  thumbnailUrls[id] = { id, url };
-  storage.set("thumbnailUrls", JSON.stringify(thumbnailUrls));
+  const thumbnailData = JSON.stringify({ id, url });
+  console.log("!!!!!!!!!>>>>", `thumbnailUrls.${id}`, thumbnailData);
+  storage.set(`thumbnailUrls.${id}`, thumbnailData);
 };
 
 export const removeThumbnailUrl = (id: string): void => {
-  const thumbnailUrls = getThumbnailUrls();
-  delete thumbnailUrls[id];
-  storage.set("thumbnailUrls", JSON.stringify(thumbnailUrls));
+  storage.delete(`thumbnailUrls.${id}`);
 };

@@ -23,8 +23,6 @@ export type PostType = {
 
 export type FrequentlyAccessedPostsType = Record<string, number>;
 
-export type ThumbnailUrlsType = Record<string, ThumbnailType>;
-
 export type ThumbnailType = {
   id: string;
   url: string;

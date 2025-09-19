@@ -6,6 +6,7 @@ import { FrequentlyAccessedPostsType, PostType } from "@/types/posts";
 import { ErrorHandler } from "../errors";
 import { getAppAuthType } from "./auth";
 import { storage } from "./storage";
+import { removeThumbnailUrl } from "./thumbnails";
 
 export const getPosts = (): PostType[] => {
   const posts = storage.getString("posts");
@@ -62,22 +63,33 @@ export const updatePost = async (post: PostType): Promise<void> => {
 };
 
 export const removePost = async (post: PostType): Promise<void> => {
-  const appAuthType = getAppAuthType();
-  removePostById(post);
-  deleteImage(post.thumbnail);
+  try {
+    const appAuthType = getAppAuthType();
+    removePostById(post);
+    deleteImage(post.thumbnail);
+    removeThumbnailUrl(post.id);
 
-  if (appAuthType === "google" || appAuthType === "apple") {
-    try {
-      await removePostService(post);
-    } catch (error) {
-      ErrorHandler.logError({
-        location: "removePost",
-        error: safelyPrintError(error),
-        metadata: {
-          post,
-        },
-      });
+    if (appAuthType === "google" || appAuthType === "apple") {
+      try {
+        await removePostService(post);
+      } catch (error) {
+        ErrorHandler.logError({
+          location: "removePostAppAuthService",
+          error: safelyPrintError(error),
+          metadata: {
+            post,
+          },
+        });
+      }
     }
+  } catch (error) {
+    ErrorHandler.logError({
+      location: "removePost",
+      error: safelyPrintError(error),
+      metadata: {
+        post,
+      },
+    });
   }
 };
 

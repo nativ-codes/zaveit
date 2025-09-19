@@ -27,10 +27,7 @@ function PreviewPostCard({
       accessibilityRole="button"
       accessibilityLabel={`View details for ${title || url}`}
     >
-      <PostImage
-        id={id}
-        style={styles.image}
-      />
+      <PostImage id={id} style={styles.image} />
 
       <Spacer direction="full" size="s8" gap="s4">
         {title && (

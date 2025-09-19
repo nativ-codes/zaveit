@@ -97,13 +97,13 @@ export const getMetadata = async (
   }
   
   const platformConfig = checkSocialPlatform(shareIntent.webUrl);
-  console.log("platformConfig", platformConfig);
+
   if (platformConfig) {
     const data = await getOEmbedMetadata({
       platformConfig: platformConfig as PlatformConfig,
       url: shareIntent.webUrl,
     });
-    console.log("data", data);
+
     if (data) {
       return {
         url: shareIntent.webUrl || "",

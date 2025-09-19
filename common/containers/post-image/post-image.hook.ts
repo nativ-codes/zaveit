@@ -13,7 +13,7 @@ export const useTryThumbnailUrl = (
 ): UseTryThumbnailUrlReturnType => {
   const [updatedThumbnailUrl, setUpdatedThumbnailUrl] =
     useState('');
-  const { url: thumbnailUrl } = useThumbnailUrl(id) || {};
+  const { url: thumbnailUrl } = useThumbnailUrl(id);
 
   useEffect(() => {
     if (!thumbnailUrl) {

@@ -13,6 +13,7 @@ import { Text } from "react-native";
 import { useMMKVString } from "react-native-mmkv";
 import { v4 as uuid } from "uuid";
 import { getDefaultMappings } from "./debug.util";
+import { StorageViewer } from "./storage-viewer";
 
 function DebugScreen() {
   const [name, setName] = useMMKVString("name", storage);
@@ -39,6 +40,7 @@ function DebugScreen() {
     const key = `mappings.${id}`;
     storage.set(key, id);
     setMappings([key, ...mappings]);
+    console.log("storage", storage);
   };
 
   return (
@@ -81,6 +83,7 @@ function DebugScreen() {
             ))}
           </Spacer>
         </Menu>
+        <StorageViewer />
       </Spacer>
     </ScreenLayout>
   );
