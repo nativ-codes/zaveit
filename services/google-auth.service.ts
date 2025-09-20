@@ -15,7 +15,9 @@ export type GoogleAuthErrorType = {
 };
 
 export const initializeGoogleSignIn = () => {
-  GoogleSignin.configure();
+  GoogleSignin.configure({
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID
+  });
 };
 
 export const signInWithGoogle = async (): Promise<UserUUIDType | null> => {
@@ -56,9 +58,9 @@ export const signInWithGoogle = async (): Promise<UserUUIDType | null> => {
 
 export const signOut = async () => {
   try {
+    await auth().signOut();
     await GoogleSignin.signOut();
     await GoogleSignin.revokeAccess();
-    await auth().signOut();
   } catch (error) {
     throw error;
   }
