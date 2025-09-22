@@ -1,4 +1,4 @@
-import { Button } from "@/common/components";
+import Button from "@/common/components/button/button";
 import { Colors } from "@/common/constants/colors";
 import React from "react";
 import { TextInput, View } from "react-native";

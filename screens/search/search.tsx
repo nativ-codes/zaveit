@@ -2,6 +2,7 @@ import {
   EmptyPlaceholder,
   HorizontalScrollViewTags,
   PreviewPost,
+  SearchInput,
   TopBar,
 } from "@/common/components";
 import { Units } from "@/common/constants";
@@ -14,7 +15,6 @@ import { FlashList } from "@shopify/flash-list";
 import { useRouter } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
 import { Text, View } from "react-native";
-import SearchInput from "./components/search-input/search-input";
 import TagPostsList from "./components/tag-posts-list/tag-posts-list";
 import styles from "./search.style";
 import {

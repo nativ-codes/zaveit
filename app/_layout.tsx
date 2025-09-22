@@ -7,6 +7,7 @@ import { useFonts } from "expo-font";
 import { ShareIntentProvider } from "expo-share-intent";
 import { StatusBar } from "expo-status-bar";
 import "react-native-get-random-values";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
@@ -29,10 +30,12 @@ export default function RootLayout() {
   return (
     <ShareIntentProvider>
       <SafeAreaProvider>
-        <AuthProvider>
-          <MainStack />
-          <StatusBar style="dark" />
-        </AuthProvider>
+        <KeyboardProvider>
+          <AuthProvider>
+            <MainStack />
+            <StatusBar style="dark" />
+          </AuthProvider>
+        </KeyboardProvider>
       </SafeAreaProvider>
     </ShareIntentProvider>
   );

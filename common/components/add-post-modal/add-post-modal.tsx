@@ -1,13 +1,19 @@
-import { Button } from "@/common/components";
-import { ACTIVE_OPACITY_NO_FEEDBACK, Units } from "@/common/constants";
+import Button from "@/common/components/button/button";
+import SearchInput from "@/common/components/search-input/search-input";
+import {
+  ACTIVE_OPACITY_NO_FEEDBACK,
+  STICKY_VIEW_OFFSET,
+  Units,
+} from "@/common/constants";
 import { Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { noop, safelyPrintError } from "@/common/utils";
+import { URL_REGEX } from "@/common/utils/regex";
 import { ErrorHandler } from "@/config/errors";
-import SearchInput from "@/screens/search/components/search-input/search-input";
 import * as Clipboard from "expo-clipboard";
 import React, { useState } from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { KeyboardStickyView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import styles from "./add-post-modal.style";
 import { AddPostModalPropsType } from "./add-post-modal.type";
@@ -15,6 +21,8 @@ import { AddPostModalPropsType } from "./add-post-modal.type";
 function AddPostModal({ isVisible, onClose, onSubmit }: AddPostModalPropsType) {
   const insets = useSafeAreaInsets();
   const [url, setUrl] = useState("");
+
+  const isButtonDisabled = !url.trim() || !URL_REGEX.test(url.trim());
 
   const handleOnPaste = async () => {
     const text = await Clipboard.getStringAsync();
@@ -69,35 +77,38 @@ function AddPostModal({ isVisible, onClose, onSubmit }: AddPostModalPropsType) {
           activeOpacity={ACTIVE_OPACITY_NO_FEEDBACK}
           onPress={noop}
         >
-          <Spacer
-            gap="s24"
-            size="s24"
-            direction="full"
-            style={StyleSheet.compose(styles.container, {
-              marginBottom: insets.bottom || Units.s16,
-            })}
-          >
-            <Text style={GeneralStyles.textTitlePostMediumPrimary}>
-              Add New Post
-            </Text>
+          <KeyboardStickyView offset={STICKY_VIEW_OFFSET}>
+            <Spacer
+              gap="s24"
+              size="s24"
+              direction="full"
+              style={StyleSheet.compose(styles.container, {
+                marginBottom: insets.bottom || Units.s16,
+              })}
+            >
+              <Text style={GeneralStyles.textTitlePostMediumPrimary}>
+                Add New Post
+              </Text>
 
-            <SearchInput
-              value={url}
-              isActionVisible
-              placeholder="Enter or paste URL..."
-              onChangeText={setUrl}
-              onAction={onAction}
-              actionIcon={actionIcon}
-            />
-
-            <View style={styles.buttonContainer}>
-              <Button
-                label="Zave post"
-                type="primary"
-                onPress={handleOnZavePost}
+              <SearchInput
+                value={url}
+                isActionVisible
+                placeholder="Enter or paste URL..."
+                onChangeText={setUrl}
+                onAction={onAction}
+                actionIcon={actionIcon}
               />
-            </View>
-          </Spacer>
+
+              <View style={styles.buttonContainer}>
+                <Button
+                  label="Zave post"
+                  type="primary"
+                  isDisabled={isButtonDisabled}
+                  onPress={handleOnZavePost}
+                />
+              </View>
+            </Spacer>
+          </KeyboardStickyView>
         </TouchableOpacity>
       </TouchableOpacity>
     </Modal>
