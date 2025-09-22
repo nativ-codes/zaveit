@@ -1,4 +1,6 @@
 import { Menu, TopBar } from "@/common/components";
+import { SWITCH_TRACK_COLOR } from "@/common/constants";
+import { Colors } from "@/common/constants/colors";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { Analytics } from "@/config/analytics";
@@ -30,6 +32,8 @@ function PreferencesScreen() {
             description="We collect anonymous data to improve the app"
             right={
               <Switch
+                thumbColor={Colors.primary}
+                trackColor={SWITCH_TRACK_COLOR}
                 value={isAnalyticsEnabled}
                 onValueChange={handleOnShareAnalyticsPress}
               />
