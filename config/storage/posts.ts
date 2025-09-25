@@ -3,10 +3,10 @@ import { safelyPrintError } from "@/common/utils/error-parsers";
 import { deleteAllImages, deleteImage } from "@/common/utils/files";
 import { removePostService, savePostService } from "@/services/posts.service";
 import { FrequentlyAccessedPostsType, PostType } from "@/types/posts";
+import * as FileSystem from "expo-file-system";
 import { ErrorHandler } from "../errors";
 import { getAppAuthType } from "./auth";
 import { storage } from "./storage";
-import { removeThumbnailUrl } from "./thumbnails";
 
 export const getPosts = (): PostType[] => {
   const posts = storage.getString("posts");
@@ -66,8 +66,7 @@ export const removePost = async (post: PostType): Promise<void> => {
   try {
     const appAuthType = getAppAuthType();
     removePostById(post);
-    deleteImage(post.thumbnail);
-    removeThumbnailUrl(post.id);
+    deleteImage(`${FileSystem.documentDirectory}${post.id}.jpg`);
 
     if (appAuthType === "google" || appAuthType === "apple") {
       try {

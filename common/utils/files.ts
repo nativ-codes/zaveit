@@ -6,7 +6,6 @@ export const saveImageFromUrl = async (url: string, id: string) => {
   const localUri = `${FileSystem.documentDirectory}${id}.jpg`;
 
   try {
-    // Ensure the directory exists before downloading
     const directoryInfo = await FileSystem.getInfoAsync(FileSystem.documentDirectory as string);
     if (!directoryInfo.exists) {
       await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory as string, { intermediates: true });

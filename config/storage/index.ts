@@ -5,6 +5,4 @@ export * from "./posts.hook";
 export * from "./preferences";
 export * from "./preferences.hook";
 export * from "./tags";
-export * from "./thumbnails";
-export * from "./thumbnails.hook";
 

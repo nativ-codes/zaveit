@@ -1,5 +1,5 @@
 import { ErrorHandler } from "@/config/errors";
-import { getPosts, setThumbnailUrl } from "@/config/storage";
+import { getPosts } from "@/config/storage";
 import { getMetadata } from "@/screens/share-intent/share-intent.utils";
 import { safelyPrintError } from "./error-parsers";
 import { saveImageFromUrl } from "./files";
@@ -14,26 +14,21 @@ type ToggleTagType = {
 export const toggleTag = ({ tags, tag }: ToggleTagType) =>
   tags.includes(tag) ? tags.filter((t) => t !== tag) : [...(tags || []), tag];
 
-export const updateThumbnail = async (id: string): Promise<string> => {
+export const updateThumbnail = async (id: string): Promise<void> => {
   const posts = getPosts();
   const post = posts.find((p) => p.id === id);
 
   if (!post) {
-    return '';
+    return;
   }
 
   try {
     const metadata = await getMetadata({
-      webUrl: post.url
+      webUrl: post.url,
     });
 
-    if (metadata) {
-      const thumbnailUrl = (await saveImageFromUrl(metadata.thumbnail, post.id)) || "";
-      setThumbnailUrl({id, url: thumbnailUrl});
-      
-      return thumbnailUrl;
-    } else {
-      return '';
+    if (metadata.thumbnail) {
+      await saveImageFromUrl(metadata.thumbnail, post.id);
     }
   } catch (error) {
     ErrorHandler.logError({
@@ -43,6 +38,5 @@ export const updateThumbnail = async (id: string): Promise<string> => {
         id,
       },
     });
-    return '';
   }
-}
+};

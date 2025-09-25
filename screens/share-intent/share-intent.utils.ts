@@ -1,8 +1,4 @@
-import {
-  IMAGE_PLACEHOLDER,
-  MAIN_TAGS,
-  PLATFORM_CONFIGS,
-} from "@/common/constants";
+import { MAIN_TAGS, PLATFORM_CONFIGS } from "@/common/constants";
 import { safelyPrintError } from "@/common/utils/error-parsers";
 import { getIsEmpty } from "@/common/utils/validators";
 import { ErrorHandler } from "@/config/errors";
@@ -57,13 +53,17 @@ export const parseTags = async (
 
   // Filter suggested tags that are NOT in MAIN_TAGS
   const selectedAdditionalTags = suggestedTags.filter(
-    (tag) => !MAIN_TAGS.includes(tag.toLowerCase() as (typeof MAIN_TAGS)[number])
+    (tag) =>
+      !MAIN_TAGS.includes(tag.toLowerCase() as (typeof MAIN_TAGS)[number])
   );
 
   // Filter local tags that are NOT in MAIN_TAGS and make them unique
   const localAdditionalTags = [
     ...new Set(
-      localTags.filter((tag) => !MAIN_TAGS.includes(tag.toLowerCase() as (typeof MAIN_TAGS)[number]))
+      localTags.filter(
+        (tag) =>
+          !MAIN_TAGS.includes(tag.toLowerCase() as (typeof MAIN_TAGS)[number])
+      )
     ),
   ];
 
@@ -95,7 +95,7 @@ export const getMetadata = async (
   if (!shareIntent.webUrl) {
     throw new Error("No URL provided");
   }
-  
+
   const platformConfig = checkSocialPlatform(shareIntent.webUrl);
 
   if (platformConfig) {
@@ -109,9 +109,9 @@ export const getMetadata = async (
         url: shareIntent.webUrl || "",
         title: data.title || shareIntent.webUrl || "",
         author: data.author || "",
-        thumbnail: data.thumbnail_url || data.thumbnail || IMAGE_PLACEHOLDER,
+        thumbnail: data.thumbnail_url || data.thumbnail,
       };
-    } 
+    }
   }
 
   if (shareIntent?.meta && !getIsEmpty(shareIntent?.meta)) {
@@ -119,7 +119,7 @@ export const getMetadata = async (
       url: shareIntent.webUrl || "",
       title: shareIntent.meta?.title || shareIntent.webUrl || "",
       author: shareIntent.meta?.author || "",
-      thumbnail: shareIntent.meta?.["og:image"] || IMAGE_PLACEHOLDER
+      thumbnail: shareIntent.meta?.["og:image"],
     };
   }
 
@@ -132,7 +132,7 @@ export const getMetadata = async (
       url: shareIntent.webUrl || "",
       title: localLinkPreviewMetadata.title || shareIntent.webUrl || "",
       author: "",
-      thumbnail: localLinkPreviewMetadata.thumbnail || IMAGE_PLACEHOLDER,
+      thumbnail: localLinkPreviewMetadata.thumbnail,
     };
   }
 
@@ -145,7 +145,7 @@ export const getMetadata = async (
       url: shareIntent.webUrl || "",
       title: linkPreviewMetadata.title || shareIntent.webUrl || "",
       author: "",
-      thumbnail: linkPreviewMetadata.image || IMAGE_PLACEHOLDER
+      thumbnail: linkPreviewMetadata.image,
     };
   }
 

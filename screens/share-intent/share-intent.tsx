@@ -98,18 +98,20 @@ function ShareIntentScreen() {
         const postId = uuid();
 
         const post: PostType = {
-          id: uuid(),
+          id: postId,
           url: postMetadata?.url || "",
           title: postMetadata?.title || "",
           author: postMetadata?.author || "",
-          thumbnail:
-            (await saveImageFromUrl(postMetadata?.thumbnail, postId)) || "",
           tags: [...tags.selectedMainTags, ...tags.selectedAdditionalTags],
           timestamp: Date.now(),
         };
         setIsLoading(true);
+
+        if (postMetadata?.thumbnail) {
+          await saveImageFromUrl(postMetadata?.thumbnail, postId);
+        }
+
         await savePost(post);
-        setIsLoading(false);
 
         Analytics.sendEvent(Analytics.events.zaved_post, {
           platform: getDomainFromUrl(postMetadata?.url || ""),
@@ -127,6 +129,8 @@ function ShareIntentScreen() {
       });
     } catch (error) {
       handleOnError(error as Error);
+    } finally {
+      setIsLoading(false);
     }
   };
 

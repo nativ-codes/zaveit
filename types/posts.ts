@@ -16,16 +16,12 @@ export type PostType = {
   url: string;
   title: string;
   author: string;
-  thumbnail: string;
   timestamp: number;
   tags: string[];
 };
 
 export type FrequentlyAccessedPostsType = Record<string, number>;
 
-export type ThumbnailType = {
-  id: string;
-  url: string;
+export type PostMetadataType = Omit<PostType, "id" | "timestamp" | "tags"> & {
+  thumbnail?: string;
 };
-
-export type PostMetadataType = Omit<PostType, "id" | "timestamp" | "tags">;
