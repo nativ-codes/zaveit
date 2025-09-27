@@ -11,6 +11,7 @@ import { savePost } from "@/config/storage";
 import { PostMetadataType, PostType } from "@/types";
 import * as Burnt from "burnt";
 
+import { IMAGE_PLACEHOLDER } from "@/common/constants";
 import { GeneralStyles } from "@/common/styles";
 import { getDomainFromUrl } from "@/common/utils";
 import { saveImageFromUrl } from "@/common/utils/files";
@@ -181,7 +182,7 @@ function ShareIntentScreen() {
           title={postMetadata.title}
           author={postMetadata.author}
           url={postMetadata.url}
-          thumbnail={postMetadata.thumbnail}
+          thumbnail={postMetadata.thumbnail || IMAGE_PLACEHOLDER}
           additionalTags={tags.additionalTags}
           selectedAdditionalTags={tags.selectedAdditionalTags}
           mainTags={tags.mainTags}
