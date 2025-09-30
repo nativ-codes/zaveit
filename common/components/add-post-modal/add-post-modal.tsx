@@ -7,9 +7,8 @@ import {
 } from "@/common/constants";
 import { Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
-import { noop, safelyPrintError } from "@/common/utils";
+import { noop } from "@/common/utils";
 import { URL_REGEX } from "@/common/utils/regex";
-import { ErrorHandler } from "@/config/errors";
 import * as Clipboard from "expo-clipboard";
 import React, { useState } from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -42,23 +41,12 @@ function AddPostModal({ isVisible, onClose, onSubmit }: AddPostModalPropsType) {
   };
 
   const handleOnZavePost = () => {
-    try {
       const trimmedUrl = url.trim();
-      new URL(trimmedUrl);
 
       if (trimmedUrl) {
         onSubmit(trimmedUrl);
         handleOnClose();
       }
-    } catch (error) {
-      ErrorHandler.logError({
-        location: "handleOnZavePost",
-        error: safelyPrintError(error),
-        metadata: {
-          url,
-        },
-      });
-    }
   };
 
   return (

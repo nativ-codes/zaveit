@@ -13,7 +13,7 @@ import * as Burnt from "burnt";
 
 import { IMAGE_PLACEHOLDER } from "@/common/constants";
 import { GeneralStyles } from "@/common/styles";
-import { getDomainFromUrl } from "@/common/utils";
+import { forceHttps, getDomainFromUrl } from "@/common/utils";
 import { saveImageFromUrl } from "@/common/utils/files";
 import { Analytics } from "@/config/analytics";
 import { ErrorHandler } from "@/config/errors";
@@ -109,7 +109,7 @@ function ShareIntentScreen() {
         setIsLoading(true);
 
         if (postMetadata?.thumbnail) {
-          await saveImageFromUrl(postMetadata?.thumbnail, postId);
+          await saveImageFromUrl(forceHttps(postMetadata?.thumbnail), postId);
         }
 
         await savePost(post);

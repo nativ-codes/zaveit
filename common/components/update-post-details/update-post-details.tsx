@@ -3,13 +3,14 @@ import { Colors } from "@/common/constants/colors";
 import { Units } from "@/common/constants/units";
 import { Row, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
-import { safelyPrintError } from "@/common/utils";
+import { forceHttps, safelyPrintError } from "@/common/utils";
 import { ErrorHandler } from "@/config/errors";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import * as Burnt from "burnt";
 import * as Clipboard from "expo-clipboard";
+import { Image } from "expo-image";
 import React from "react";
-import { Image, ScrollView, Text, TouchableOpacity } from "react-native";
+import { ScrollView, Text, TouchableOpacity } from "react-native";
 import SkeletonLoader from "../skeleton-loader/skeleton-loader";
 import TagItem from "../tag-item/tag-item";
 import styles from "./update-post-details.style";
@@ -86,9 +87,8 @@ function UpdatePostDetails({
     <Spacer gap="s16">
       {thumbnail && (
         <Image
-          source={{ uri: thumbnail }}
+          source={{ uri: forceHttps(thumbnail) }}
           style={styles.image}
-          resizeMode="cover"
         />
       )}
       <Spacer direction="horizontal" size="s16" gap="s16">
