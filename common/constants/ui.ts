@@ -9,6 +9,6 @@ export const STICKY_VIEW_OFFSET = {
     opened: Units.s16,
 };
 export const SWITCH_TRACK_COLOR = {
-    true: Colors.primaryDisabled,
+    true: Colors.primaryLight,
     false: Colors.overlay,
 };
