@@ -8,6 +8,15 @@ Zave It is a mobile application that lets you save and organize content from any
 
 Found something worth keeping while browsing? Just share it to Zave It. Whether it's an article, video, social media post, or any other content, Zave It captures it instantly and uses AI to organize it into relevant categories like #music, #art, #history, or your own custom tags. No more lost bookmarks or endless scrolling to find that one post you saved weeks ago.
 
+## 📲 Download
+
+Get Zave It on your favorite platform:
+
+<div>
+  <a href="https://apps.apple.com/ro/app/zaveit-smart-bookmark-manager/id6747726703"><img src="https://nativ.codes/assets/images/projects/appstore.png" alt="drawing" width="130"/></a>
+  <a href="https://play.google.com/store/apps/details?id=com.nativcodes.zaveit&hl=en"><img src="https://nativ.codes/assets/images/projects/googleplay.png" alt="drawing" width="130"/></a>
+</div>
+
 ## ✨ Key Features
 
 ### Flexible Authentication
