@@ -13,8 +13,8 @@ Found something worth keeping while browsing? Just share it to Zave It. Whether 
 Get Zave It on your favorite platform:
 
 <div>
-  <a href="https://apps.apple.com/ro/app/zaveit-smart-bookmark-manager/id6747726703"><img src="https://nativ.codes/assets/images/projects/appstore.png" alt="drawing" width="130"/></a>
-  <a href="https://play.google.com/store/apps/details?id=com.nativcodes.zaveit&hl=en"><img src="https://nativ.codes/assets/images/projects/googleplay.png" alt="drawing" width="130"/></a>
+  <a target="_blank" href="https://apps.apple.com/ro/app/zaveit-smart-bookmark-manager/id6747726703"><img src="https://nativ.codes/assets/images/projects/appstore.png" alt="drawing" width="130"/></a>
+  <a target="_blank" href="https://play.google.com/store/apps/details?id=com.nativcodes.zaveit&hl=en"><img src="https://nativ.codes/assets/images/projects/googleplay.png" alt="drawing" width="130"/></a>
 </div>
 
 ## ✨ Key Features
