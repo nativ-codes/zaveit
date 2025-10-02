@@ -21,7 +21,6 @@ export const setIsAnalyticsEnabled = (isAnalyticsEnabled: boolean): void => {
   const preferences = getPreferences();
   preferences.isAnalyticsEnabled = isAnalyticsEnabled;
   storage.set("preferences", JSON.stringify(preferences));
-  console.log(">> ! preferences", storage);
 };
 
 export const getIsAnalyticsEnabled = (): boolean => {
