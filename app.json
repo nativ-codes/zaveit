@@ -7,9 +7,8 @@
     "icon": "./assets/images/icon.png",
     "scheme": "zaveit",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
-      "buildNumber": "2",
+      "buildNumber": "3",
       "supportsTablet": true,
       "bundleIdentifier": "com.nativcodes.zaveit",
       "googleServicesFile": "./keys/GoogleService-Info.plist",
@@ -25,12 +24,11 @@
       }
     },
     "android": {
-      "versionCode": "3",
+      "versionCode": 3,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/android-adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true,
       "package": "com.nativcodes.zaveit",
       "googleServicesFile": "./keys/google-services.json"
     },
@@ -54,7 +52,8 @@
         "expo-build-properties",
         {
           "ios": {
-            "useFrameworks": "static"
+            "useFrameworks": "static",
+            "forceStaticLinking": ["RNFBApp", "RNFBAuth", "RNFBFirestore"]
           }
         }
       ],
@@ -68,8 +67,12 @@
       ],
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
+      "expo-font",
+      "expo-image",
+      "expo-web-browser",
       "@react-native-google-signin/google-signin",
-      "./plugins/with-android-signing-config.js"
+      "./plugins/with-android-signing-config.js",
+      "./plugins/with-non-modular-headers.js"
     ],
     "experiments": {
       "typedRoutes": true

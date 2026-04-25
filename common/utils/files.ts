@@ -1,5 +1,5 @@
 import { ErrorHandler } from "@/config/errors";
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import { safelyPrintError } from "./error-parsers";
 
 export const saveImageFromUrl = async (url: string, id: string) => {

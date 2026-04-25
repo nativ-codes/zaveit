@@ -3,7 +3,7 @@ import { safelyPrintError } from "@/common/utils/error-parsers";
 import { deleteAllImages, deleteImage } from "@/common/utils/files";
 import { removePostService, savePostService } from "@/services/posts.service";
 import { FrequentlyAccessedPostsType, PostType } from "@/types/posts";
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import { ErrorHandler } from "../errors";
 import { getAppAuthType } from "./auth";
 import { storage } from "./storage";

@@ -1,7 +1,11 @@
+import { forceHttps } from "@/common/utils/formatters";
+import { saveImageFromUrl } from "@/common/utils/files";
 import { getPosts, savePosts } from "@/config/storage/posts";
+import { getMetadata } from "@/screens/share-intent/share-intent.utils";
 import { PostType } from "@/types/posts";
 import auth from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
+import * as FileSystem from "expo-file-system/legacy";
 import { savePostsService } from "./posts.service";
 
 export type LoginResponseType = {
@@ -67,6 +71,29 @@ export const syncPosts = async ({ uid }: SyncPostsPropsType) => {
       const posts = lists[0].posts as PostType[];
       savePosts(posts);
       console.log("[Sync Lists] Saved posts:", posts.length);
+
+      const postsWithoutImages = (
+        await Promise.all(
+          posts.map(async (post) => {
+            const localUri = `${FileSystem.documentDirectory}${post.id}.jpg`;
+            const info = await FileSystem.getInfoAsync(localUri);
+            return info.exists ? null : post;
+          })
+        )
+      ).filter(Boolean) as PostType[];
+
+      await Promise.allSettled(
+        postsWithoutImages.map(async (post) => {
+          try {
+            const metadata = await getMetadata({ webUrl: post.url });
+            if (metadata.thumbnail) {
+              await saveImageFromUrl(forceHttps(metadata.thumbnail), post.id);
+            }
+          } catch {
+            // silently skip posts where metadata/image fetch fails
+          }
+        })
+      );
     }
 
     return lists;

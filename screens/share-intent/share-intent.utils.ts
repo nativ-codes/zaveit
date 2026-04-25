@@ -89,6 +89,15 @@ export const parseTags = async (
   };
 };
 
+const resolveUrl = async (url: string): Promise<string> => {
+  try {
+    const response = await fetch(url, { method: "HEAD" });
+    return response.url || url;
+  } catch {
+    return url;
+  }
+};
+
 export const getMetadata = async (
   shareIntent: Partial<ShareIntent>
 ): Promise<PostMetadataType> => {
@@ -99,9 +108,10 @@ export const getMetadata = async (
   const platformConfig = checkSocialPlatform(shareIntent.webUrl);
 
   if (platformConfig) {
+    const resolvedUrl = await resolveUrl(shareIntent.webUrl);
     const data = await getOEmbedMetadata({
       platformConfig: platformConfig as PlatformConfig,
-      url: shareIntent.webUrl,
+      url: resolvedUrl,
     });
 
     if (data) {
