@@ -105,7 +105,7 @@ function LoginScreen() {
         />
         <Button.Social
           label="Continue with Apple"
-          iconName="apple1"
+          iconName="apple"
           onPress={handleSignIn("apple")}
         />
         <TouchableOpacity
