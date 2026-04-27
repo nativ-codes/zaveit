@@ -18,7 +18,6 @@ function PreviewPost({
   onPress
 }: PreviewPostPropsType) {
   const domain = getDomainFromUrl(url);
-  console.log("PreviewPost", title);
 
   return (
     <TouchableOpacity

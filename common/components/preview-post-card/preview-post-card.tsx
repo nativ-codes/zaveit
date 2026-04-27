@@ -18,7 +18,6 @@ function PreviewPostCard({
   onPress,
 }: PreviewPostCardPropsType) {
   const domain = getDomainFromUrl(url);
-  console.log("PreviewPostCard", title);
 
   return (
     <TouchableOpacity

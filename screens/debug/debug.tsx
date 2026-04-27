@@ -61,7 +61,6 @@ function DebugScreen() {
     const key = `mappings.${id}`;
     storage.set(key, id);
     setMappings([key, ...mappings]);
-    console.log("storage", storage);
   };
 
   return (

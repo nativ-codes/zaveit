@@ -11,7 +11,6 @@ mixpanelInstance.init();
 mixpanelInstance.setServerURL("https://api-eu.mixpanel.com");
 
 function setMixpanelUserId() {
-  console.log(">> ! setMixpanelUserId");
   const userId = getUserId();
 
   mixpanelInstance?.identify(userId);
