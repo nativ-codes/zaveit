@@ -4,23 +4,23 @@ import {
   TopBar,
   UpdatePostDetails,
 } from "@/common/components";
+import { ACTIVE_OPACITY, Colors, IMAGE_PLACEHOLDER, Units } from "@/common/constants";
 import { ScreenLayout, Spacer } from "@/common/layouts";
-import { safelyPrintError } from "@/common/utils/error-parsers";
-import { toggleTag } from "@/common/utils/misc";
-import { savePost } from "@/config/storage";
-import { PostMetadataType, PostType } from "@/types";
-import * as Burnt from "burnt";
-
-import { IMAGE_PLACEHOLDER } from "@/common/constants";
 import { GeneralStyles } from "@/common/styles";
 import { forceHttps, getDomainFromUrl } from "@/common/utils";
+import { safelyPrintError } from "@/common/utils/error-parsers";
 import { saveImageFromUrl } from "@/common/utils/files";
+import { toggleTag } from "@/common/utils/misc";
 import { Analytics } from "@/config/analytics";
 import { ErrorHandler } from "@/config/errors";
+import { savePost } from "@/config/storage";
+import { PostMetadataType, PostType } from "@/types";
+import Icon from "@expo/vector-icons/Feather";
+import * as Burnt from "burnt";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useShareIntentContext } from "expo-share-intent";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { v4 as uuid } from "uuid";
 import styles from "./share-intent.style";
@@ -155,6 +155,14 @@ function ShareIntentScreen() {
     }));
   };
 
+  const goBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.navigate("/");
+    }
+  };
+
   return (
     <ScreenLayout
       hasTopInset={false}
@@ -175,7 +183,11 @@ function ShareIntentScreen() {
           top: insets.top,
         })}
       >
-        <TopBar hasBackButton />
+        <TopBar left={
+          <TouchableOpacity activeOpacity={ACTIVE_OPACITY} onPress={goBack} style={styles.topBarButton} hitSlop={Units.s16}>
+            <Icon name="chevron-left" size={Units.s24} color={Colors.white} />
+          </TouchableOpacity>
+        }/>
       </View>
       {postMetadata ? (
         <UpdatePostDetails
