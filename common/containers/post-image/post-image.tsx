@@ -19,6 +19,33 @@ type Status = "loading" | "done" | "failed";
 // primary's promise instead of firing a duplicate network request.
 const downloadPromises = new Map<string, Promise<void>>();
 
+// Semaphore: limits how many getMetadata calls run concurrently across all
+// PostImage instances, preventing rate-limit hits on oEmbed/link-preview APIs.
+const MAX_CONCURRENT_METADATA = 3;
+let metadataRunning = 0;
+const metadataQueue: (() => void)[] = [];
+
+const acquireMetadataSlot = (): Promise<void> =>
+  new Promise(resolve => {
+    if (metadataRunning < MAX_CONCURRENT_METADATA) {
+      metadataRunning++;
+      resolve();
+    } else {
+      metadataQueue.push(resolve);
+    }
+  });
+
+const METADATA_RELEASE_DELAY_MS = 3000;
+
+const releaseMetadataSlot = () => {
+  const next = metadataQueue.shift();
+  if (next) {
+    setTimeout(next, METADATA_RELEASE_DELAY_MS);
+  } else {
+    metadataRunning--;
+  }
+};
+
 function PostImage({ id, url, style }: PostImagePropsType) {
   const [status, setStatus] = useState<Status>("loading");
   const [imageStatusRaw] = useMMKVString(`imageStatus.${id}`, storage);
@@ -74,7 +101,13 @@ function PostImage({ id, url, style }: PostImagePropsType) {
       downloadPromises.set(id, promise);
 
       try {
-        const metadata = await getMetadata({ webUrl: url });
+        await acquireMetadataSlot();
+        let metadata;
+        try {
+          metadata = await getMetadata({ webUrl: url });
+        } finally {
+          releaseMetadataSlot();
+        }
 
         if (!metadata.thumbnail) {
           if (!cancelled) { storage.delete(`imageReloadAt.${id}`); markImageFailed(id); setStatus("failed"); }
