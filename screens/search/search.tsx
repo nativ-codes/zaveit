@@ -105,7 +105,7 @@ function SearchScreen() {
         },
       ];
     }
-    return sortedMainTags.map((tag) => ({ type: "tag-section", tag }));
+    return sortedMainTags.slice(0, 5).map((tag) => ({ type: "tag-section", tag }));
   }, [selectedTags, searchQuery, filteredPosts, sortedTags, sortedMainTags]);
 
   const handleOnClearSearch = useCallback(() => {
