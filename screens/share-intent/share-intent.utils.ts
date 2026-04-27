@@ -28,7 +28,7 @@ export const checkSocialPlatform = (
     return platformConfig
       ? PLATFORM_CONFIGS[platformConfig as SocialPlatform]
       : undefined;
-  } catch (error) {
+  } catch {
     return undefined;
   }
 };

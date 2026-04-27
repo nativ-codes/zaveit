@@ -12,9 +12,9 @@ import { GeneralStyles } from "@/common/styles";
 import { safelyPrintError } from "@/common/utils";
 import { ErrorHandler } from "@/config/errors";
 import {
-  clearImageFailed,
   increasePostAccessCount,
   removePost,
+  triggerImageReload,
   usePosts,
 } from "@/config/storage";
 import { PostType } from "@/types";
@@ -64,7 +64,7 @@ function PostDetailsScreen() {
 
   const handleReloadImage = () => {
     if (post) {
-      clearImageFailed(post.id);
+      triggerImageReload(post.id);
     }
   };
 
@@ -116,7 +116,7 @@ function PostDetailsScreen() {
             </TouchableOpacity>
           }
           right={
-              <TouchableOpacity activeOpacity={ACTIVE_OPACITY} onPress={handleReloadImage}style={styles.topBarButton} hitSlop={Units.s16}>
+              <TouchableOpacity activeOpacity={ACTIVE_OPACITY} onPress={handleReloadImage} style={styles.topBarButton} hitSlop={Units.s16}>
               <Icon name="refresh-cw" size={Units.s20} color={Colors.white} />
             </TouchableOpacity>
           }

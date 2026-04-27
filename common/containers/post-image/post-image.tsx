@@ -22,6 +22,7 @@ const downloadPromises = new Map<string, Promise<void>>();
 function PostImage({ id, url, style }: PostImagePropsType) {
   const [status, setStatus] = useState<Status>("loading");
   const [imageStatusRaw] = useMMKVString(`imageStatus.${id}`, storage);
+  const [imageReloadAt] = useMMKVString(`imageReloadAt.${id}`, storage);
 
   useEffect(() => {
     if (imageStatusRaw === "failed") {
@@ -37,12 +38,13 @@ function PostImage({ id, url, style }: PostImagePropsType) {
 
       if (cancelled) return;
 
-      if (info.exists) {
+      if (info.exists && !imageReloadAt) {
         setStatus("done");
         return;
       }
 
       if (!url) {
+        storage.delete(`imageReloadAt.${id}`);
         markImageFailed(id);
         setStatus("failed");
         return;
@@ -75,13 +77,14 @@ function PostImage({ id, url, style }: PostImagePropsType) {
         const metadata = await getMetadata({ webUrl: url });
 
         if (!metadata.thumbnail) {
-          if (!cancelled) { markImageFailed(id); setStatus("failed"); }
+          if (!cancelled) { storage.delete(`imageReloadAt.${id}`); markImageFailed(id); setStatus("failed"); }
           return;
         }
 
         const savedUri = await saveImageFromUrl(forceHttps(metadata.thumbnail), id);
 
         if (!cancelled) {
+          storage.delete(`imageReloadAt.${id}`);
           if (savedUri) {
             setStatus("done");
           } else {
@@ -91,6 +94,7 @@ function PostImage({ id, url, style }: PostImagePropsType) {
         }
       } catch {
         if (!cancelled) {
+          storage.delete(`imageReloadAt.${id}`);
           markImageFailed(id);
           setStatus("failed");
         }
@@ -104,7 +108,7 @@ function PostImage({ id, url, style }: PostImagePropsType) {
     return () => {
       cancelled = true;
     };
-  }, [id, url, imageStatusRaw]);
+  }, [id, url, imageStatusRaw, imageReloadAt]);
 
   if (status === "loading") {
     return (
@@ -122,7 +126,7 @@ function PostImage({ id, url, style }: PostImagePropsType) {
   return (
     <Image
       source={{ uri: `${FileSystem.documentDirectory}${id}.jpg` }}
-      recyclingKey={`${id}-${imageStatusRaw ?? "ok"}`}
+      recyclingKey={`${id}-${imageStatusRaw ?? "ok"}-${imageReloadAt ?? ""}`}
       placeholder={IMAGE_PLACEHOLDER}
       placeholderContentFit="cover"
       contentFit="cover"
