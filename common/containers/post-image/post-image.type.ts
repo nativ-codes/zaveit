@@ -1,6 +1,7 @@
-import { ImageStyle } from "react-native";
+import { StyleProp, ImageStyle } from "react-native";
 
 export type PostImagePropsType = {
-    id: string;
-    style: ImageStyle;
+  id: string;
+  url: string;
+  style: StyleProp<ImageStyle>;
 };

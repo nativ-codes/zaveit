@@ -4,20 +4,25 @@ import {
   PostDetails,
   TopBar,
 } from "@/common/components";
+import { ACTIVE_OPACITY } from "@/common/constants";
+import { Colors } from "@/common/constants/colors";
+import { Units } from "@/common/constants/units";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { safelyPrintError } from "@/common/utils";
 import { ErrorHandler } from "@/config/errors";
 import {
+  clearImageFailed,
   increasePostAccessCount,
   removePost,
   usePosts,
 } from "@/config/storage";
 import { PostType } from "@/types";
+import Icon from "@expo/vector-icons/Feather";
 import * as Linking from "expo-linking";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect } from "react";
-import { Alert, StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getPostDetails } from "../search/search.util";
 import styles from "./post-details.style";
@@ -46,6 +51,20 @@ function PostDetailsScreen() {
           post,
         },
       });
+    }
+  };
+
+  const goBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.navigate("/");
+    }
+  };
+
+  const handleReloadImage = () => {
+    if (post) {
+      clearImageFailed(post.id);
     }
   };
 
@@ -90,7 +109,18 @@ function PostDetailsScreen() {
           top: insets.top,
         })}
       >
-        <TopBar hasBackButton />
+        <TopBar
+          left={
+            <TouchableOpacity activeOpacity={ACTIVE_OPACITY} onPress={goBack} style={styles.topBarButton} hitSlop={Units.s16}>
+              <Icon name="chevron-left" size={Units.s24} color={Colors.white} />
+            </TouchableOpacity>
+          }
+          right={
+              <TouchableOpacity activeOpacity={ACTIVE_OPACITY} onPress={handleReloadImage}style={styles.topBarButton} hitSlop={Units.s16}>
+              <Icon name="refresh-cw" size={Units.s20} color={Colors.white} />
+            </TouchableOpacity>
+          }
+        />
       </View>
       {post ? (
         <PostDetails {...post} />

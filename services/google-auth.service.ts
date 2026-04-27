@@ -1,4 +1,4 @@
-import auth from "@react-native-firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithCredential, signOut as firebaseSignOut } from "@react-native-firebase/auth";
 import {
   GoogleSignin,
   isNoSavedCredentialFoundResponse,
@@ -34,12 +34,13 @@ export const signInWithGoogle = async (): Promise<UserUUIDType | null> => {
         throw new Error("No ID token present in Google Sign In response");
       }
 
-      const googleCredential = auth.GoogleAuthProvider.credential(
+      const googleCredential = GoogleAuthProvider.credential(
         letsSignin.data.idToken
       );
       console.log("[Google Auth] Got Google credentials");
 
-      const userCredential = await auth().signInWithCredential(
+      const userCredential = await signInWithCredential(
+        getAuth(),
         googleCredential
       );
       console.log("[Google Auth] Successfully signed in with Firebase");
@@ -58,7 +59,7 @@ export const signInWithGoogle = async (): Promise<UserUUIDType | null> => {
 
 export const signOut = async () => {
   try {
-    await auth().signOut();
+    await firebaseSignOut(getAuth());
     await GoogleSignin.signOut();
     await GoogleSignin.revokeAccess();
   } catch (error) {

@@ -1,11 +1,7 @@
-import { forceHttps } from "@/common/utils/formatters";
-import { saveImageFromUrl } from "@/common/utils/files";
 import { getPosts, savePosts } from "@/config/storage/posts";
-import { getMetadata } from "@/screens/share-intent/share-intent.utils";
 import { PostType } from "@/types/posts";
-import auth from "@react-native-firebase/auth";
-import firestore from "@react-native-firebase/firestore";
-import * as FileSystem from "expo-file-system/legacy";
+import { getAuth, signInWithEmailAndPassword } from "@react-native-firebase/auth";
+import { getFirestore } from "@react-native-firebase/firestore";
 import { savePostsService } from "./posts.service";
 
 export type LoginResponseType = {
@@ -22,7 +18,8 @@ export const login = async (
   password: string
 ): Promise<LoginResponseType> => {
   try {
-    const userCredential = await auth().signInWithEmailAndPassword(
+    const userCredential = await signInWithEmailAndPassword(
+      getAuth(),
       email,
       password
     );
@@ -48,7 +45,7 @@ export const syncPosts = async ({ uid }: SyncPostsPropsType) => {
   try {
     console.log("[Sync Lists] Starting sync for user:", uid);
 
-    const listsRef = firestore().collection("lists");
+    const listsRef = getFirestore().collection("lists");
     const userListsQuery = await listsRef.where("userId", "==", uid).get();
 
     if (userListsQuery.empty) {
@@ -71,29 +68,6 @@ export const syncPosts = async ({ uid }: SyncPostsPropsType) => {
       const posts = lists[0].posts as PostType[];
       savePosts(posts);
       console.log("[Sync Lists] Saved posts:", posts.length);
-
-      const postsWithoutImages = (
-        await Promise.all(
-          posts.map(async (post) => {
-            const localUri = `${FileSystem.documentDirectory}${post.id}.jpg`;
-            const info = await FileSystem.getInfoAsync(localUri);
-            return info.exists ? null : post;
-          })
-        )
-      ).filter(Boolean) as PostType[];
-
-      await Promise.allSettled(
-        postsWithoutImages.map(async (post) => {
-          try {
-            const metadata = await getMetadata({ webUrl: post.url });
-            if (metadata.thumbnail) {
-              await saveImageFromUrl(forceHttps(metadata.thumbnail), post.id);
-            }
-          } catch {
-            // silently skip posts where metadata/image fetch fails
-          }
-        })
-      );
     }
 
     return lists;

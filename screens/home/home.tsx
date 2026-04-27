@@ -5,7 +5,7 @@ import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { useHasPosts } from "@/config/storage";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Text, TouchableOpacity } from "react-native";
 import FrequentlyAccessedSection from "./components/frequently-accessed-section/frequently-accessed-section";
 import RandomPickSection from "./components/random-pick-section/random-pick-section";
@@ -15,12 +15,12 @@ function HomeScreen() {
   const hasPosts = useHasPosts();
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const handleOnPostPress = (postId: string) => {
+  const handleOnPostPress = useCallback((postId: string) => {
     router.push({
       pathname: "/post-details",
       params: { id: postId },
     });
-  };
+  }, []);
 
   const handleOnAddPost = () => {
     setIsModalVisible(true);

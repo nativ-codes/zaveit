@@ -4,7 +4,7 @@ import { Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { idExtractor } from "@/common/utils";
 import { FlashList } from "@shopify/flash-list";
-import React, { useCallback } from "react";
+import React, { memo, useCallback } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import styles from "./horizontal-scrollview-posts.style";
 import { HorizontalScrollViewPostsType } from "./horizontal-scrollview-posts.type";
@@ -18,9 +18,9 @@ function HorizontalScrollViewPosts({
   onViewAll,
   onPostPress,
 }: HorizontalScrollViewPostsType) {
-  const renderItem = ({ item }: { item: any }) => (
+  const renderItem = useCallback(({ item }: { item: any }) => (
     <Element {...item} onPress={() => onPostPress(item.id)} />
-  );
+  ), [Element, onPostPress]);
 
   const renderItemSeparator = useCallback(
     () => <View style={styles.itemSeparator} />,
@@ -63,4 +63,4 @@ function HorizontalScrollViewPosts({
   );
 }
 
-export default HorizontalScrollViewPosts;
+export default memo(HorizontalScrollViewPosts);

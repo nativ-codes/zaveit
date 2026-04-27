@@ -1,4 +1,4 @@
-import auth from '@react-native-firebase/auth';
+import { createUserWithEmailAndPassword, getAuth } from '@react-native-firebase/auth';
 
 export type RegisterResponseType = {
   user: any;
@@ -14,7 +14,7 @@ export const register = async (
   password: string
 ): Promise<RegisterResponseType> => {
   try {
-    const userCredential = await auth().createUserWithEmailAndPassword(email, password);
+    const userCredential = await createUserWithEmailAndPassword(getAuth(), email, password);
     return { user: userCredential.user };
   } catch (error: any) {
     throw {

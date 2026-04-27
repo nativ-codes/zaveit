@@ -4,7 +4,7 @@ import PostImage from "@/common/containers/post-image/post-image";
 import { Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { getDomainFromUrl } from "@/common/utils";
-import React from "react";
+import React, { memo } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import TagItem from "../tag-item/tag-item";
 import { styles } from "./preview-post-card.style";
@@ -18,6 +18,7 @@ function PreviewPostCard({
   onPress,
 }: PreviewPostCardPropsType) {
   const domain = getDomainFromUrl(url);
+  console.log("PreviewPostCard", title);
 
   return (
     <TouchableOpacity
@@ -27,7 +28,7 @@ function PreviewPostCard({
       accessibilityRole="button"
       accessibilityLabel={`View details for ${title || url}`}
     >
-      <PostImage id={id} style={styles.image} />
+      <PostImage id={id} url={url} style={styles.image} />
 
       <Spacer direction="full" size="s8" gap="s4">
         {title && (
@@ -69,4 +70,4 @@ function PreviewPostCard({
   );
 }
 
-export default PreviewPostCard;
+export default memo(PreviewPostCard);

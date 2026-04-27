@@ -2,6 +2,7 @@ export const Colors = {
   // Base colors
   white: "#FFFFFF",
   black: "#000000",
+  black20: "#00000033",
   transparent: "transparent",
   primary: "#5474FD",
   primaryLight: "#c9cefe",

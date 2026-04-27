@@ -124,6 +124,14 @@ export const clearAllData = (): void => {
   deleteAllImages();
 };
 
+export const markImageFailed = (id: string): void => {
+  storage.set(`imageStatus.${id}`, "failed");
+};
+
+export const clearImageFailed = (id: string): void => {
+  storage.delete(`imageStatus.${id}`);
+};
+
 export const removeDuplicatePosts = (): void => {
   const posts = getPosts();
   if (posts.length === 0) {

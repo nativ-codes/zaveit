@@ -1,6 +1,6 @@
 import { safelyPrintError } from '@/common/utils';
 import { UserType } from '@/services/users.service';
-import auth from '@react-native-firebase/auth';
+import { getAuth, onAuthStateChanged } from '@react-native-firebase/auth';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { ErrorHandler } from '../errors';
 
@@ -28,7 +28,7 @@ function AuthProvider({ children }: AuthProviderPropsType) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = auth().onAuthStateChanged(async (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(getAuth(), async (firebaseUser) => {
       try {
         if (firebaseUser) {
           console.log('[Auth Context] Firebase user authenticated:', firebaseUser);

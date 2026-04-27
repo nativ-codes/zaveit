@@ -9,7 +9,7 @@ import {
 } from "@/config/storage";
 import { storage } from "@/config/storage/storage";
 import { syncPosts } from "@/services/login.service";
-import auth from "@react-native-firebase/auth";
+import { getAuth } from "@react-native-firebase/auth";
 import * as Burnt from "burnt";
 import React, { useState } from "react";
 import { Text } from "react-native";
@@ -40,7 +40,7 @@ function DebugScreen() {
   };
 
   const handleOnSync = async () => {
-    const uid = auth().currentUser?.uid;
+    const uid = getAuth().currentUser?.uid;
     if (!uid) {
       Burnt.toast({ title: "Not logged in", preset: "error", duration: 2 });
       return;

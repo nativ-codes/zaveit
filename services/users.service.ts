@@ -1,5 +1,5 @@
-import auth from "@react-native-firebase/auth";
-import firestore from "@react-native-firebase/firestore";
+import { getAuth } from "@react-native-firebase/auth";
+import { getFirestore, serverTimestamp } from "@react-native-firebase/firestore";
 
 export type UserType = {
   id: string;
@@ -17,20 +17,20 @@ export const createUser = async (user: UserType): Promise<void> => {
       email: user.email,
     });
 
-    const userRef = firestore().collection("users").doc(user.id);
+    const userRef = getFirestore().collection("users").doc(user.id);
     await userRef.set({
       displayName: user.displayName,
       email: user.email,
-      createdAt: firestore.FieldValue.serverTimestamp(),
+      createdAt: serverTimestamp(),
     });
 
     // Create a list for the user
-    const listRef = firestore().collection("lists").doc();
+    const listRef = getFirestore().collection("lists").doc();
     await listRef.set({
       isPublished: false,
       posts: [],
       userId: user.id,
-      createdAt: firestore.FieldValue.serverTimestamp(),
+      createdAt: serverTimestamp(),
     });
 
     console.log("[Users Service] User and list created successfully:", user.id);
@@ -48,7 +48,7 @@ export const createUser = async (user: UserType): Promise<void> => {
 
 export const deleteUser = async (): Promise<void> => {
   try {
-    const currentUser = auth().currentUser;
+    const currentUser = getAuth().currentUser;
 
     if (!currentUser) {
       throw {
@@ -61,7 +61,7 @@ export const deleteUser = async (): Promise<void> => {
     console.log("[Users Service] Deleting user:", { userId });
 
     // Find the user's list first
-    const listsQuery = await firestore()
+    const listsQuery = await getFirestore()
       .collection("lists")
       .where("userId", "==", userId)
       .get();
@@ -80,7 +80,7 @@ export const deleteUser = async (): Promise<void> => {
 
     console.log("[Users Service] Deleting user document:", userId);
     // Delete the user document
-    const userRef = firestore().collection("users").doc(userId);
+    const userRef = getFirestore().collection("users").doc(userId);
     await userRef.delete();
 
     console.log("[Users Service] Deleted user document:", userId);

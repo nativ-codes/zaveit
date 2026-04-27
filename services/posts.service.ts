@@ -1,14 +1,14 @@
 import { PostType } from "@/types";
-import auth from "@react-native-firebase/auth";
-import firestore from "@react-native-firebase/firestore";
+import { getAuth } from "@react-native-firebase/auth";
+import { arrayUnion, getFirestore } from "@react-native-firebase/firestore";
 
 export const savePostService = async (post: PostType): Promise<void> => {
   try {
-    const userId = auth().currentUser?.uid;
+    const userId = getAuth().currentUser?.uid;
     console.log("[Posts Service] Saving post:", { userId, post });
 
     // Find the user's list
-    const listsRef = firestore().collection("lists");
+    const listsRef = getFirestore().collection("lists");
     const userListQuery = await listsRef
       .where("userId", "==", userId)
       .limit(1)
@@ -23,7 +23,7 @@ export const savePostService = async (post: PostType): Promise<void> => {
     // Add the post to the list's posts array
     await userList.ref.update({
       userId: userId,
-      posts: firestore.FieldValue.arrayUnion(post),
+      posts: arrayUnion(post),
     });
 
     console.log("[Posts Service] Post saved successfully");
@@ -40,14 +40,14 @@ export const savePostService = async (post: PostType): Promise<void> => {
 
 export const savePostsService = async (posts: PostType[]): Promise<void> => {
   try {
-    const userId = auth().currentUser?.uid;
+    const userId = getAuth().currentUser?.uid;
     console.log("[Posts Service] Saving posts:", {
       userId,
       postsCount: posts.length,
     });
 
     // Find the user's list
-    const listsRef = firestore().collection("lists");
+    const listsRef = getFirestore().collection("lists");
     const userListQuery = await listsRef
       .where("userId", "==", userId)
       .limit(1)
@@ -62,7 +62,7 @@ export const savePostsService = async (posts: PostType[]): Promise<void> => {
     // Add all posts to the list's posts array
     await userList.ref.update({
       userId: userId,
-      posts: firestore.FieldValue.arrayUnion(...posts),
+      posts: arrayUnion(...posts),
     });
 
     console.log("[Posts Service] Posts saved successfully");
@@ -79,11 +79,11 @@ export const savePostsService = async (posts: PostType[]): Promise<void> => {
 
 export const removePostService = async (post: PostType): Promise<void> => {
   try {
-    const userId = auth().currentUser?.uid;
+    const userId = getAuth().currentUser?.uid;
     console.log("[Posts Service] Removing post:", { userId, post });
 
     // Find the user's list
-    const listsRef = firestore().collection("lists");
+    const listsRef = getFirestore().collection("lists");
     const userListQuery = await listsRef
       .where("userId", "==", userId)
       .limit(1)

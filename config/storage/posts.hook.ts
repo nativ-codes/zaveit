@@ -2,7 +2,7 @@ import { MAX_HORIZONTAL_SCROLLVIEW_POSTS } from "@/common/constants";
 import { getRandomPick } from "@/screens/search/search.util";
 import { syncPosts } from "@/services/login.service";
 import { FrequentlyAccessedPostsType, PostType } from "@/types/posts";
-import auth from "@react-native-firebase/auth";
+import { getAuth } from "@react-native-firebase/auth";
 import { useEffect, useMemo } from "react";
 import { useMMKVString } from "react-native-mmkv";
 import { getPosts } from "./posts";
@@ -64,7 +64,7 @@ export const useHasPosts = (): boolean => {
 
   useEffect(() => {
     if(!posts.length) {
-      const userUUID = auth()?.currentUser?.uid;
+      const userUUID = getAuth()?.currentUser?.uid;
       if (userUUID) {
         syncPosts({ uid: userUUID });
       }
