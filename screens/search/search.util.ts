@@ -53,7 +53,7 @@ export const getFilteredPosts = ({
   const hasQuery = query.length > 0;
   const hasTags = selectedTags.length > 0;
 
-  return posts.filter((post) => {
+  const filtered = posts.filter((post) => {
     // Check search query if it exists
     if (hasQuery) {
       const matchesQuery =
@@ -69,6 +69,14 @@ export const getFilteredPosts = ({
 
     return true;
   });
+
+  if (hasTags) {
+    return [...filtered].sort(
+      (a, b) => (b.timestamp ?? 0) - (a.timestamp ?? 0)
+    );
+  }
+
+  return filtered;
 };
 
 type GetPostsForTagType = {
