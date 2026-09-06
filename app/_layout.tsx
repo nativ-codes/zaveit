@@ -2,6 +2,7 @@
 import "@/config/storage/storage";
 
 import MainStack from "@/common/containers/main-stack/main-stack";
+import { initializeAppCheck } from "@/config/app-check";
 import AuthProvider from "@/config/contexts/auth.context";
 import { useFonts } from "expo-font";
 import { ShareIntentProvider } from "expo-share-intent";
@@ -15,6 +16,9 @@ if (__DEV__) {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   require("../dev/reactotron-config");
 }
+
+// Fire-and-forget: App Check warms its token cache in the background.
+initializeAppCheck();
 
 export default function RootLayout() {
   const [loaded] = useFonts({
