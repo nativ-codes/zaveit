@@ -10,6 +10,7 @@ import {
   getLinkPreviewMetadata,
   getLocalLinkPreviewMetadata,
   getOEmbedMetadata,
+  getTikTokEmbedMetadata,
 } from "./share-intent.service";
 
 export const checkSocialPlatform = (
@@ -98,6 +99,22 @@ const resolveUrl = async (url: string): Promise<string> => {
   }
 };
 
+const TIKTOK_VIDEO_ID_PATTERN = /\/(?:video|photo)\/(\d+)/;
+
+const extractTikTokVideoId = (url: string): string | undefined => {
+  const match = url.match(TIKTOK_VIDEO_ID_PATTERN);
+  return match?.[1];
+};
+
+const hasUsefulMetadata = (data?: {
+  title?: string;
+  thumbnail?: string;
+  thumbnail_url?: string;
+}): boolean =>
+  Boolean(
+    data?.title?.trim() || data?.thumbnail?.trim() || data?.thumbnail_url?.trim()
+  );
+
 export const getMetadata = async (
   shareIntent: Partial<ShareIntent>
 ): Promise<PostMetadataType> => {
@@ -117,12 +134,28 @@ export const getMetadata = async (
       url: resolvedUrl,
     });
 
-    if (data) {
+    let resolvedData = hasUsefulMetadata(data) ? data : undefined;
+
+    // TikTok oEmbed currently returns only an iframe (no title/author/thumbnail).
+    // Fall back to the embed/v2 page, which still includes that metadata.
+    if (isTikTok && !resolvedData) {
+      const videoId =
+        data?.embedProductId || extractTikTokVideoId(resolvedUrl);
+      const tikTokData = videoId
+        ? await getTikTokEmbedMetadata(videoId)
+        : undefined;
+
+      if (hasUsefulMetadata(tikTokData)) {
+        resolvedData = tikTokData;
+      }
+    }
+
+    if (resolvedData) {
       return {
         url: shareIntent.webUrl || "",
-        title: data.title || shareIntent.webUrl || "",
-        author: data.author || "",
-        thumbnail: data.thumbnail_url || data.thumbnail,
+        title: resolvedData.title || shareIntent.webUrl || "",
+        author: resolvedData.author || "",
+        thumbnail: resolvedData.thumbnail,
       };
     }
   }

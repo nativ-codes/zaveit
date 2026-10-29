@@ -3,7 +3,7 @@ import { PlatformConfig, SocialPlatform } from "@/types/posts";
 export const PLATFORM_CONFIGS: Record<SocialPlatform, PlatformConfig> = {
   [SocialPlatform.TIKTOK]: {
     platform: SocialPlatform.TIKTOK,
-    domains: ["tiktok.com", "vm.tiktok.com"],
+    domains: ["tiktok.com", "vm.tiktok.com", "vt.tiktok.com"],
     oembedEndpoint: "https://www.tiktok.com/oembed",
   },
   [SocialPlatform.REDDIT]: {
