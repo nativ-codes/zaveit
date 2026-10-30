@@ -42,10 +42,11 @@ export type ParseTagsReturnType = {
 };
 
 export const parseTags = async (
-  title: string
+  title: string,
+  url?: string
 ): Promise<ParseTagsReturnType> => {
   const localTags = getTags();
-  const suggestedTags = await getSuggestedTags(title);
+  const suggestedTags = await getSuggestedTags(title, url);
 
   // Filter suggested tags that are also in MAIN_TAGS
   const selectedMainTags = suggestedTags.filter((tag) =>
