@@ -10,6 +10,7 @@ import {
   getLinkPreviewMetadata,
   getLocalLinkPreviewMetadata,
   getOEmbedMetadata,
+  getTikTokEmbedMetadata,
 } from "./share-intent.service";
 
 export const checkSocialPlatform = (
@@ -112,12 +113,28 @@ export const getMetadata = async (
     const resolvedUrl = isTikTok
       ? await resolveUrl(shareIntent.webUrl)
       : shareIntent.webUrl;
+
+    if (isTikTok) {
+      const tikTokData = await getTikTokEmbedMetadata({
+        url: resolvedUrl,
+      });
+
+      if (tikTokData?.title || tikTokData?.thumbnail) {
+        return {
+          url: shareIntent.webUrl || "",
+          title: tikTokData.title || shareIntent.webUrl || "",
+          author: tikTokData.author || "",
+          thumbnail: tikTokData.thumbnail,
+        };
+      }
+    }
+
     const data = await getOEmbedMetadata({
       platformConfig: platformConfig as PlatformConfig,
       url: resolvedUrl,
     });
 
-    if (data) {
+    if (data?.title) {
       return {
         url: shareIntent.webUrl || "",
         title: data.title || shareIntent.webUrl || "",
