@@ -1,0 +1,41 @@
+# Links checked by GET /health/sources. One URL per line, # starts a comment.
+# Each link must give a title and a picture that loads. Redeploy after editing.
+
+# YouTube
+https://www.youtube.com/watch?v=dQw4w9WgXcQ
+https://youtu.be/dQw4w9WgXcQ
+https://music.youtube.com/watch?v=dQw4w9WgXcQ
+
+# TikTok
+https://www.tiktok.com/@scout2015/video/6718335390845095173
+
+# Reddit
+https://www.reddit.com/r/FutureOfWork/comments/1xgpt0k/microsoft_is_laying_off_60000_employees/
+https://redd.it/1xgpt0k
+
+# Other sites (generic fallback)
+https://en.wikipedia.org/wiki/Go_(programming_language)
+
+
+# TikTok - long url - video
+https://www.tiktok.com/@thelost_world_/video/7701444108262329622?_r=1&_t=ZN-94AXmquIb2M
+
+# TikTok - short url - video
+https://vm.tiktok.com/ZN8UTV3VN/
+
+# TikTok - long url - gallery
+https://www.tiktok.com/@qauxxo/photo/7674288494172310806?is_from_webapp=1&sender_device=pc&web_id=7701816416530269719 
+
+# TikTok - short url - gallery
+https://vm.tiktok.com/ZN8UTEFP5/
+
+# Reddit - long url - post
+https://www.reddit.com/r/iasi/s/aaZutsBR83
+
+# Facebook - long url - post
+https://www.facebook.com/OradeIasi.ro/posts/pfbid0BsEw1iKjNsycPUVw5pM3pGpVcwdNNmffnqX6Dt4ufKWpcszVQ96336e2gzQM8b2el
+
+# Github - long url - repo
+https://github.com/mattpocock/skills
+
+https://hotnews.ro/interviu-toate-atrocitatile-posibile-s-au-produs-la-odesa-un-istoric-reconstituie-un-episod-rusinos-al-armatei-romane-2390888
