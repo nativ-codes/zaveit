@@ -1,0 +1,13 @@
+name: zaveit
+
+services:
+  server:
+    build: .
+    container_name: zaveit-server
+    restart: unless-stopped
+    env_file: .env
+    networks: [web]
+
+networks:
+  web:
+    external: true
