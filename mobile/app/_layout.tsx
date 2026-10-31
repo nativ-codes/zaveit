@@ -2,6 +2,7 @@
 import "@/config/storage/storage";
 
 import MainStack from "@/common/containers/main-stack/main-stack";
+import { initializeAppCheck } from "@/config/app-check";
 import AuthProvider from "@/config/contexts/auth.context";
 import { useFonts } from "expo-font";
 import { ShareIntentProvider } from "expo-share-intent";
@@ -15,6 +16,11 @@ if (__DEV__) {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   require("../dev/reactotron-config");
 }
+
+// Started early so the first share does not wait for attestation.
+initializeAppCheck().catch(() => {
+  // getAppCheckToken retries and reports the failure.
+});
 
 export default function RootLayout() {
   const [loaded] = useFonts({

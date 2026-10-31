@@ -1,3 +1,5 @@
+import { ApiEndpoints } from "@/config/api";
+import { getAppCheckToken } from "@/config/app-check";
 import { PlatformConfig } from "@/types/posts";
 
 const TAGS_TIMEOUT_MS = 5000;
@@ -36,10 +38,11 @@ export const fetchTikTokEmbedPage = async ({
 };
 
 export const fetchServerMetadata = async (url: string): Promise<Response> => {
-  const apiUrl = process.env.EXPO_PUBLIC_METADATA_API_URL;
   const encodedUrl = encodeURIComponent(url || "");
 
-  return fetch(`${apiUrl}?url=${encodedUrl}`);
+  return fetch(`${ApiEndpoints.metadata}?url=${encodedUrl}`, {
+    headers: { "X-Firebase-AppCheck": await getAppCheckToken() },
+  });
 };
 
 export const getSuggestedTags = async (content: string): Promise<string[]> => {
@@ -47,9 +50,12 @@ export const getSuggestedTags = async (content: string): Promise<string[]> => {
   const timeout = setTimeout(() => controller.abort(), TAGS_TIMEOUT_MS);
 
   try {
-    const response = await fetch(process.env.EXPO_PUBLIC_TAGS_API_URL!, {
+    const response = await fetch(ApiEndpoints.tags, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "X-Firebase-AppCheck": await getAppCheckToken(),
+      },
       body: JSON.stringify({ title: content }),
       signal: controller.signal,
     });
