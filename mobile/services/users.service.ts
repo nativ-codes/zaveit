@@ -11,12 +11,6 @@ export type UserUUIDType = string;
 
 export const createUser = async (user: UserType): Promise<void> => {
   try {
-    console.log("[Users Service] Creating user:", {
-      userId: user.id,
-      displayName: user.displayName,
-      email: user.email,
-    });
-
     const userRef = getFirestore().collection("users").doc(user.id);
     await userRef.set({
       displayName: user.displayName,
@@ -107,11 +101,6 @@ export const createFirestoreUser = async (
 ): Promise<UserUUIDType | null> => {
   try {
     if (userCredential) {
-      console.log(
-        "[Google Auth] User credential:",
-        JSON.stringify(userCredential)
-      );
-
       // Check if this is a new user using Firebase's isNewUser flag
       if (userCredential.additionalUserInfo?.isNewUser) {
         console.log(
@@ -133,7 +122,6 @@ export const createFirestoreUser = async (
       } else {
         console.log("[Google Auth] Existing user, skipping Firestore creation");
       }
-      console.log("[Users Service] User credential:", userCredential.user);
       return userCredential.user.uid as UserUUIDType;
     } else {
       return null;

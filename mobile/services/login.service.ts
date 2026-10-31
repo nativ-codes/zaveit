@@ -59,10 +59,8 @@ export const syncPosts = async ({ uid }: SyncPostsPropsType) => {
     }));
 
     const localPosts = getPosts();
-    console.log("[Sync Lists] Local posts", localPosts);
     localPosts.length && savePostsService(localPosts);
 
-    console.log("[Sync Lists] Found lists:", lists);
     // Extract posts from the first list and save them as share intents
     if (lists.length > 0 && "posts" in lists[0]) {
       const posts = lists[0].posts as PostType[];

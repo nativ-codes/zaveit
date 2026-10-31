@@ -5,7 +5,6 @@ import { arrayUnion, getFirestore } from "@react-native-firebase/firestore";
 export const savePostService = async (post: PostType): Promise<void> => {
   try {
     const userId = getAuth().currentUser?.uid;
-    console.log("[Posts Service] Saving post:", { userId, post });
 
     // Find the user's list
     const listsRef = getFirestore().collection("lists");
@@ -80,7 +79,6 @@ export const savePostsService = async (posts: PostType[]): Promise<void> => {
 export const removePostService = async (post: PostType): Promise<void> => {
   try {
     const userId = getAuth().currentUser?.uid;
-    console.log("[Posts Service] Removing post:", { userId, post });
 
     // Find the user's list
     const listsRef = getFirestore().collection("lists");
