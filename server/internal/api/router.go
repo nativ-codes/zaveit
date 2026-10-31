@@ -11,9 +11,11 @@ import (
 )
 
 // NewRouter is the list of every route the server has.
-func NewRouter(ai deepseek.Client, logTagDetails bool) http.Handler {
+func NewRouter(ai deepseek.Client, logTagDetails bool, check SourcesCheck) http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", health)
+	mux.HandleFunc("GET /health/sources", checkSources(check))
+	mux.HandleFunc("GET /metadata", getMetadata)
 	mux.HandleFunc("POST /tags", suggestTags(ai, logTagDetails))
 	return logRequests(mux)
 }
