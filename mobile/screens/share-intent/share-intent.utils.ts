@@ -42,10 +42,12 @@ export type ParseTagsReturnType = {
 };
 
 export const parseTags = async (
-  title: string
+  title: string,
+  url: string
 ): Promise<ParseTagsReturnType> => {
   const localTags = getTags();
-  const suggestedTags = await getSuggestedTags(title);
+  // getMetadata falls back to the URL as title, which gives the model nothing to tag.
+  const suggestedTags = title === url ? [] : await getSuggestedTags(title);
 
   // Filter suggested tags that are also in MAIN_TAGS
   const selectedMainTags = suggestedTags.filter((tag) =>

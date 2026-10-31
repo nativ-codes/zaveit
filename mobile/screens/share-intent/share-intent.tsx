@@ -82,7 +82,7 @@ function ShareIntentScreen() {
         setPostMetadata(data);
 
         if (data?.title) {
-          const response = await parseTags(data.title);
+          const response = await parseTags(data.title, data.url);
           setTags(response);
         }
       } catch (error) {
