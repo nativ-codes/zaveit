@@ -14,13 +14,17 @@ import (
 type VerifyToken func(token string) error
 
 // NewRouter is the list of every route the server has.
-// shortcut: no per-IP rate limit yet, ADR 0001 stage 2 needs one before exposing /v1 publicly.
 func NewRouter(ai deepseek.Client, logTagDetails bool, check SourcesCheck, verify VerifyToken) http.Handler {
+	limiter := newRateLimiter()
+	v1 := func(next http.HandlerFunc) http.HandlerFunc {
+		return limitRate(limiter, requireAppCheck(verify, next))
+	}
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", health)
 	mux.HandleFunc("GET /health/sources", checkSources(check))
-	mux.HandleFunc("GET /v1/metadata", requireAppCheck(verify, getMetadata))
-	mux.HandleFunc("POST /v1/tags", requireAppCheck(verify, suggestTags(ai, logTagDetails)))
+	mux.HandleFunc("GET /v1/metadata", v1(getMetadata))
+	mux.HandleFunc("POST /v1/tags", v1(suggestTags(ai, logTagDetails)))
 	return logRequests(mux)
 }
 
