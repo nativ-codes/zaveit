@@ -1,8 +1,7 @@
 import { safelyPrintError } from "@/common/utils/error-parsers";
 import { ErrorHandler } from "@/config/errors";
 import {
-  fetchLinkPreview,
-  fetchLocalLinkPreview,
+  fetchServerMetadata,
   fetchOEmbedMetadata,
   fetchTikTokEmbedPage,
 } from "@/services/general.service";
@@ -17,16 +16,6 @@ type GetOEmbedMetadataReturnType = {
 
 type GetOEmbedMetadataType = {
   platformConfig: PlatformConfig;
-  url: string;
-};
-
-type GetLinkPreviewMetadataReturnType = {
-  title: string;
-  image: string;
-  url: string;
-};
-
-type GetLinkPreviewMetadataType = {
   url: string;
 };
 
@@ -182,56 +171,25 @@ export const getTikTokEmbedMetadata = async ({
   }
 };
 
-export const getLinkPreviewMetadata = async ({
-  url,
-}: GetLinkPreviewMetadataType): Promise<
-  GetLinkPreviewMetadataReturnType | undefined
-> => {
-  try {
-    const response = await fetchLinkPreview(url);
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch link preview metadata");
-    }
-
-    const data = await response.json();
-
-    return {
-      title: data.title || "",
-      image: data.image || "",
-      url: url || "",
-    };
-  } catch (error) {
-    ErrorHandler.logError({
-      location: "getLinkPreviewMetadata",
-      error: safelyPrintError(error),
-      metadata: {
-        url,
-      },
-    });
-    return undefined;
-  }
-};
-
-type GetLocalLinkPreviewMetadataReturnType = {
+type GetServerMetadataReturnType = {
   title: string;
   thumbnail: string;
 };
 
-type GetLocalLinkPreviewMetadataType = {
+type GetServerMetadataType = {
   url: string;
 };
 
-export const getLocalLinkPreviewMetadata = async ({
+export const getServerMetadata = async ({
   url,
-}: GetLocalLinkPreviewMetadataType): Promise<
-  GetLocalLinkPreviewMetadataReturnType | undefined
+}: GetServerMetadataType): Promise<
+  GetServerMetadataReturnType | undefined
 > => {
   try {
-    const response = await fetchLocalLinkPreview(url);
+    const response = await fetchServerMetadata(url);
 
     if (!response.ok) {
-      throw new Error("Failed to fetch local link preview metadata");
+      throw new Error("Failed to fetch server metadata");
     }
 
     const data = await response.json();
@@ -242,7 +200,7 @@ export const getLocalLinkPreviewMetadata = async ({
     };
   } catch (error) {
     ErrorHandler.logError({
-      location: "getLocalLinkPreviewMetadata",
+      location: "getServerMetadata",
       error: safelyPrintError(error),
       metadata: {
         url,

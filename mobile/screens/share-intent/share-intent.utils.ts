@@ -7,10 +7,7 @@ import { getSuggestedTags } from "@/services/general.service";
 import { PostMetadataType } from "@/types";
 import { ShareIntent } from "expo-share-intent";
 import { getPlatformMetadata } from "./share-intent.platforms";
-import {
-  getLinkPreviewMetadata,
-  getLocalLinkPreviewMetadata,
-} from "./share-intent.service";
+import { getServerMetadata } from "./share-intent.service";
 
 export type ParseTagsReturnType = {
   additionalTags: string[];
@@ -92,29 +89,16 @@ export const getMetadata = async (
     };
   }
 
-  const localLinkPreviewMetadata = await getLocalLinkPreviewMetadata({
+  const serverMetadata = await getServerMetadata({
     url: shareIntent.webUrl,
   });
 
-  if (localLinkPreviewMetadata?.title) {
+  if (serverMetadata?.title) {
     return {
       url: shareIntent.webUrl || "",
-      title: localLinkPreviewMetadata.title || shareIntent.webUrl || "",
+      title: serverMetadata.title || shareIntent.webUrl || "",
       author: "",
-      thumbnail: localLinkPreviewMetadata.thumbnail,
-    };
-  }
-
-  const linkPreviewMetadata = await getLinkPreviewMetadata({
-    url: shareIntent.webUrl,
-  });
-
-  if (linkPreviewMetadata?.title) {
-    return {
-      url: shareIntent.webUrl || "",
-      title: linkPreviewMetadata.title || shareIntent.webUrl || "",
-      author: "",
-      thumbnail: linkPreviewMetadata.image,
+      thumbnail: serverMetadata.thumbnail,
     };
   }
 

@@ -20,7 +20,7 @@ type Status = "loading" | "done" | "failed";
 const downloadPromises = new Map<string, Promise<void>>();
 
 // Semaphore: limits how many getMetadata calls run concurrently across all
-// PostImage instances, preventing rate-limit hits on oEmbed/link-preview APIs.
+// PostImage instances, preventing rate-limit hits on oEmbed and metadata APIs.
 const MAX_CONCURRENT_METADATA = 3;
 let metadataRunning = 0;
 const metadataQueue: (() => void)[] = [];
