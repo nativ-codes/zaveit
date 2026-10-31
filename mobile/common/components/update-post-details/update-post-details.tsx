@@ -4,6 +4,7 @@ import { Units } from "@/common/constants/units";
 import { Row, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { forceHttps, safelyPrintError } from "@/common/utils";
+import { Haptics } from "@/common/utils/haptics";
 import { ErrorHandler } from "@/config/errors";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import * as Burnt from "burnt";
@@ -37,8 +38,8 @@ function UpdatePostDetails({
         title: "Copied to clipboard.",
         preset: "done",
         duration: 2,
-        haptic: "success",
       });
+      Haptics.light();
     } catch (error) {
       ErrorHandler.logError({
         location: "handleOnCopyToClipboard",

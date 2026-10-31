@@ -1,5 +1,6 @@
 import { Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
+import { Haptics } from "@/common/utils/haptics";
 import { toggleTag } from "@/common/utils/misc";
 import React from "react";
 import { ScrollView } from "react-native";
@@ -15,6 +16,7 @@ const HorizontalScrollViewTags = ({
   onSecondaryTagSelect,
 }: HorizontalScrollViewTagsPropsType) => {
   const handleOnPrimaryTagSelect = (tag: string) => {
+    Haptics.selection();
     onPrimaryTagSelect((prevPrimaryTagSelected) => {
       if (prevPrimaryTagSelected === tag) {
         onSecondaryTagSelect([]);
@@ -26,6 +28,7 @@ const HorizontalScrollViewTags = ({
   };
 
   const handleOnSecondaryTagSelect = (tag: string) => {
+    Haptics.selection();
     onSecondaryTagSelect((prevSecondaryTags) =>
       toggleTag({
         tags: prevSecondaryTags,
@@ -61,7 +64,7 @@ const HorizontalScrollViewTags = ({
               <TagItem
                 key={tag}
                 tag={tag}
-                onPress={() => onPrimaryTagSelect(tag)}
+                onPress={() => handleOnPrimaryTagSelect(tag)}
                 isSelected={false}
               />
             ))}

@@ -1,7 +1,8 @@
 import { PreviewPost } from "@/common/components";
 import { ACTIVE_OPACITY, Colors, Units } from "@/common/constants";
+import { Haptics } from "@/common/utils/haptics";
 import Icon from "@expo/vector-icons/Feather";
-import React from "react";
+import React, { useRef } from "react";
 import { TouchableOpacity, View } from "react-native";
 import Animated, {
   interpolate,
@@ -20,6 +21,7 @@ function SwipePreviewPost({
   onRemove,
 }: SwipePreviewPostPropsType) {
   const swipeProgress = useSharedValue(0);
+  const isAtRemovePoint = useRef(false);
 
   const animatedStyle = useAnimatedStyle(() => {
     const opacity = interpolate(
@@ -44,6 +46,12 @@ function SwipePreviewPost({
 
   const handleOnSwipeValueChange = (swipeData: { value: number }) => {
     swipeProgress.value = swipeData.value;
+
+    const isOpen = swipeData.value <= -RIGHT_OFFSET;
+    if (isOpen && !isAtRemovePoint.current) {
+      Haptics.medium();
+    }
+    isAtRemovePoint.current = isOpen;
   };
 
   return (

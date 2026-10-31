@@ -3,6 +3,7 @@ import SwipePreviewPost from "@/common/components/swipe-preview-post/swipe-previ
 import { Colors, Units } from "@/common/constants";
 import { GeneralStyles } from "@/common/styles";
 import { idExtractor } from "@/common/utils";
+import { Haptics } from "@/common/utils/haptics";
 import { removePost, usePosts } from "@/config/storage";
 import { PostType } from "@/types";
 import { FlashList } from "@shopify/flash-list";
@@ -67,7 +68,10 @@ function ViewPostsScreen() {
       <View style={styles.rowInset}>
         <SwipePreviewPost
           post={item}
-          onRemove={() => removePost(item)}
+          onRemove={() => {
+            removePost(item);
+            Haptics.warning();
+          }}
           onPress={() =>
             router.push({
               pathname: "/post-details",

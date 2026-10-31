@@ -10,6 +10,7 @@ import { GeneralStyles } from "@/common/styles";
 import { forceHttps, getDomainFromUrl } from "@/common/utils";
 import { safelyPrintError } from "@/common/utils/error-parsers";
 import { saveImageFromUrl } from "@/common/utils/files";
+import { Haptics } from "@/common/utils/haptics";
 import { toggleTag } from "@/common/utils/misc";
 import { Analytics } from "@/config/analytics";
 import { ErrorHandler } from "@/config/errors";
@@ -63,8 +64,8 @@ function ShareIntentScreen() {
       message: "Please try again later.",
       preset: "error",
       duration: 5,
-      haptic: "error",
     });
+    Haptics.error();
     resetShareIntent();
     router.replace("/");
   };
@@ -126,8 +127,8 @@ function ShareIntentScreen() {
         title: "Zaved it successfully!",
         preset: "done",
         duration: 2,
-        haptic: "success",
       });
+      Haptics.success();
     } catch (error) {
       handleOnError(error as Error);
     } finally {
@@ -136,6 +137,7 @@ function ShareIntentScreen() {
   };
 
   const handleOnMainTagPress = (tag: string) => {
+    Haptics.selection();
     setTags((prevTags) => ({
       ...prevTags,
       selectedMainTags: toggleTag({
@@ -146,6 +148,7 @@ function ShareIntentScreen() {
   };
 
   const handleOnAdditionalTagPress = (tag: string) => {
+    Haptics.selection();
     setTags((prevTags) => ({
       ...prevTags,
       selectedAdditionalTags: toggleTag({

@@ -10,6 +10,7 @@ import { Units } from "@/common/constants/units";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { safelyPrintError } from "@/common/utils";
+import { Haptics } from "@/common/utils/haptics";
 import { ErrorHandler } from "@/config/errors";
 import {
   increasePostAccessCount,
@@ -79,6 +80,7 @@ function PostDetailsScreen() {
         style: "destructive",
         onPress: () => {
           removePost(post);
+          Haptics.warning();
           router.back();
         },
       },

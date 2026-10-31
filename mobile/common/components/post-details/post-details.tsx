@@ -4,6 +4,7 @@ import PostImage from "@/common/containers/post-image/post-image";
 import { Row, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { formatTimestampToDateString, safelyPrintError } from "@/common/utils";
+import { Haptics } from "@/common/utils/haptics";
 import { ErrorHandler } from "@/config/errors";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import * as Burnt from "burnt";
@@ -38,8 +39,8 @@ function PostDetails({
         title: "Copied to clipboard.",
         preset: "done",
         duration: TWO_SECONDS,
-        haptic: "success",
       });
+      Haptics.light();
     } catch (error) {
       ErrorHandler.logError({
         location: "handleOnCopyToClipboard",
