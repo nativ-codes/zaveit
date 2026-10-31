@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"zaveit/server/internal/api"
+	"zaveit/server/internal/appcheck"
 	"zaveit/server/internal/deepseek"
 )
 
@@ -23,6 +24,11 @@ func main() {
 		log.Fatal("DEEPSEEK_API_KEY is required")
 	}
 
+	projectNumber := os.Getenv("FIREBASE_PROJECT_NUMBER")
+	if projectNumber == "" {
+		log.Fatal("FIREBASE_PROJECT_NUMBER is required")
+	}
+
 	ai := deepseek.Client{
 		BaseURL: getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com"),
 		Model:   getenv("DEEPSEEK_MODEL", "deepseek-chat"),
@@ -30,10 +36,11 @@ func main() {
 	}
 
 	check := api.SourcesCheck{Token: os.Getenv("SOURCES_CHECK_TOKEN")}
+	verifier := appcheck.New(projectNumber)
 
 	server := &http.Server{
 		Addr:              ":" + getenv("PORT", "8080"),
-		Handler:           api.NewRouter(ai, os.Getenv("LOG_TAG_DETAILS") == "true", check),
+		Handler:           api.NewRouter(ai, os.Getenv("LOG_TAG_DETAILS") == "true", check, verifier.Verify),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 

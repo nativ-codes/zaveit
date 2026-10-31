@@ -3,6 +3,7 @@ package api
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io"
 	"log"
 	"net/http"
@@ -14,6 +15,8 @@ import (
 	"zaveit/server/internal/tags"
 )
 
+func allowAll(string) error { return nil }
+
 // post runs a request against the router, backed by a fake DeepSeek.
 func post(t *testing.T, body string, upstream http.HandlerFunc) *httptest.ResponseRecorder {
 	t.Helper()
@@ -22,7 +25,7 @@ func post(t *testing.T, body string, upstream http.HandlerFunc) *httptest.Respon
 
 	res := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodPost, "/v1/tags", strings.NewReader(body))
-	NewRouter(deepseek.Client{BaseURL: fake.URL, Model: "m", APIKey: "k"}, false, SourcesCheck{}).ServeHTTP(res, req)
+	NewRouter(deepseek.Client{BaseURL: fake.URL, Model: "m", APIKey: "k"}, false, SourcesCheck{}, allowAll).ServeHTTP(res, req)
 	return res
 }
 
@@ -83,9 +86,46 @@ func TestTagsUpstreamFailure(t *testing.T) {
 	}
 }
 
+func TestV1RoutesRequireAppCheck(t *testing.T) {
+	var sent string
+	reject := func(token string) error {
+		sent = token
+		return errors.New("rejected")
+	}
+	fake := httptest.NewServer(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {
+		t.Error("DeepSeek must not be called without a valid token")
+	}))
+	defer fake.Close()
+	router := NewRouter(deepseek.Client{BaseURL: fake.URL}, false, SourcesCheck{}, reject)
+
+	for _, req := range []*http.Request{
+		httptest.NewRequest(http.MethodPost, "/v1/tags", strings.NewReader(`{"title":"x"}`)),
+		httptest.NewRequest(http.MethodGet, "/v1/metadata?url=https%3A%2F%2Fexample.com", nil),
+	} {
+		req.Header.Set("X-Firebase-AppCheck", "the-token")
+		res := httptest.NewRecorder()
+		router.ServeHTTP(res, req)
+		if res.Code != http.StatusUnauthorized {
+			t.Errorf("%s: got %d", req.URL.Path, res.Code)
+		}
+		if sent != "the-token" {
+			t.Errorf("%s: verified %q", req.URL.Path, sent)
+		}
+	}
+}
+
+func TestHealthNeedsNoAppCheck(t *testing.T) {
+	reject := func(string) error { return errors.New("rejected") }
+	res := httptest.NewRecorder()
+	NewRouter(deepseek.Client{}, false, SourcesCheck{}, reject).ServeHTTP(res, httptest.NewRequest(http.MethodGet, "/health", nil))
+	if res.Code != http.StatusOK {
+		t.Errorf("got %d", res.Code)
+	}
+}
+
 func TestHealth(t *testing.T) {
 	res := httptest.NewRecorder()
-	NewRouter(deepseek.Client{}, false, SourcesCheck{}).ServeHTTP(res, httptest.NewRequest(http.MethodGet, "/health", nil))
+	NewRouter(deepseek.Client{}, false, SourcesCheck{}, allowAll).ServeHTTP(res, httptest.NewRequest(http.MethodGet, "/health", nil))
 	if res.Code != http.StatusOK {
 		t.Errorf("got %d", res.Code)
 	}
@@ -95,7 +135,7 @@ func TestSourcesRejectsBadToken(t *testing.T) {
 	for _, check := range []struct{ configured, sent string }{{"", ""}, {"secret", ""}, {"secret", "wrong"}} {
 		res := httptest.NewRecorder()
 		req := httptest.NewRequest(http.MethodGet, "/health/sources?token="+check.sent, nil)
-		NewRouter(deepseek.Client{}, false, SourcesCheck{Token: check.configured}).ServeHTTP(res, req)
+		NewRouter(deepseek.Client{}, false, SourcesCheck{Token: check.configured}, allowAll).ServeHTTP(res, req)
 		if res.Code != http.StatusUnauthorized {
 			t.Errorf("%+v: got %d", check, res.Code)
 		}
@@ -105,7 +145,7 @@ func TestSourcesRejectsBadToken(t *testing.T) {
 func TestMetadataRejectsBadURL(t *testing.T) {
 	for _, target := range []string{"/v1/metadata", "/v1/metadata?url=nope", "/v1/metadata?url=file%3A%2F%2F%2Fetc%2Fpasswd"} {
 		res := httptest.NewRecorder()
-		NewRouter(deepseek.Client{}, false, SourcesCheck{}).ServeHTTP(res, httptest.NewRequest(http.MethodGet, target, nil))
+		NewRouter(deepseek.Client{}, false, SourcesCheck{}, allowAll).ServeHTTP(res, httptest.NewRequest(http.MethodGet, target, nil))
 		if res.Code != http.StatusBadRequest {
 			t.Errorf("%s: got %d", target, res.Code)
 		}
@@ -123,7 +163,7 @@ func TestTagDetailsLogging(t *testing.T) {
 			io.WriteString(w, `{"choices":[{"message":{"content":"art"}}]}`)
 		}))
 		req := httptest.NewRequest(http.MethodPost, "/v1/tags", strings.NewReader(`{"title":"secret title"}`))
-		NewRouter(deepseek.Client{BaseURL: fake.URL}, enabled, SourcesCheck{}).ServeHTTP(httptest.NewRecorder(), req)
+		NewRouter(deepseek.Client{BaseURL: fake.URL}, enabled, SourcesCheck{}, allowAll).ServeHTTP(httptest.NewRecorder(), req)
 		fake.Close()
 
 		if got := strings.Contains(logs.String(), "secret title"); got != enabled {

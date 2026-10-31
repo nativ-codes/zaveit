@@ -12,7 +12,6 @@ import (
 
 const maxBodyBytes = 16 << 10
 
-// shortcut: unauthenticated, see docs/adr/0001-tags-endpoint-auth-roadmap.md before exposing it publicly.
 func suggestTags(ai deepseek.Client, logDetails bool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var body struct {
