@@ -2,7 +2,6 @@ export enum SocialPlatform {
   TIKTOK = "tiktok.com",
   REDDIT = "reddit.com",
   YOUTUBE = "youtube.com",
-  UNKNOWN = "unknown",
 }
 
 export interface PlatformConfig {

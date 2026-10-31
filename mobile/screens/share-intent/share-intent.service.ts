@@ -12,7 +12,6 @@ type GetOEmbedMetadataReturnType = {
   author: string;
   title: string;
   thumbnail?: string;
-  thumbnail_url?: string;
   url: string;
 };
 
@@ -47,7 +46,7 @@ export const getOEmbedMetadata = async ({
 
     const data = await response.json();
 
-    if (!data.title && !data.thumbnail_url) {
+    if (!data.title) {
       return undefined;
     }
 

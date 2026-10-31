@@ -1,38 +1,16 @@
-import { MAIN_TAGS, PLATFORM_CONFIGS } from "@/common/constants";
+import { MAIN_TAGS } from "@/common/constants";
 import { safelyPrintError } from "@/common/utils/error-parsers";
 import { getIsEmpty } from "@/common/utils/validators";
 import { ErrorHandler } from "@/config/errors";
 import { getTags } from "@/config/storage";
 import { getSuggestedTags } from "@/services/general.service";
-import { PlatformConfig, PostMetadataType, SocialPlatform } from "@/types";
+import { PostMetadataType } from "@/types";
 import { ShareIntent } from "expo-share-intent";
+import { getPlatformMetadata } from "./share-intent.platforms";
 import {
   getLinkPreviewMetadata,
   getLocalLinkPreviewMetadata,
-  getOEmbedMetadata,
-  getTikTokEmbedMetadata,
 } from "./share-intent.service";
-
-export const checkSocialPlatform = (
-  url: string
-): PlatformConfig | undefined => {
-  if (!url) return undefined;
-
-  try {
-    const urlObj = new URL(url);
-    const domain = urlObj.hostname.toLowerCase().replace("www.", "");
-
-    const platformConfig = Object.keys(PLATFORM_CONFIGS).find((key) =>
-      PLATFORM_CONFIGS[key as SocialPlatform].domains.includes(domain)
-    );
-
-    return platformConfig
-      ? PLATFORM_CONFIGS[platformConfig as SocialPlatform]
-      : undefined;
-  } catch {
-    return undefined;
-  }
-};
 
 export type ParseTagsReturnType = {
   additionalTags: string[];
@@ -92,15 +70,6 @@ export const parseTags = async (
   };
 };
 
-const resolveUrl = async (url: string): Promise<string> => {
-  try {
-    const response = await fetch(url, { method: "HEAD" });
-    return response.url || url;
-  } catch {
-    return url;
-  }
-};
-
 export const getMetadata = async (
   shareIntent: Partial<ShareIntent>
 ): Promise<PostMetadataType> => {
@@ -108,42 +77,10 @@ export const getMetadata = async (
     throw new Error("No URL provided");
   }
 
-  const platformConfig = checkSocialPlatform(shareIntent.webUrl);
+  const platformMetadata = await getPlatformMetadata(shareIntent.webUrl);
 
-  if (platformConfig) {
-    const isTikTok = platformConfig.platform === SocialPlatform.TIKTOK;
-    const resolvedUrl = isTikTok
-      ? await resolveUrl(shareIntent.webUrl)
-      : shareIntent.webUrl;
-
-    if (isTikTok) {
-      const tikTokData = await getTikTokEmbedMetadata({
-        url: resolvedUrl,
-      });
-
-      if (tikTokData?.title || tikTokData?.thumbnail) {
-        return {
-          url: shareIntent.webUrl || "",
-          title: tikTokData.title || shareIntent.webUrl || "",
-          author: tikTokData.author || "",
-          thumbnail: tikTokData.thumbnail,
-        };
-      }
-    }
-
-    const data = await getOEmbedMetadata({
-      platformConfig: platformConfig as PlatformConfig,
-      url: resolvedUrl,
-    });
-
-    if (data?.title) {
-      return {
-        url: shareIntent.webUrl || "",
-        title: data.title || shareIntent.webUrl || "",
-        author: data.author || "",
-        thumbnail: data.thumbnail_url || data.thumbnail,
-      };
-    }
+  if (platformMetadata) {
+    return platformMetadata;
   }
 
   if (shareIntent?.meta && !getIsEmpty(shareIntent?.meta)) {
