@@ -29,9 +29,11 @@ func main() {
 		APIKey:  apiKey,
 	}
 
+	check := api.SourcesCheck{Token: os.Getenv("SOURCES_CHECK_TOKEN")}
+
 	server := &http.Server{
 		Addr:              ":" + getenv("PORT", "8080"),
-		Handler:           api.NewRouter(ai, os.Getenv("LOG_TAG_DETAILS") == "true"),
+		Handler:           api.NewRouter(ai, os.Getenv("LOG_TAG_DETAILS") == "true", check),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 

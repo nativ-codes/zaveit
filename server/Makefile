@@ -1,4 +1,4 @@
-.PHONY: deploy stop logs status test
+.PHONY: deploy stop logs status test check-sources
 
 deploy:
 	docker compose up -d --build
@@ -14,3 +14,6 @@ status:
 
 test:
 	go test ./...
+
+check-sources:
+	@go run ./cmd/check-sources
