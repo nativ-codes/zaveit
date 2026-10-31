@@ -21,7 +21,7 @@ func post(t *testing.T, body string, upstream http.HandlerFunc) *httptest.Respon
 	defer fake.Close()
 
 	res := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodPost, "/tags", strings.NewReader(body))
+	req := httptest.NewRequest(http.MethodPost, "/v1/tags", strings.NewReader(body))
 	NewRouter(deepseek.Client{BaseURL: fake.URL, Model: "m", APIKey: "k"}, false, SourcesCheck{}).ServeHTTP(res, req)
 	return res
 }
@@ -103,7 +103,7 @@ func TestSourcesRejectsBadToken(t *testing.T) {
 }
 
 func TestMetadataRejectsBadURL(t *testing.T) {
-	for _, target := range []string{"/metadata", "/metadata?url=nope", "/metadata?url=file%3A%2F%2F%2Fetc%2Fpasswd"} {
+	for _, target := range []string{"/v1/metadata", "/v1/metadata?url=nope", "/v1/metadata?url=file%3A%2F%2F%2Fetc%2Fpasswd"} {
 		res := httptest.NewRecorder()
 		NewRouter(deepseek.Client{}, false, SourcesCheck{}).ServeHTTP(res, httptest.NewRequest(http.MethodGet, target, nil))
 		if res.Code != http.StatusBadRequest {
@@ -122,7 +122,7 @@ func TestTagDetailsLogging(t *testing.T) {
 		fake := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			io.WriteString(w, `{"choices":[{"message":{"content":"art"}}]}`)
 		}))
-		req := httptest.NewRequest(http.MethodPost, "/tags", strings.NewReader(`{"title":"secret title"}`))
+		req := httptest.NewRequest(http.MethodPost, "/v1/tags", strings.NewReader(`{"title":"secret title"}`))
 		NewRouter(deepseek.Client{BaseURL: fake.URL}, enabled, SourcesCheck{}).ServeHTTP(httptest.NewRecorder(), req)
 		fake.Close()
 

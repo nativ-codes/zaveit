@@ -15,8 +15,8 @@ func NewRouter(ai deepseek.Client, logTagDetails bool, check SourcesCheck) http.
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", health)
 	mux.HandleFunc("GET /health/sources", checkSources(check))
-	mux.HandleFunc("GET /metadata", getMetadata)
-	mux.HandleFunc("POST /tags", suggestTags(ai, logTagDetails))
+	mux.HandleFunc("GET /v1/metadata", getMetadata)
+	mux.HandleFunc("POST /v1/tags", suggestTags(ai, logTagDetails))
 	return logRequests(mux)
 }
 
