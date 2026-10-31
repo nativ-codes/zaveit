@@ -1,5 +1,10 @@
-import { getAuth } from "@react-native-firebase/auth";
-import { getFirestore, serverTimestamp } from "@react-native-firebase/firestore";
+import {
+  collection,
+  doc,
+  getFirestore,
+  serverTimestamp,
+  setDoc,
+} from "@react-native-firebase/firestore";
 
 export type UserType = {
   id: string;
@@ -11,16 +16,16 @@ export type UserUUIDType = string;
 
 export const createUser = async (user: UserType): Promise<void> => {
   try {
-    const userRef = getFirestore().collection("users").doc(user.id);
-    await userRef.set({
+    const userRef = doc(getFirestore(), "users", user.id);
+    await setDoc(userRef, {
       displayName: user.displayName,
       email: user.email,
       createdAt: serverTimestamp(),
     });
 
     // Create a list for the user
-    const listRef = getFirestore().collection("lists").doc();
-    await listRef.set({
+    const listRef = doc(collection(getFirestore(), "lists"));
+    await setDoc(listRef, {
       isPublished: false,
       posts: [],
       userId: user.id,
@@ -31,62 +36,6 @@ export const createUser = async (user: UserType): Promise<void> => {
   } catch (error: any) {
     console.error("[Users Service] Error creating user:", {
       userId: user.id,
-      error: error.message,
-    });
-    throw {
-      code: error.code,
-      message: error.message,
-    };
-  }
-};
-
-export const deleteUser = async (): Promise<void> => {
-  try {
-    const currentUser = getAuth().currentUser;
-
-    if (!currentUser) {
-      throw {
-        code: "auth/no-user",
-        message: "No authenticated user found",
-      };
-    }
-
-    const userId = currentUser.uid;
-    console.log("[Users Service] Deleting user:", { userId });
-
-    // Find the user's list first
-    const listsQuery = await getFirestore()
-      .collection("lists")
-      .where("userId", "==", userId)
-      .get();
-
-    if (!listsQuery.empty) {
-      // Delete all lists associated with the user
-      const deletePromises = listsQuery.docs.map((doc) => doc.ref.delete());
-      await Promise.all(deletePromises);
-      console.log(
-        "[Users Service] Deleted",
-        listsQuery.docs.length,
-        "list(s) for user:",
-        userId
-      );
-    }
-
-    console.log("[Users Service] Deleting user document:", userId);
-    // Delete the user document
-    const userRef = getFirestore().collection("users").doc(userId);
-    await userRef.delete();
-
-    console.log("[Users Service] Deleted user document:", userId);
-    // Delete the Firebase Auth user
-    await currentUser.delete();
-
-    console.log(
-      "[Users Service] User and associated lists deleted successfully:",
-      userId
-    );
-  } catch (error: any) {
-    console.error("[Users Service] Error deleting user:", {
       error: error.message,
     });
     throw {

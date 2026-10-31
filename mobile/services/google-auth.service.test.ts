@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { signInWithCredential, signOut as firebaseSignOut } from "@react-native-firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithCredential, signOut as firebaseSignOut } from "@react-native-firebase/auth";
 import { signInWithGoogle, signOut } from "./google-auth.service";
 import { createFirestoreUser } from "./users.service";
 
@@ -37,6 +37,7 @@ describe("signInWithGoogle", () => {
       type: "success",
       data: { idToken: "token" },
     } as never);
+    jest.mocked(GoogleAuthProvider.credential).mockReturnValue({} as never);
     jest.mocked(createFirestoreUser).mockResolvedValue("user-id");
 
     await expect(signInWithGoogle()).resolves.toBe("user-id");
@@ -55,6 +56,10 @@ describe("signInWithGoogle", () => {
 });
 
 describe("signOut", () => {
+  beforeEach(() => {
+    jest.mocked(getAuth).mockReturnValue({ currentUser: {} } as never);
+  });
+
   it("clears the saved Google login", async () => {
     google.hasPreviousSignIn.mockReturnValue(true);
 
@@ -71,6 +76,16 @@ describe("signOut", () => {
 
     await expect(signOut()).rejects.toThrow("offline");
 
+    expect(google.signOut).toHaveBeenCalledTimes(1);
+  });
+
+  it("still clears the saved Google login when Firebase has no user", async () => {
+    jest.mocked(getAuth).mockReturnValue({ currentUser: null } as never);
+    google.hasPreviousSignIn.mockReturnValue(true);
+
+    await signOut();
+
+    expect(firebaseSignOut).not.toHaveBeenCalled();
     expect(google.signOut).toHaveBeenCalledTimes(1);
   });
 

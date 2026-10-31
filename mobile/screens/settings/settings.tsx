@@ -1,22 +1,23 @@
-import { Menu, TopBar } from "@/common/components";
+import { Menu, SpinningLoader, TopBar } from "@/common/components";
+import { Colors } from "@/common/constants/colors";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { noop, safelyPrintError } from "@/common/utils";
-import { Analytics } from "@/config/analytics";
 import { useAuth } from "@/config/contexts/auth.context";
 import { ErrorHandler } from "@/config/errors";
 import { clearAllData, setAppAuthType } from "@/config/storage";
-import { signOut } from "@/services/google-auth.service";
-import { deleteUser } from "@/services/users.service";
+import { deleteAccount, logOut } from "@/services/account.service";
 import { LegalEnum } from "@/types";
+import * as Burnt from "burnt";
 import * as Application from "expo-application";
 import * as Linking from "expo-linking";
 import { router } from "expo-router";
-import React from "react";
-import { Alert, StyleSheet, Text } from "react-native";
+import React, { useState } from "react";
+import { Alert, StyleSheet, Text, View } from "react-native";
 
 function SettingsScreen() {
   const { isAuthenticated, user } = useAuth();
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 
   const handleOnTermsAndConditionsPress = () => {
     router.push({
@@ -51,19 +52,6 @@ function SettingsScreen() {
     );
   };
 
-  const logOut = async () => {
-    try {
-      setAppAuthType();
-      clearAllData();
-      await signOut();
-    } catch (error) {
-      ErrorHandler.logError({
-        location: "logOut",
-        error: safelyPrintError(error),
-      });
-    }
-  };
-
   const handleOnRemoveAccount = async () => {
     Alert.alert(
       "Delete Account",
@@ -77,16 +65,23 @@ function SettingsScreen() {
           text: "Delete",
           style: "destructive",
           onPress: async () => {
+            setIsDeletingAccount(true);
             try {
-              await deleteUser();
-              Analytics.sendEvent(Analytics.events.remove_account);
+              await deleteAccount();
             } catch (error) {
               ErrorHandler.logError({
                 location: "handleOnRemoveAccount",
                 error: safelyPrintError(error),
               });
+              Burnt.toast({
+                title: "Unable to delete account",
+                message: "Your account was not deleted. Please try again later.",
+                preset: "error",
+                duration: 5,
+                haptic: "error",
+              });
             } finally {
-              logOut();
+              setIsDeletingAccount(false);
             }
           },
         },
@@ -128,78 +123,95 @@ function SettingsScreen() {
   };
 
   return (
-    <ScreenLayout>
-      <Spacer direction="bottom" size="s8">
-        <TopBar
-          left={
-            <Text style={GeneralStyles.textTitleScreenPrimary}>Settings</Text>
-          }
-        />
-      </Spacer>
-      <Spacer direction="horizontal" size="s16" gap="s32">
-        <Menu>
-          <Menu.Item onPress={handleOnPreferencesPress} label="Preferences" />
-          <Menu.Item
-            onPress={noop}
-            label="Manage main tags"
-            right={
-              <Text style={GeneralStyles.textLabelMediumSecondary}>Soon</Text>
+    <>
+      <ScreenLayout>
+        <Spacer direction="bottom" size="s8">
+          <TopBar
+            left={
+              <Text style={GeneralStyles.textTitleScreenPrimary}>Settings</Text>
             }
           />
-          <Menu.Item
-            onPress={noop}
-            label="Publish your list"
-            right={
-              <Text style={GeneralStyles.textLabelMediumSecondary}>Soon</Text>
-            }
-          />
-        </Menu>
-        <Menu>
-          <Menu.Item
-            onPress={handleOnTermsAndConditionsPress}
-            label="Terms and Conditions"
-          />
-          <Menu.Item
-            onPress={handleOnPrivacyPolicyPress}
-            label="Privacy Policy"
-          />
-          <Menu.Item
-            onPress={handleOnSendFeedbackPress}
-            label="Send us your feedback"
-          />
-        </Menu>
-        {isAuthenticated ? (
+        </Spacer>
+        <Spacer direction="horizontal" size="s16" gap="s32">
           <Menu>
-            {Boolean(user?.displayName) && (
-              <Spacer direction={["left", "bottom"]} size="s8">
-                <Text style={GeneralStyles.textLabelMediumSecondary}>
-                  Connected as {user?.displayName}
-                </Text>
-              </Spacer>
-            )}
-            <Menu.Item onPress={handleOnRemoveAccount} label="Remove account" />
-            <Menu.Item onPress={handleOnLogOut} label="Log out" />
+            <Menu.Item onPress={handleOnPreferencesPress} label="Preferences" />
+            <Menu.Item
+              onPress={noop}
+              label="Manage main tags"
+              right={
+                <Text style={GeneralStyles.textLabelMediumSecondary}>Soon</Text>
+              }
+            />
+            <Menu.Item
+              onPress={noop}
+              label="Publish your list"
+              right={
+                <Text style={GeneralStyles.textLabelMediumSecondary}>Soon</Text>
+              }
+            />
           </Menu>
-        ) : (
           <Menu>
             <Menu.Item
-              onPress={handleOnLogIn}
-              label="Connect to your account"
+              onPress={handleOnTermsAndConditionsPress}
+              label="Terms and Conditions"
             />
-            <Menu.Item onPress={handleOnRemoveData} label="Remove data" />
+            <Menu.Item
+              onPress={handleOnPrivacyPolicyPress}
+              label="Privacy Policy"
+            />
+            <Menu.Item
+              onPress={handleOnSendFeedbackPress}
+              label="Send us your feedback"
+            />
           </Menu>
-        )}
-        <Text
-          style={StyleSheet.compose(
-            GeneralStyles.textLabelMediumSecondary,
-            GeneralStyles.textCenter
+          {isAuthenticated ? (
+            <Menu>
+              {Boolean(user?.displayName) && (
+                <Spacer direction={["left", "bottom"]} size="s8">
+                  <Text style={GeneralStyles.textLabelMediumSecondary}>
+                    Connected as {user?.displayName}
+                  </Text>
+                </Spacer>
+              )}
+              <Menu.Item onPress={handleOnRemoveAccount} label="Remove account" />
+              <Menu.Item onPress={handleOnLogOut} label="Log out" />
+            </Menu>
+          ) : (
+            <Menu>
+              <Menu.Item
+                onPress={handleOnLogIn}
+                label="Connect to your account"
+              />
+              <Menu.Item onPress={handleOnRemoveData} label="Remove data" />
+            </Menu>
           )}
-        >
-          ZaveIt v{Application.nativeApplicationVersion}
-        </Text>
-      </Spacer>
-    </ScreenLayout>
+          <Text
+            style={StyleSheet.compose(
+              GeneralStyles.textLabelMediumSecondary,
+              GeneralStyles.textCenter
+            )}
+          >
+            ZaveIt v{Application.nativeApplicationVersion}
+          </Text>
+        </Spacer>
+      </ScreenLayout>
+      {isDeletingAccount && (
+        // Not a Modal: it could block the Google and Apple sheets from opening on top.
+        <View style={styles.loaderOverlay}>
+          <SpinningLoader />
+        </View>
+      )}
+    </>
   );
 }
+
+const styles = StyleSheet.create({
+  loaderOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: Colors.overlay,
+  },
+});
 
 export default SettingsScreen;

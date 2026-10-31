@@ -133,7 +133,6 @@ function SearchScreen() {
             onPostPress={(id: string) =>
               router.push({ pathname: "/post-details", params: { id } })
             }
-            estimatedItemSize={Units.s256}
           />
         );
       }
@@ -227,7 +226,6 @@ function SearchScreen() {
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         getItemType={getItemType}
-        estimatedItemSize={Units.s256}
         ListHeaderComponent={listHeader}
         ItemSeparatorComponent={renderItemSeparator}
         keyboardShouldPersistTaps="handled"

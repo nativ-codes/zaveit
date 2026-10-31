@@ -4,6 +4,7 @@ type DocData = Record<string, any>;
 
 const collections = new Map<string, Map<string, DocData>>();
 let nextDocId = 0;
+let failNextBatch = false;
 
 class ArrayUnion {
   constructor(readonly items: unknown[]) {}
@@ -15,6 +16,11 @@ export const serverTimestamp = () => new Date();
 export const resetFirestore = () => {
   collections.clear();
   nextDocId = 0;
+  failNextBatch = false;
+};
+
+export const failNextBatchCommit = () => {
+  failNextBatch = true;
 };
 
 const getCollection = (name: string) => {
@@ -75,7 +81,7 @@ const docSnapshot = (collectionName: string, id: string) => {
 
 type Filter = { field: string; value: unknown };
 
-const query = (
+const buildQuery = (
   collectionName: string,
   filters: Filter[] = [],
   max = Infinity
@@ -84,9 +90,9 @@ const query = (
     if (operator !== "==") {
       throw new Error(`Fake Firestore doesn't support "${operator}"`);
     }
-    return query(collectionName, [...filters, { field, value }], max);
+    return buildQuery(collectionName, [...filters, { field, value }], max);
   },
-  limit: (count: number) => query(collectionName, filters, count),
+  limit: (count: number) => buildQuery(collectionName, filters, count),
   get: async () => {
     const docs = [...getCollection(collectionName).entries()]
       .filter(([, data]) =>
@@ -98,9 +104,60 @@ const query = (
   },
 });
 
+const batch = () => {
+  const refs: { delete: () => Promise<void> }[] = [];
+  return {
+    delete: (ref: { delete: () => Promise<void> }) => {
+      refs.push(ref);
+    },
+    commit: async () => {
+      if (failNextBatch) {
+        failNextBatch = false;
+        throw Object.assign(new Error("Batch failed"), {
+          code: "firestore/unavailable",
+        });
+      }
+      await Promise.all(refs.map((ref) => ref.delete()));
+    },
+  };
+};
+
 export const getFirestore = () => ({
+  batch,
   collection: (name: string) => ({
-    ...query(name),
+    ...buildQuery(name),
     doc: (id: string = `doc-${++nextDocId}`) => docRef(name, id),
   }),
 });
+
+// Modular API, which the typed Firestore instance requires.
+type FakeFirestore = ReturnType<typeof getFirestore>;
+type FakeQuery = ReturnType<typeof buildQuery>;
+
+export const writeBatch = (firestore: FakeFirestore) => firestore.batch();
+export const collection = (firestore: FakeFirestore, name: string) =>
+  firestore.collection(name);
+export const doc = (
+  parent: FakeFirestore | ReturnType<FakeFirestore["collection"]>,
+  name?: string,
+  id?: string
+) =>
+  "collection" in parent ? parent.collection(name!).doc(id) : parent.doc();
+
+type Constraint = (source: FakeQuery) => FakeQuery;
+
+export const where =
+  (field: string, operator: string, value: unknown): Constraint =>
+  (source) =>
+    source.where(field, operator, value);
+export const limit =
+  (count: number): Constraint =>
+  (source) =>
+    source.limit(count);
+export const query = (source: FakeQuery, ...constraints: Constraint[]) =>
+  constraints.reduce((current, apply) => apply(current), source);
+export const getDocs = (source: FakeQuery) => source.get();
+export const setDoc = (ref: ReturnType<typeof docRef>, data: DocData) =>
+  ref.set(data);
+export const updateDoc = (ref: ReturnType<typeof docRef>, changes: DocData) =>
+  ref.update(changes);

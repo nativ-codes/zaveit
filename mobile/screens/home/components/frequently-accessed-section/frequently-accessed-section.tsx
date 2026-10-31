@@ -2,7 +2,6 @@ import {
   HorizontalScrollViewPosts,
   PreviewPostCard,
 } from "@/common/components";
-import { Units } from "@/common/constants";
 import { useFrequentlyAccessedPosts } from "@/config/storage";
 import React from "react";
 import { FrequentlyAccessedSectionPropsType } from "./frequently-accessed-section.type";
@@ -19,7 +18,6 @@ function FrequentlyAccessedSection({
         title="Frequently Accessed"
         posts={posts}
         onPostPress={onPostPress}
-        estimatedItemSize={Units.s256}
         shouldDisplayCount={false}
       />
     )

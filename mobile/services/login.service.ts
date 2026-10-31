@@ -1,7 +1,13 @@
 import { getPosts, savePosts } from "@/config/storage/posts";
 import { PostType } from "@/types/posts";
 import { getAuth, signInWithEmailAndPassword } from "@react-native-firebase/auth";
-import { getFirestore } from "@react-native-firebase/firestore";
+import {
+  collection,
+  getDocs,
+  getFirestore,
+  query,
+  where,
+} from "@react-native-firebase/firestore";
 import { savePostsService } from "./posts.service";
 
 export type LoginResponseType = {
@@ -45,8 +51,9 @@ export const syncPosts = async ({ uid }: SyncPostsPropsType) => {
   try {
     console.log("[Sync Lists] Starting sync for user:", uid);
 
-    const listsRef = getFirestore().collection("lists");
-    const userListsQuery = await listsRef.where("userId", "==", uid).get();
+    const userListsQuery = await getDocs(
+      query(collection(getFirestore(), "lists"), where("userId", "==", uid))
+    );
 
     if (userListsQuery.empty) {
       console.log("[Sync Lists] No lists found for user:", uid);

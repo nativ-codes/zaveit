@@ -14,7 +14,6 @@ function HorizontalScrollViewPosts({
   posts,
   shouldDisplayCount = true,
   Element,
-  estimatedItemSize,
   onViewAll,
   onPostPress,
 }: HorizontalScrollViewPostsType) {
@@ -52,7 +51,6 @@ function HorizontalScrollViewPosts({
       <FlashList
         data={posts}
         renderItem={renderItem}
-        estimatedItemSize={estimatedItemSize}
         keyExtractor={idExtractor}
         contentContainerStyle={styles.contentContainer}
         horizontal
