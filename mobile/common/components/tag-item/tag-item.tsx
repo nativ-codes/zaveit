@@ -32,6 +32,7 @@ function TagItem({
       activeOpacity={ACTIVE_OPACITY}
       style={containerStyle}
       testID={`Components_TagItem_${tag}`}
+      accessibilityState={{ selected: Boolean(isSelected) }}
     >
       <Text style={textStyle}>{shouldUsePrefixedTag ? `#${tag}` : tag}</Text>
     </Wrapper>

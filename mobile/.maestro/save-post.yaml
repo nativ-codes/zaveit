@@ -1,0 +1,23 @@
+appId: com.nativcodes.zaveit
+name: Save a Post
+tags:
+  - smoke
+---
+- launchApp:
+    clearState: true
+- runFlow: subflows/connect-dev-server.yaml
+- tapOn: "Continue without account"
+- extendedWaitUntil:
+    visible: "You haven't zaved any posts yet."
+    timeout: 10000
+
+- runFlow: subflows/save-example-post.yaml
+- assertNotVisible: "You haven't zaved any posts yet."
+
+# Must come from storage, not memory.
+- stopApp
+- launchApp
+- runFlow: subflows/connect-dev-server.yaml
+- extendedWaitUntil:
+    visible: "View details for Example Domain"
+    timeout: 15000

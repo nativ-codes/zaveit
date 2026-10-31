@@ -1,0 +1,31 @@
+appId: com.nativcodes.zaveit
+---
+# Starts on Home, ends on Home with one Post tagged "technology".
+- tapOn: "Add post"
+- tapOn: "Enter or paste URL..."
+- inputText: "https://example.com"
+- tapOn: "Zave post"
+
+# Real backend: metadata and AI tags can take a while.
+- extendedWaitUntil:
+    visible: "Example Domain"
+    timeout: 30000
+- extendedWaitUntil:
+    visible:
+      id: "Components_TagItem_technology"
+    timeout: 30000
+
+# AI tags vary and tapping a selected tag would deselect it, so only tap when it's off.
+- runFlow:
+    when:
+      notVisible:
+        id: "Components_TagItem_technology"
+        selected: true
+    commands:
+      - tapOn:
+          id: "Components_TagItem_technology"
+- tapOn: "ZaveIt"
+
+- extendedWaitUntil:
+    visible: "View details for Example Domain"
+    timeout: 15000

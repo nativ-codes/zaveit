@@ -5,6 +5,7 @@ export type ButtonIconPropsType = {
   iconName: keyof typeof Icon.glyphMap;
   onPress: () => void;
   theme?: keyof typeof ButtonIconThemeEnum;
+  accessibilityLabel?: string;
 };
 
 export enum ButtonIconThemeEnum {

@@ -1,0 +1,40 @@
+appId: com.nativcodes.zaveit
+name: Remove a Post
+tags:
+  - smoke
+---
+- launchApp:
+    clearState: true
+- runFlow: subflows/connect-dev-server.yaml
+- tapOn: "Continue without account"
+- extendedWaitUntil:
+    visible: "You haven't zaved any posts yet."
+    timeout: 10000
+- runFlow: subflows/save-example-post.yaml
+
+- tapOn: "View details for Example Domain"
+
+# Cancel must keep the Post.
+- tapOn: "Remove post"
+- tapOn: "Cancel"
+- extendedWaitUntil:
+    notVisible: "Are you sure you want to remove this post\\?"
+    timeout: 5000
+- assertVisible: "Remove post"
+- assertVisible: "Example Domain"
+
+- tapOn: "Remove post"
+- tapOn: "Remove"
+- extendedWaitUntil:
+    visible: "You haven't zaved any posts yet."
+    timeout: 5000
+- assertNotVisible: "View details for Example Domain"
+
+# Must be gone from storage too, not just the screen.
+- stopApp
+- launchApp
+- runFlow: subflows/connect-dev-server.yaml
+- extendedWaitUntil:
+    visible: "You haven't zaved any posts yet."
+    timeout: 15000
+- assertNotVisible: "View details for Example Domain"

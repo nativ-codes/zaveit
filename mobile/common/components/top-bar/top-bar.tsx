@@ -33,6 +33,8 @@ function TopBar({
           activeOpacity={ACTIVE_OPACITY}
           onPress={goBack}
           hitSlop={Units.s16}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
         >
           <Icon
             name="chevron-left"

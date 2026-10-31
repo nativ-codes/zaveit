@@ -6,9 +6,19 @@ import React from "react";
 import { Text, TouchableOpacity } from "react-native";
 import { MenuItemPropsType } from "./menu-item.type";
 
-function MenuItem({ onPress, label, right, description }: MenuItemPropsType) {
+function MenuItem({
+  onPress,
+  label,
+  right,
+  description,
+  accessibilityValue,
+}: MenuItemPropsType) {
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={ACTIVE_OPACITY}>
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={ACTIVE_OPACITY}
+      accessibilityValue={accessibilityValue}
+    >
       <Spacer direction="full" size="s8">
         <Row
           center={

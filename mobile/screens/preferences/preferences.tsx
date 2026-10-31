@@ -30,6 +30,7 @@ function PreferencesScreen() {
             onPress={handleOnShareAnalyticsPress}
             label="Share analytics"
             description="We collect anonymous data to improve the app"
+            accessibilityValue={{ text: isAnalyticsEnabled ? "On" : "Off" }}
             right={
               <Switch
                 thumbColor={Colors.primary}

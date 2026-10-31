@@ -56,12 +56,15 @@ function AddPostModal({ isVisible, onClose, onSubmit }: AddPostModalPropsType) {
       animationType="fade"
       onRequestClose={handleOnClose}
     >
+      {/* accessible={false}: otherwise these merge the input and button into one element for screen readers. */}
       <TouchableOpacity
+        accessible={false}
         style={styles.overlay}
         activeOpacity={ACTIVE_OPACITY_NO_FEEDBACK}
         onPress={handleOnClose}
       >
         <TouchableOpacity
+          accessible={false}
           activeOpacity={ACTIVE_OPACITY_NO_FEEDBACK}
           onPress={noop}
         >

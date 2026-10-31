@@ -31,6 +31,8 @@ function TabBar({ state, navigation, insets }: BottomTabBarProps) {
             onPress={handleOnPress}
             activeOpacity={ACTIVE_OPACITY}
             style={styles.tabBarItem}
+            accessibilityRole="button"
+            accessibilityLabel={tab.label}
           >
             <Icon
               name={iconName as keyof typeof Icon.glyphMap}

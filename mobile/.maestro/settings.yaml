@@ -1,0 +1,80 @@
+appId: com.nativcodes.zaveit
+name: Settings
+tags:
+  - smoke
+---
+- launchApp:
+    clearState: true
+- runFlow: subflows/connect-dev-server.yaml
+- tapOn: "Continue without account"
+- extendedWaitUntil:
+    visible: "You haven't zaved any posts yet."
+    timeout: 10000
+- runFlow: subflows/save-example-post.yaml
+
+# The analytics choice must survive a relaunch.
+- tapOn: "SETTINGS"
+- tapOn: "Preferences.*"
+- extendedWaitUntil:
+    visible: "Share analytics.*"
+    timeout: 5000
+- assertVisible: "On"
+- tapOn: "Share analytics.*"
+- extendedWaitUntil:
+    visible: "Off"
+    timeout: 5000
+
+- stopApp
+- launchApp
+- runFlow: subflows/connect-dev-server.yaml
+- tapOn: "SETTINGS"
+- tapOn: "Preferences.*"
+- extendedWaitUntil:
+    visible: "Off"
+    timeout: 5000
+- tapOn: "Go back"
+
+- tapOn: "Terms and Conditions.*"
+- extendedWaitUntil:
+    visible: "Last Updated: .*"
+    timeout: 5000
+- assertVisible: "Terms and Conditions"
+- tapOn: "Go back"
+
+- tapOn: "Privacy Policy.*"
+- extendedWaitUntil:
+    visible: "Last Updated: .*"
+    timeout: 5000
+- assertVisible: "Privacy Policy"
+- tapOn: "Go back"
+
+# Connecting must not touch local Posts.
+- tapOn: "Connect to your account.*"
+- extendedWaitUntil:
+    visible: "Continue without account"
+    timeout: 5000
+- tapOn: "Continue without account"
+- extendedWaitUntil:
+    visible: "View details for Example Domain"
+    timeout: 10000
+
+# Cancel must keep the data.
+- tapOn: "SETTINGS"
+- tapOn: "Remove data.*"
+- tapOn: "Cancel"
+- extendedWaitUntil:
+    notVisible: "Are you sure you want to remove your data.*"
+    timeout: 5000
+- assertVisible: "Settings"
+
+# Removing also clears the anonymous choice, so the app goes back to login.
+- tapOn: "Remove data.*"
+- tapOn: "Remove"
+- extendedWaitUntil:
+    visible: "Continue without account"
+    timeout: 5000
+- tapOn: "Continue without account"
+- extendedWaitUntil:
+    visible: "You haven't zaved any posts yet."
+    timeout: 10000
+- assertNotVisible: "View details for Example Domain"

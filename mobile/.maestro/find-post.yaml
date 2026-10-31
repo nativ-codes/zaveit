@@ -1,0 +1,55 @@
+appId: com.nativcodes.zaveit
+name: Find a Post
+tags:
+  - smoke
+---
+- launchApp:
+    clearState: true
+- runFlow: subflows/connect-dev-server.yaml
+- tapOn: "Continue without account"
+- extendedWaitUntil:
+    visible: "You haven't zaved any posts yet."
+    timeout: 10000
+- runFlow: subflows/save-example-post.yaml
+
+- tapOn: "SEARCH"
+- tapOn: "Search your saved content..."
+
+# No match first, so the title search below proves something.
+- inputText: "zzz-no-match"
+- extendedWaitUntil:
+    visible: "No posts found."
+    timeout: 5000
+- assertNotVisible: "View details for Example Domain"
+
+- eraseText
+- inputText: "example domain"
+- extendedWaitUntil:
+    visible: "View details for Example Domain"
+    timeout: 5000
+- assertNotVisible: "No posts found."
+
+- eraseText
+# With the keyboard up, the first tap on a tag only closes it.
+- hideKeyboard
+- tapOn:
+    id: "Components_TagItem_technology"
+- assertVisible:
+    id: "Components_TagItem_technology"
+    selected: true
+- assertVisible: "View details for Example Domain"
+
+- tapOn: "View details for Example Domain"
+- extendedWaitUntil:
+    # The row also holds the copy icon, so the accessible text is longer than the URL.
+    visible: "https://example\\.com.*"
+    timeout: 5000
+- assertVisible: "Example Domain"
+- assertVisible: "Added on .*"
+
+- tapOn:
+    id: "Components_TagItem_technology"
+- extendedWaitUntil:
+    visible: "View details for Example Domain"
+    timeout: 5000
+- assertVisible: "#technology"

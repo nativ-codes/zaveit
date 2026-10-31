@@ -1,0 +1,20 @@
+appId: com.nativcodes.zaveit
+name: First launch
+tags:
+  - smoke
+---
+- launchApp:
+    clearState: true
+- runFlow: subflows/connect-dev-server.yaml
+- assertVisible: "Your smart bookmark manager"
+- tapOn: "Continue without account"
+- extendedWaitUntil:
+    visible: "You haven't zaved any posts yet."
+    timeout: 10000
+
+# The choice must survive a relaunch, or the user lands on login every time.
+- stopApp
+- launchApp
+- runFlow: subflows/connect-dev-server.yaml
+- assertVisible: "You haven't zaved any posts yet."
+- assertNotVisible: "Continue without account"

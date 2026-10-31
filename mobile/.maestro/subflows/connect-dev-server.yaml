@@ -1,0 +1,48 @@
+appId: com.nativcodes.zaveit
+---
+# Dev builds can stop at the Expo launcher after launchApp. Other builds skip this.
+- extendedWaitUntil:
+    visible: "Development Build|Continue without account|Home|Open"
+    timeout: 30000
+# A failed run can leave the iOS link prompt open, and it hides the app from Maestro.
+- runFlow:
+    when:
+      visible: "Open"
+    commands:
+      - tapOn: "Open"
+- runFlow:
+    when:
+      visible: "Development Build"
+    commands:
+      # disableOnboarding stops Expo's dev menu popup from covering the app.
+      # iOS reads it from the inner url, Android from the outer link, so it's in both.
+      - openLink: "zaveit://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081%2F%3FdisableOnboarding%3D1&disableOnboarding=1"
+      # iOS asks "Open in ZaveIt?" for the link.
+      - tapOn:
+          text: "Open"
+          optional: true
+
+# Long timeout: a dev build may need Metro to bundle on the first launch.
+- extendedWaitUntil:
+    visible: "Continue without account|Home"
+    timeout: 60000
+
+# Expo's floating Tools button sits on top of "Add post". Launch arguments don't turn it
+# off, so use its own switch. The setting sticks until clearState.
+- extendedWaitUntil:
+    visible: "Tools"
+    timeout: 3000
+    optional: true
+- runFlow:
+    when:
+      visible: "Tools"
+    commands:
+      - tapOn: "Tools"
+      - tapOn:
+          text: "1"
+          rightOf: "Tools button"
+          index: 1
+      - tapOn: "Close"
+      - extendedWaitUntil:
+          notVisible: "Tools"
+          timeout: 5000

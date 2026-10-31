@@ -101,6 +101,7 @@ function PostDetailsScreen() {
             iconName="trash"
             onPress={handleOnRemovePost}
             theme="error"
+            accessibilityLabel="Remove post"
           />
           <Button type="primary" label="Open" onPress={handleOpenInBrowser} />
         </Spacer>

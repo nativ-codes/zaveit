@@ -5,11 +5,18 @@ import { StyleSheet, TouchableOpacity } from "react-native";
 import styles from "./button-icon.style";
 import { ButtonIconPropsType, ButtonIconThemeMap } from "./button-icon.type";
 
-function ButtonIcon({ iconName, onPress, theme = "primary" }: ButtonIconPropsType) {
+function ButtonIcon({
+  iconName,
+  onPress,
+  theme = "primary",
+  accessibilityLabel,
+}: ButtonIconPropsType) {
   return (
     <TouchableOpacity
       activeOpacity={ACTIVE_OPACITY}
       onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
       style={StyleSheet.compose(styles.wrapper, ButtonIconThemeMap[theme])}
     >
       <Icon name={iconName} size={Units.s24} color={Colors.text.onPrimary} />
