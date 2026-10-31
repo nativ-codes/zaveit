@@ -1,5 +1,5 @@
 import { getAuth, GoogleAuthProvider, signInWithCredential, signOut as firebaseSignOut } from "@react-native-firebase/auth";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import { GoogleSignin, isCancelledResponse } from "@react-native-google-signin/google-signin";
 import { createFirestoreUser, UserUUIDType } from "./users.service";
 
 export type GoogleAuthResponseType = {
@@ -17,10 +17,15 @@ export const initializeGoogleSignIn = () => {
   });
 };
 
+// Returns null when the user cancels.
 export const signInWithGoogle = async (): Promise<UserUUIDType | null> => {
   try {
     await GoogleSignin.hasPlayServices();
     const response = await GoogleSignin.signIn();
+
+    if (isCancelledResponse(response)) {
+      return null;
+    }
 
     if (!response.data?.idToken) {
       throw new Error("No ID token present in Google Sign In response");

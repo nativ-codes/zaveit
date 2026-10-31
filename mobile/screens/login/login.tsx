@@ -9,10 +9,11 @@ import { setAppAuthType, setInitialUserId } from "@/config/storage";
 import { signInWithApple } from "@/services/apple-auth.service";
 import { signInWithGoogle } from "@/services/google-auth.service";
 import { AppAuthType } from "@/types";
+import * as Burnt from "burnt";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import styles from "./login.style";
 
@@ -30,13 +31,12 @@ function LoginScreen() {
         authType === "google" ? signInWithGoogle : signInWithApple;
       const userUUID = await signByAuthType();
 
+      // No user means the user cancelled, which is not an error.
       if (userUUID) {
         setAppAuthType(authType);
         setInitialUserId();
         Analytics.sendEvent(Analytics.events.logged_in, { authType });
         router.replace("/");
-      } else {
-        console.error("Sign in failed");
       }
     } catch (error) {
       ErrorHandler.logError({
@@ -45,6 +45,13 @@ function LoginScreen() {
         metadata: {
           authType,
         },
+      });
+      Burnt.toast({
+        title: "Unable to sign in",
+        message: "Please try again later.",
+        preset: "error",
+        duration: 5,
+        haptic: "error",
       });
     }
   };
@@ -96,11 +103,13 @@ function LoginScreen() {
           iconName="google"
           onPress={handleSignIn("google")}
         />
-        <Button.Social
-          label="Continue with Apple"
-          iconName="apple"
-          onPress={handleSignIn("apple")}
-        />
+        {Platform.OS === "ios" && (
+          <Button.Social
+            label="Continue with Apple"
+            iconName="apple"
+            onPress={handleSignIn("apple")}
+          />
+        )}
         <TouchableOpacity
           onPress={handleContinueWithoutAccount}
           hitSlop={Units.s16}

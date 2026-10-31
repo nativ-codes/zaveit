@@ -13,6 +13,7 @@ jest.mock("@react-native-google-signin/google-signin", () => ({
     revokeAccess: jest.fn(),
     signOut: jest.fn(),
   },
+  isCancelledResponse: (response: { type: string }) => response.type === "cancelled",
 }));
 
 jest.mock("@react-native-firebase/auth", () => ({
@@ -42,6 +43,14 @@ describe("signInWithGoogle", () => {
 
     expect(google.signInSilently).not.toHaveBeenCalled();
     expect(signInWithCredential).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns null when the user cancels", async () => {
+    google.signIn.mockResolvedValue({ type: "cancelled", data: null } as never);
+
+    await expect(signInWithGoogle()).resolves.toBeNull();
+
+    expect(signInWithCredential).not.toHaveBeenCalled();
   });
 });
 
