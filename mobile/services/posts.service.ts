@@ -14,7 +14,7 @@ import { createList } from "./users.service";
 
 // Sign-up can fail before the list exists, so create it here when it's missing.
 // shortcut: two simultaneous first saves can each create a list, move to a list id derived from the user id if that shows up.
-const getUserList = async () => {
+export const getUserList = async () => {
   const userId = getAuth().currentUser?.uid;
   if (!userId) {
     throw new Error("No signed-in user");

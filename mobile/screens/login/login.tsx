@@ -8,6 +8,7 @@ import { ErrorHandler } from "@/config/errors";
 import { setAppAuthType, setInitialUserId } from "@/config/storage";
 import { signInWithApple } from "@/services/apple-auth.service";
 import { signInWithGoogle } from "@/services/google-auth.service";
+import { syncPosts } from "@/services/login.service";
 import { AppAuthType } from "@/types";
 import * as Burnt from "burnt";
 import { Image } from "expo-image";
@@ -35,6 +36,7 @@ function LoginScreen() {
       if (userUUID) {
         setAppAuthType(authType);
         setInitialUserId();
+        syncPosts();
         Analytics.sendEvent(Analytics.events.logged_in, { authType });
         router.replace("/");
       }

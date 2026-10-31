@@ -1,14 +1,8 @@
+import { safelyPrintError } from "@/common/utils/error-parsers";
+import { ErrorHandler } from "@/config/errors";
 import { getPosts, savePosts } from "@/config/storage/posts";
-import { PostType } from "@/types/posts";
 import { getAuth, signInWithEmailAndPassword } from "@react-native-firebase/auth";
-import {
-  collection,
-  getDocs,
-  getFirestore,
-  query,
-  where,
-} from "@react-native-firebase/firestore";
-import { savePostsService } from "./posts.service";
+import { getUserList, savePostsService } from "./posts.service";
 
 export type LoginResponseType = {
   user: any;
@@ -38,49 +32,28 @@ export const login = async (
   }
 };
 
-type SyncPostsPropsType = {
-  uid: string;
-};
-
-export const syncPosts = async ({ uid }: SyncPostsPropsType) => {
-  if (!uid) {
-    console.log("[Sync Lists] No user found");
-    return;
-  }
-
+// Safe to repeat. Compares by id because an edited Post differs from its cloud copy, and arrayUnion would add it twice.
+// Never rejects, so callers can start it without waiting. Resolves false when the sync failed.
+export const syncPosts = async (): Promise<boolean> => {
   try {
-    console.log("[Sync Lists] Starting sync for user:", uid);
-
-    const userListsQuery = await getDocs(
-      query(collection(getFirestore(), "lists"), where("userId", "==", uid))
-    );
-
-    if (userListsQuery.empty) {
-      console.log("[Sync Lists] No lists found for user:", uid);
-      return;
-    }
-
-    const lists = userListsQuery.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-
+    const { posts: cloudPosts } = await getUserList();
     const localPosts = getPosts();
-    localPosts.length && savePostsService(localPosts);
 
-    // Extract posts from the first list and save them as share intents
-    if (lists.length > 0 && "posts" in lists[0]) {
-      const posts = lists[0].posts as PostType[];
-      savePosts(posts);
-      console.log("[Sync Lists] Saved posts:", posts.length);
+    const cloudIds = new Set(cloudPosts.map(({ id }) => id));
+    const missingFromCloud = localPosts.filter(({ id }) => !cloudIds.has(id));
+    if (missingFromCloud.length) {
+      await savePostsService(missingFromCloud);
     }
 
-    return lists;
-  } catch (error: any) {
-    console.error("[Sync Lists] Error syncing lists:", error.message);
-    throw {
-      code: error.code,
-      message: error.message,
-    };
+    // The local copy wins, because edits aren't uploaded.
+    const localIds = new Set(localPosts.map(({ id }) => id));
+    savePosts(cloudPosts.filter(({ id }) => !localIds.has(id)));
+    return true;
+  } catch (error) {
+    ErrorHandler.logError({
+      location: "syncPosts",
+      error: safelyPrintError(error),
+    });
+    return false;
   }
 };

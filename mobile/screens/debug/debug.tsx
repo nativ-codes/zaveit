@@ -46,14 +46,13 @@ function DebugScreen() {
       return;
     }
     setIsSyncing(true);
-    try {
-      await syncPosts({ uid });
-      Burnt.toast({ title: "Sync complete", preset: "done", duration: 2 });
-    } catch {
-      Burnt.toast({ title: "Sync failed", preset: "error", duration: 2 });
-    } finally {
-      setIsSyncing(false);
-    }
+    const didSync = await syncPosts();
+    Burnt.toast(
+      didSync
+        ? { title: "Sync complete", preset: "done", duration: 2 }
+        : { title: "Sync failed", preset: "error", duration: 2 }
+    );
+    setIsSyncing(false);
   };
 
   const handleOnAddMapping = () => {

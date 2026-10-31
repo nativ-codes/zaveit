@@ -5,6 +5,7 @@ type DocData = Record<string, any>;
 const collections = new Map<string, Map<string, DocData>>();
 let nextDocId = 0;
 let failNextBatch = false;
+let failUpdate = false;
 
 class ArrayUnion {
   constructor(readonly items: unknown[]) {}
@@ -17,6 +18,11 @@ export const resetFirestore = () => {
   collections.clear();
   nextDocId = 0;
   failNextBatch = false;
+  failUpdate = false;
+};
+
+export const failNextUpdate = () => {
+  failUpdate = true;
 };
 
 export const failNextBatchCommit = () => {
@@ -55,6 +61,12 @@ const docRef = (collectionName: string, id: string) => {
       docs.set(id, structuredClone(data));
     },
     update: async (changes: DocData) => {
+      if (failUpdate) {
+        failUpdate = false;
+        throw Object.assign(new Error("Update failed"), {
+          code: "firestore/unavailable",
+        });
+      }
       if (!docs.has(id)) {
         throw Object.assign(new Error(`No document ${id}`), {
           code: "firestore/not-found",
