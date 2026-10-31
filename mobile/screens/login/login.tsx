@@ -7,14 +7,11 @@ import { Analytics } from "@/config/analytics";
 import { ErrorHandler } from "@/config/errors";
 import { setAppAuthType, setInitialUserId } from "@/config/storage";
 import { signInWithApple } from "@/services/apple-auth.service";
-import {
-  initializeGoogleSignIn,
-  signInWithGoogle,
-} from "@/services/google-auth.service";
+import { signInWithGoogle } from "@/services/google-auth.service";
 import { AppAuthType } from "@/types";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import React, { useEffect } from "react";
+import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import styles from "./login.style";
@@ -22,10 +19,6 @@ import styles from "./login.style";
 function LoginScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-
-  useEffect(() => {
-    initializeGoogleSignIn();
-  }, []);
 
   const handleSignIn = (authType: AppAuthType) => async () => {
     try {

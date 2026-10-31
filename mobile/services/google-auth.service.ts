@@ -1,8 +1,5 @@
 import { getAuth, GoogleAuthProvider, signInWithCredential, signOut as firebaseSignOut } from "@react-native-firebase/auth";
-import {
-  GoogleSignin,
-  isNoSavedCredentialFoundResponse,
-} from "@react-native-google-signin/google-signin";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { createFirestoreUser, UserUUIDType } from "./users.service";
 
 export type GoogleAuthResponseType = {
@@ -23,32 +20,21 @@ export const initializeGoogleSignIn = () => {
 export const signInWithGoogle = async (): Promise<UserUUIDType | null> => {
   try {
     await GoogleSignin.hasPlayServices();
-    const response = await GoogleSignin.signInSilently();
-    console.log("[Google Auth] Attempting silent sign in");
+    const response = await GoogleSignin.signIn();
 
-    if (isNoSavedCredentialFoundResponse(response)) {
-      console.log("[Google Auth] No saved credentials, initiating sign in");
-      const letsSignin = await GoogleSignin.signIn();
-
-      if (!letsSignin.data?.idToken) {
-        throw new Error("No ID token present in Google Sign In response");
-      }
-
-      const googleCredential = GoogleAuthProvider.credential(
-        letsSignin.data.idToken
-      );
-      console.log("[Google Auth] Got Google credentials");
-
-      const userCredential = await signInWithCredential(
-        getAuth(),
-        googleCredential
-      );
-      console.log("[Google Auth] Successfully signed in with Firebase");
-
-      return await createFirestoreUser(userCredential);
+    if (!response.data?.idToken) {
+      throw new Error("No ID token present in Google Sign In response");
     }
 
-    return null;
+    const googleCredential = GoogleAuthProvider.credential(
+      response.data.idToken
+    );
+    const userCredential = await signInWithCredential(
+      getAuth(),
+      googleCredential
+    );
+
+    return await createFirestoreUser(userCredential);
   } catch (error: any) {
     throw {
       code: error.code,
@@ -58,11 +44,17 @@ export const signInWithGoogle = async (): Promise<UserUUIDType | null> => {
 };
 
 export const signOut = async () => {
+  await firebaseSignOut(getAuth());
+
+  // Apple and anonymous users have no Google login to clear.
+  if (!GoogleSignin.hasPreviousSignIn()) {
+    return;
+  }
+
   try {
-    await firebaseSignOut(getAuth());
-    await GoogleSignin.signOut();
     await GoogleSignin.revokeAccess();
-  } catch (error) {
-    throw error;
+  } finally {
+    // Runs even if revoking fails (e.g. offline), so the saved login is always cleared.
+    await GoogleSignin.signOut();
   }
 };

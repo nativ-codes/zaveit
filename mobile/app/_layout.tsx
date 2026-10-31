@@ -4,6 +4,7 @@ import "@/config/storage/storage";
 import MainStack from "@/common/containers/main-stack/main-stack";
 import { initializeAppCheck } from "@/config/app-check";
 import AuthProvider from "@/config/contexts/auth.context";
+import { initializeGoogleSignIn } from "@/services/google-auth.service";
 import { useFonts } from "expo-font";
 import { ShareIntentProvider } from "expo-share-intent";
 import { StatusBar } from "expo-status-bar";
@@ -16,6 +17,9 @@ if (__DEV__) {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   require("../dev/reactotron-config");
 }
+
+// At app start, not on the login screen: log out needs it in sessions that never open login.
+initializeGoogleSignIn();
 
 // Started early so the first share does not wait for attestation.
 initializeAppCheck().catch(() => {
