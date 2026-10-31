@@ -14,6 +14,17 @@ export type UserType = {
 
 export type UserUUIDType = string;
 
+export const createList = async (userId: string) => {
+  const listRef = doc(collection(getFirestore(), "lists"));
+  await setDoc(listRef, {
+    isPublished: false,
+    posts: [],
+    userId,
+    createdAt: serverTimestamp(),
+  });
+  return listRef;
+};
+
 export const createUser = async (user: UserType): Promise<void> => {
   try {
     const userRef = doc(getFirestore(), "users", user.id);
@@ -24,13 +35,7 @@ export const createUser = async (user: UserType): Promise<void> => {
     });
 
     // Create a list for the user
-    const listRef = doc(collection(getFirestore(), "lists"));
-    await setDoc(listRef, {
-      isPublished: false,
-      posts: [],
-      userId: user.id,
-      createdAt: serverTimestamp(),
-    });
+    await createList(user.id);
 
     console.log("[Users Service] User and list created successfully:", user.id);
   } catch (error: any) {

@@ -10,29 +10,38 @@ import {
   updateDoc,
   where,
 } from "@react-native-firebase/firestore";
+import { createList } from "./users.service";
+
+// Sign-up can fail before the list exists, so create it here when it's missing.
+// shortcut: two simultaneous first saves can each create a list, move to a list id derived from the user id if that shows up.
+const getUserList = async () => {
+  const userId = getAuth().currentUser?.uid;
+  if (!userId) {
+    throw new Error("No signed-in user");
+  }
+
+  const userListQuery = await getDocs(
+    query(
+      collection(getFirestore(), "lists"),
+      where("userId", "==", userId),
+      limit(1)
+    )
+  );
+
+  if (userListQuery.empty) {
+    return { ref: await createList(userId), posts: [] as PostType[] };
+  }
+
+  const userList = userListQuery.docs[0];
+  return { ref: userList.ref, posts: userList.data().posts as PostType[] };
+};
 
 export const savePostService = async (post: PostType): Promise<void> => {
   try {
-    const userId = getAuth().currentUser?.uid;
-
-    // Find the user's list
-    const userListQuery = await getDocs(
-      query(
-        collection(getFirestore(), "lists"),
-        where("userId", "==", userId),
-        limit(1)
-      )
-    );
-
-    if (userListQuery.empty) {
-      throw new Error("No list found for user");
-    }
-
-    const userList = userListQuery.docs[0];
+    const userList = await getUserList();
 
     // Add the post to the list's posts array
     await updateDoc(userList.ref, {
-      userId: userId,
       posts: arrayUnion(post),
     });
 
@@ -50,30 +59,14 @@ export const savePostService = async (post: PostType): Promise<void> => {
 
 export const savePostsService = async (posts: PostType[]): Promise<void> => {
   try {
-    const userId = getAuth().currentUser?.uid;
     console.log("[Posts Service] Saving posts:", {
-      userId,
       postsCount: posts.length,
     });
 
-    // Find the user's list
-    const userListQuery = await getDocs(
-      query(
-        collection(getFirestore(), "lists"),
-        where("userId", "==", userId),
-        limit(1)
-      )
-    );
-
-    if (userListQuery.empty) {
-      throw new Error("No list found for user");
-    }
-
-    const userList = userListQuery.docs[0];
+    const userList = await getUserList();
 
     // Add all posts to the list's posts array
     await updateDoc(userList.ref, {
-      userId: userId,
       posts: arrayUnion(...posts),
     });
 
@@ -91,26 +84,10 @@ export const savePostsService = async (posts: PostType[]): Promise<void> => {
 
 export const removePostService = async (post: PostType): Promise<void> => {
   try {
-    const userId = getAuth().currentUser?.uid;
-
-    // Find the user's list
-    const userListQuery = await getDocs(
-      query(
-        collection(getFirestore(), "lists"),
-        where("userId", "==", userId),
-        limit(1)
-      )
-    );
-
-    if (userListQuery.empty) {
-      throw new Error("No list found for user");
-    }
-
-    const userList = userListQuery.docs[0];
-    const listData = userList.data();
+    const userList = await getUserList();
 
     // Filter out the post with the matching postId
-    const updatedPosts = listData.posts.filter(
+    const updatedPosts = userList.posts.filter(
       (currentPost: PostType) => currentPost.id !== post.id
     );
 
