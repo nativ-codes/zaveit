@@ -17,6 +17,7 @@ export type PostType = {
   author: string;
   timestamp: number;
   tags: string[];
+  thumbnailUrl?: string;
 };
 
 export type FrequentlyAccessedPostsType = Record<string, number>;

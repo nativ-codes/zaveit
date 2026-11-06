@@ -11,8 +11,8 @@ import styles from "./preview-post.style";
 import { PreviewPostPropsType } from "./preview-post.type";
 
 function PreviewPost({
-  id,
   url,
+  thumbnailUrl,
   title,
   tags,
   onPress
@@ -27,7 +27,7 @@ function PreviewPost({
       accessibilityRole="button"
       accessibilityLabel={`View details for ${title || url}`}
     >
-      <PostImage id={id} url={url} style={styles.image} />
+      <PostImage thumbnailUrl={thumbnailUrl} style={styles.image} />
 
       <Spacer direction="full" size="s8" gap="s4" style={styles.content}>
         {title && (

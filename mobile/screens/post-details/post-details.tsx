@@ -15,7 +15,6 @@ import { ErrorHandler } from "@/config/errors";
 import {
   increasePostAccessCount,
   removePost,
-  triggerImageReload,
   usePosts,
 } from "@/config/storage";
 import { PostType } from "@/types";
@@ -60,12 +59,6 @@ function PostDetailsScreen() {
       router.back();
     } else {
       router.navigate("/");
-    }
-  };
-
-  const handleReloadImage = () => {
-    if (post) {
-      triggerImageReload(post.id);
     }
   };
 
@@ -116,11 +109,6 @@ function PostDetailsScreen() {
           left={
             <TouchableOpacity activeOpacity={ACTIVE_OPACITY} onPress={goBack} style={styles.topBarButton} hitSlop={Units.s16}>
               <Icon name="chevron-left" size={Units.s24} color={Colors.white} />
-            </TouchableOpacity>
-          }
-          right={
-              <TouchableOpacity activeOpacity={ACTIVE_OPACITY} onPress={handleReloadImage} style={styles.topBarButton} hitSlop={Units.s16}>
-              <Icon name="refresh-cw" size={Units.s20} color={Colors.white} />
             </TouchableOpacity>
           }
         />

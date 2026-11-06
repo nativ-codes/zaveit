@@ -4,4 +4,5 @@ const API_VERSION = "v1";
 export const ApiEndpoints = {
   tags: `${API_URL}/${API_VERSION}/tags`,
   metadata: `${API_URL}/${API_VERSION}/metadata`,
+  thumbnails: `${API_URL}/${API_VERSION}/thumbnails`,
 };

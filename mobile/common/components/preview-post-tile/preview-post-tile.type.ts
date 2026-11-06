@@ -2,7 +2,7 @@ import { PostType } from "@/types";
 
 export type PreviewPostTilePropsType = Pick<
   PostType,
-  "url" | "title" | "id"
+  "url" | "thumbnailUrl" | "title" | "id"
 > & {
   onPress?: () => void;
 };

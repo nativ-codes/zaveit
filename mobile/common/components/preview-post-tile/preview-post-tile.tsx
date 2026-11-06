@@ -9,8 +9,8 @@ import { styles } from "./preview-post-tile.style";
 import { PreviewPostTilePropsType } from "./preview-post-tile.type";
 
 function PreviewPostTile({
-  id,
   url,
+  thumbnailUrl,
   title,
   onPress,
 }: PreviewPostTilePropsType) {
@@ -24,7 +24,7 @@ function PreviewPostTile({
       accessibilityRole="button"
       accessibilityLabel={`View details for ${title || url}`}
     >
-      <PostImage id={id} url={url} style={styles.image} />
+      <PostImage thumbnailUrl={thumbnailUrl} style={styles.image} />
 
       <Spacer direction="full" size="s8" gap="s4" style={styles.content}>
         {title && (

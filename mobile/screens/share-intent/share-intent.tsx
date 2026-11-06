@@ -7,23 +7,22 @@ import {
 import { ACTIVE_OPACITY, Colors, IMAGE_PLACEHOLDER, Units } from "@/common/constants";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
-import { forceHttps, getDomainFromUrl } from "@/common/utils";
+import { getDomainFromUrl } from "@/common/utils";
 import { safelyPrintError } from "@/common/utils/error-parsers";
-import { saveImageFromUrl } from "@/common/utils/files";
 import { Haptics } from "@/common/utils/haptics";
 import { toggleTag } from "@/common/utils/misc";
 import { Analytics } from "@/config/analytics";
 import { ErrorHandler } from "@/config/errors";
-import { savePost } from "@/config/storage";
 import { PostMetadataType, PostType } from "@/types";
 import Icon from "@expo/vector-icons/Feather";
 import * as Burnt from "burnt";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useShareIntentContext } from "expo-share-intent";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { v4 as uuid } from "uuid";
+import { saveNewPost, startThumbnailUpload } from "./share-intent.service";
 import styles from "./share-intent.style";
 import { ShareIntentPropsType } from "./share-intent.type";
 import {
@@ -50,6 +49,9 @@ function ShareIntentScreen() {
     mainTags: [],
   });
   const [isLoading, setIsLoading] = useState(false);
+  const thumbnailUpload = useRef<Promise<string | undefined>>(
+    Promise.resolve(undefined)
+  );
 
   const isSaveDisabled = !Boolean(tags.selectedMainTags.length) || isLoading;
   const isSaveLoading = !Boolean(tags.mainTags.length) || isLoading;
@@ -81,6 +83,7 @@ function ShareIntentScreen() {
           shareIntent.webUrl ? shareIntent : { webUrl: url }
         );
         setPostMetadata(data);
+        thumbnailUpload.current = startThumbnailUpload(data?.thumbnail);
 
         if (data?.title) {
           const response = await parseTags(data.title, data.url);
@@ -109,11 +112,7 @@ function ShareIntentScreen() {
         };
         setIsLoading(true);
 
-        if (postMetadata?.thumbnail) {
-          await saveImageFromUrl(forceHttps(postMetadata?.thumbnail), postId);
-        }
-
-        await savePost(post);
+        await saveNewPost(post, thumbnailUpload.current);
 
         Analytics.sendEvent(Analytics.events.zaved_post, {
           platform: getDomainFromUrl(postMetadata?.url || ""),

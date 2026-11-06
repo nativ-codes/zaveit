@@ -1,11 +1,14 @@
 import { safelyPrintError } from "@/common/utils/error-parsers";
+import { forceHttps } from "@/common/utils/formatters";
 import { ErrorHandler } from "@/config/errors";
+import { savePost } from "@/config/storage/posts";
 import {
   fetchServerMetadata,
   fetchOEmbedMetadata,
   fetchTikTokEmbedPage,
 } from "@/services/general.service";
-import { PlatformConfig } from "@/types";
+import { makeThumbnail, uploadThumbnail } from "@/services/thumbnails.service";
+import { PlatformConfig, PostType } from "@/types";
 
 type GetOEmbedMetadataReturnType = {
   author: string;
@@ -208,4 +211,48 @@ export const getServerMetadata = async ({
     });
     return undefined;
   }
+};
+
+export const THUMBNAIL_UPLOAD_TIMEOUT_MS = 20000;
+
+// Never rejects or hangs: a failed or slow upload means the Post is saved without a Thumbnail.
+export const startThumbnailUpload = async (
+  sourceUrl?: string
+): Promise<string | undefined> => {
+  if (!sourceUrl) {
+    return undefined;
+  }
+
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(
+      () => reject(new Error("Thumbnail upload timed out")),
+      THUMBNAIL_UPLOAD_TIMEOUT_MS
+    );
+  });
+
+  try {
+    return await Promise.race([
+      makeThumbnail(forceHttps(sourceUrl)).then(uploadThumbnail),
+      timeout,
+    ]);
+  } catch (error) {
+    ErrorHandler.logError({
+      location: "startThumbnailUpload",
+      error: safelyPrintError(error),
+      metadata: { sourceUrl },
+    });
+    return undefined;
+  } finally {
+    clearTimeout(timer);
+  }
+};
+
+// Waits for the upload the screen already started, so Save never starts a second one.
+export const saveNewPost = async (
+  post: PostType,
+  thumbnailUpload: Promise<string | undefined>
+): Promise<void> => {
+  const thumbnailUrl = await thumbnailUpload;
+  await savePost(thumbnailUrl ? { ...post, thumbnailUrl } : post);
 };

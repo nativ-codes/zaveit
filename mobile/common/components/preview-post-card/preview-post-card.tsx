@@ -11,8 +11,8 @@ import { styles } from "./preview-post-card.style";
 import { PreviewPostCardPropsType } from "./preview-post-card.type";
 
 function PreviewPostCard({
-  id,
   url,
+  thumbnailUrl,
   title,
   tags,
   onPress,
@@ -27,7 +27,7 @@ function PreviewPostCard({
       accessibilityRole="button"
       accessibilityLabel={`View details for ${title || url}`}
     >
-      <PostImage id={id} url={url} style={styles.image} />
+      <PostImage thumbnailUrl={thumbnailUrl} style={styles.image} />
 
       <Spacer direction="full" size="s8" gap="s4">
         {title && (

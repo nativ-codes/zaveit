@@ -18,6 +18,11 @@ if (__DEV__) {
   require("../dev/reactotron-config");
 }
 
+// Keeps Home under a screen opened by a deep link or share, so closing it returns to Home.
+export const unstable_settings = {
+  anchor: "(tabs)",
+};
+
 // At app start, not on the login screen: log out needs it in sessions that never open login.
 initializeGoogleSignIn();
 

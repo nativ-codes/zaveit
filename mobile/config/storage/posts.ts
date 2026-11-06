@@ -117,20 +117,6 @@ export const clearAllData = (): void => {
   deleteAllImages();
 };
 
-export const markImageFailed = (id: string): void => {
-  storage.set(`imageStatus.${id}`, "failed");
-};
-
-export const clearImageFailed = (id: string): void => {
-  storage.delete(`imageStatus.${id}`);
-};
-
-export const triggerImageReload = (id: string): void => {
-  storage.delete(`imageStatus.${id}`);
-  deleteImage(`${FileSystem.documentDirectory}${id}.jpg`);
-  storage.set(`imageReloadAt.${id}`, Date.now().toString());
-};
-
 export const removeDuplicatePosts = (): void => {
   const posts = getPosts();
   if (posts.length === 0) {

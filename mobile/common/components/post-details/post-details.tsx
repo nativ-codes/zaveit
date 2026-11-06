@@ -17,10 +17,10 @@ import styles from "./post-details.style";
 import { PostDetailsPropsType } from "./post-details.type";
 
 function PostDetails({
-  id,
   title,
   author,
   url,
+  thumbnailUrl,
   tags,
   timestamp,
 }: PostDetailsPropsType) {
@@ -51,7 +51,7 @@ function PostDetails({
 
   return (
     <Spacer gap="s16">
-      <PostImage id={id} url={url} style={styles.image} />
+      <PostImage thumbnailUrl={thumbnailUrl} style={styles.image} />
       <Spacer direction="horizontal" size="s16" gap="s16">
         <Spacer gap="s8">
           {title && (
