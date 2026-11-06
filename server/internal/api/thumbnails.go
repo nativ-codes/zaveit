@@ -16,7 +16,7 @@ const (
 	thumbnailBaseURL  = "https://img.nativ.codes/"
 	// Keys are never rewritten, so the picture behind a URL never changes.
 	thumbnailCacheControl = "public, max-age=31536000, immutable"
-	uploadsPerMinute      = 120
+	uploadsPerMinute      = 30
 	uploadsPerDay         = 2_000
 )
 
