@@ -3,6 +3,7 @@ package api
 import (
 	"bytes"
 	"encoding/json"
+	"encoding/xml"
 	"errors"
 	"fmt"
 	"io"
@@ -127,5 +128,103 @@ func TestUploadThumbnailPerUIDLimit(t *testing.T) {
 	}
 	if res := upload(router, "other", "image/webp", webp); res.Code != http.StatusCreated {
 		t.Errorf("another user: got %d", res.Code)
+	}
+}
+
+// deleteRouter accepts the ID token "good" as user-1, backed by a fake R2 holding keys, listed two per page.
+// The delete request numbered failDelete (1-based) fails; 0 means none do.
+func deleteRouter(t *testing.T, keys []string, failDelete int) (http.Handler, *[][]string) {
+	t.Helper()
+	var deleted [][]string
+	fake := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		query := r.URL.Query()
+		switch {
+		case r.Method == http.MethodGet && query.Get("list-type") == "2":
+			var page []string
+			for _, key := range keys {
+				if strings.HasPrefix(key, query.Get("prefix")) {
+					page = append(page, key)
+				}
+			}
+			start := 0
+			fmt.Sscan(query.Get("continuation-token"), &start)
+			end := min(start+2, len(page))
+			fmt.Fprint(w, "<ListBucketResult>")
+			for _, key := range page[start:end] {
+				fmt.Fprintf(w, "<Contents><Key>%s</Key></Contents>", key)
+			}
+			fmt.Fprintf(w, "<IsTruncated>%t</IsTruncated><NextContinuationToken>%d</NextContinuationToken></ListBucketResult>", end < len(page), end)
+		case r.Method == http.MethodPost && query.Has("delete"):
+			if len(deleted)+1 == failDelete {
+				http.Error(w, "boom", http.StatusInternalServerError)
+				return
+			}
+			var body struct{ Object []struct{ Key string } }
+			bodyBytes, _ := io.ReadAll(r.Body)
+			xml.Unmarshal(bodyBytes, &body)
+			var batch []string
+			for _, object := range body.Object {
+				batch = append(batch, object.Key)
+			}
+			deleted = append(deleted, batch)
+			fmt.Fprint(w, "<DeleteResult></DeleteResult>")
+		default:
+			http.Error(w, "unexpected request", http.StatusBadRequest)
+		}
+	}))
+	t.Cleanup(fake.Close)
+
+	verifyUser := func(token string) (string, error) {
+		if token == "good" {
+			return "user-1", nil
+		}
+		return "", errors.New("rejected")
+	}
+	store := r2.Client{Endpoint: fake.URL, Bucket: "bucket", AccessKeyID: "id", SecretAccessKey: "secret"}
+	return NewRouter(deepseek.Client{}, false, SourcesCheck{}, allowAll, verifyUser, store), &deleted
+}
+
+func deleteAll(router http.Handler, token string) *httptest.ResponseRecorder {
+	req := httptest.NewRequest(http.MethodDelete, "/v1/thumbnails", nil)
+	req.Header.Set("Authorization", "Bearer "+token)
+	res := httptest.NewRecorder()
+	router.ServeHTTP(res, req)
+	return res
+}
+
+func TestDeleteThumbnailsDeletesEveryPageOfTheUsersPrefix(t *testing.T) {
+	router, deleted := deleteRouter(t, []string{
+		"zaveit/user-1/a.webp", "zaveit/user-1/b.webp", "zaveit/user-1/c.webp", "zaveit/user-10/d.webp", "zaveit/user-2/e.webp",
+	}, 0)
+
+	if res := deleteAll(router, "good"); res.Code != http.StatusNoContent {
+		t.Fatalf("got %d %s", res.Code, res.Body)
+	}
+	if got := fmt.Sprint(*deleted); got != "[[zaveit/user-1/a.webp zaveit/user-1/b.webp] [zaveit/user-1/c.webp]]" {
+		t.Errorf("deleted %s", got)
+	}
+}
+
+func TestDeleteThumbnailsSucceedsOnAnEmptyPrefix(t *testing.T) {
+	router, deleted := deleteRouter(t, []string{"zaveit/user-2/e.webp"}, 0)
+
+	if res := deleteAll(router, "good"); res.Code != http.StatusNoContent || len(*deleted) != 0 {
+		t.Errorf("got %d, deleted %v", res.Code, *deleted)
+	}
+}
+
+func TestDeleteThumbnailsFailsWhenAPageFails(t *testing.T) {
+	router, _ := deleteRouter(t, []string{"zaveit/user-1/a.webp", "zaveit/user-1/b.webp", "zaveit/user-1/c.webp"}, 2)
+
+	if res := deleteAll(router, "good"); res.Code != http.StatusBadGateway {
+		t.Errorf("got %d %s", res.Code, res.Body)
+	}
+}
+
+func TestDeleteThumbnailsNeedsAnIDToken(t *testing.T) {
+	router, deleted := deleteRouter(t, []string{"zaveit/user-1/a.webp"}, 0)
+
+	if res := deleteAll(router, "bad"); res.Code != http.StatusUnauthorized || len(*deleted) != 0 {
+		t.Errorf("got %d, deleted %v", res.Code, *deleted)
 	}
 }

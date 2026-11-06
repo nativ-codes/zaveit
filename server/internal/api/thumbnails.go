@@ -61,3 +61,32 @@ func uploadThumbnail(store r2.Client) http.HandlerFunc {
 		writeJSON(w, http.StatusCreated, map[string]string{"url": thumbnailBaseURL + key})
 	}
 }
+
+// deleteThumbnails deletes every Thumbnail under the signed-in user's prefix, one listing page at a time,
+// before their account is deleted. It fails as a whole if any page fails. Wrap it in requireUser.
+func deleteThumbnails(store r2.Client) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		prefix := "zaveit/" + userID(r) + "/"
+		token := ""
+		for {
+			objects, next, err := store.List(r.Context(), prefix, token)
+			if err == nil && len(objects) > 0 {
+				keys := make([]string, len(objects))
+				for i, object := range objects {
+					keys[i] = object.Key
+				}
+				err = store.Delete(r.Context(), keys)
+			}
+			if err != nil {
+				log.Printf("thumbnail delete failed: %v", err)
+				writeError(w, http.StatusBadGateway, "could not delete thumbnails")
+				return
+			}
+			if next == "" {
+				break
+			}
+			token = next
+		}
+		w.WriteHeader(http.StatusNoContent)
+	}
+}

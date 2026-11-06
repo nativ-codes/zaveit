@@ -29,6 +29,7 @@ func NewRouter(ai deepseek.Client, logTagDetails bool, check SourcesCheck, verif
 	mux.HandleFunc("GET /v1/metadata", v1(getMetadata))
 	mux.HandleFunc("POST /v1/tags", v1(suggestTags(ai, logTagDetails)))
 	mux.HandleFunc("POST /v1/thumbnails", v1(requireUser(verifyUser, uploadThumbnail(store))))
+	mux.HandleFunc("DELETE /v1/thumbnails", v1(requireUser(verifyUser, deleteThumbnails(store))))
 	return logRequests(mux)
 }
 
