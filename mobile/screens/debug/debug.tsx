@@ -2,11 +2,7 @@ import { Menu, TopBar } from "@/common/components";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { deleteAllImages } from "@/common/utils/files";
-import {
-  clearAllData,
-  removeDuplicatePosts,
-  setAppAuthType,
-} from "@/config/storage";
+import { clearAllData, removeDuplicatePosts } from "@/config/storage";
 import { storage } from "@/config/storage/storage";
 import { syncPosts } from "@/services/login.service";
 import { getAuth } from "@react-native-firebase/auth";
@@ -25,18 +21,6 @@ function DebugScreen() {
 
   const handleOnNameChange = () => {
     setName(Math.random().toString());
-  };
-
-  const handleOnAuthType = () => {
-    setAppAuthType();
-  };
-
-  const handleOnGoogleAuthType = () => {
-    setAppAuthType("google");
-  };
-
-  const handleOnAppleAuthType = () => {
-    setAppAuthType("apple");
   };
 
   const handleOnSync = async () => {
@@ -81,15 +65,6 @@ function DebugScreen() {
           <Menu.Item
             onPress={removeDuplicatePosts}
             label="Remove duplicate posts"
-          />
-          <Menu.Item onPress={handleOnAuthType} label="Reset appAuthType" />
-          <Menu.Item
-            onPress={handleOnGoogleAuthType}
-            label="Google appAuthType"
-          />
-          <Menu.Item
-            onPress={handleOnAppleAuthType}
-            label="Apple appAuthType"
           />
         </Menu>
         <Menu>

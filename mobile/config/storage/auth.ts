@@ -1,15 +1,14 @@
-import { AppAuthType } from "@/types";
 import { v4 as uuid } from "uuid";
 import { storage } from "./storage";
 
-export const getAppAuthType = (): AppAuthType => {
-  const appAuthType = storage.getString("appAuthType");
+// The key of the removed "Continue without account" mode (ADR 0004), still read to explain the change.
+const OLD_AUTH_TYPE_KEY = "appAuthType";
 
-  return appAuthType as AppAuthType;
-};
+export const isFormerSignedOutUser = (): boolean =>
+  storage.getString(OLD_AUTH_TYPE_KEY) === "anonymous";
 
-export const setAppAuthType = (appAuthType?: AppAuthType) => {
-  storage.set("appAuthType", appAuthType || "");
+export const forgetFormerSignedOutUser = () => {
+  storage.delete(OLD_AUTH_TYPE_KEY);
 };
 
 export const setInitialUserId = () => {

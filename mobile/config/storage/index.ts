@@ -1,5 +1,4 @@
 export * from "./auth";
-export * from "./auth.hook";
 export * from "./posts";
 export * from "./posts.hook";
 export * from "./preferences";

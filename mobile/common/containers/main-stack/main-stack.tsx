@@ -2,16 +2,13 @@ import { SCREEN_OPTIONS } from "@/common/constants";
 import { useShareIntent } from "@/common/utils";
 import { setMixpanelUserId } from "@/config/analytics";
 import { useAuth } from "@/config/contexts/auth.context";
-import { useAppAuthType } from "@/config/storage";
 import { router, Stack } from "expo-router";
 import { useEffect, useState } from "react";
 
 function MainStack() {
   const { isAuthenticated, isLoading } = useAuth();
-  const appAuthType = useAppAuthType();
 
   const [isMounted, setIsMounted] = useState(false);
-  const shouldBeRedirectedToHome = isAuthenticated || Boolean(appAuthType);
 
   useShareIntent();
 
@@ -21,14 +18,14 @@ function MainStack() {
 
   useEffect(() => {
     if (isMounted && !isLoading) {
-      if (shouldBeRedirectedToHome) {
+      if (isAuthenticated) {
         setMixpanelUserId();
         router.replace("/");
       } else {
         router.replace("/login");
       }
     }
-  }, [shouldBeRedirectedToHome, isLoading, isMounted]);
+  }, [isAuthenticated, isLoading, isMounted]);
 
   return (
     <Stack screenOptions={SCREEN_OPTIONS}>

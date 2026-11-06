@@ -27,7 +27,7 @@ describe("syncPosts", () => {
     setCurrentUser({ uid: "user-1" });
   });
 
-  it("uploads an anonymous user's Posts at sign-in, creating the list", async () => {
+  it("uploads a former signed-out user's Posts at sign-in, creating the list", async () => {
     savePosts([makePost("local")]);
 
     await syncPosts();

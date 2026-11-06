@@ -5,7 +5,6 @@ import { GeneralStyles } from "@/common/styles";
 import { noop, safelyPrintError } from "@/common/utils";
 import { useAuth } from "@/config/contexts/auth.context";
 import { ErrorHandler } from "@/config/errors";
-import { clearAllData, setAppAuthType } from "@/config/storage";
 import { deleteAccount, logOut } from "@/services/account.service";
 import { LegalEnum } from "@/types";
 import * as Burnt from "burnt";
@@ -16,7 +15,7 @@ import React, { useState } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
 
 function SettingsScreen() {
-  const { isAuthenticated, user } = useAuth();
+  const { user } = useAuth();
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 
   const handleOnTermsAndConditionsPress = () => {
@@ -103,21 +102,6 @@ function SettingsScreen() {
     ]);
   };
 
-  const handleOnLogIn = () => {
-    setAppAuthType();
-  };
-
-  const handleOnRemoveData = () => {
-    Alert.alert(
-      "Remove data",
-      "Are you sure you want to remove your data? This action cannot be undone.",
-      [
-        { text: "Cancel", style: "cancel" },
-        { text: "Remove", style: "destructive", onPress: clearAllData },
-      ]
-    );
-  };
-
   const handleOnPreferencesPress = () => {
     router.push("/preferences");
   };
@@ -164,27 +148,17 @@ function SettingsScreen() {
               label="Send us your feedback"
             />
           </Menu>
-          {isAuthenticated ? (
-            <Menu>
-              {Boolean(user?.displayName) && (
-                <Spacer direction={["left", "bottom"]} size="s8">
-                  <Text style={GeneralStyles.textLabelMediumSecondary}>
-                    Connected as {user?.displayName}
-                  </Text>
-                </Spacer>
-              )}
-              <Menu.Item onPress={handleOnRemoveAccount} label="Remove account" />
-              <Menu.Item onPress={handleOnLogOut} label="Log out" />
-            </Menu>
-          ) : (
-            <Menu>
-              <Menu.Item
-                onPress={handleOnLogIn}
-                label="Connect to your account"
-              />
-              <Menu.Item onPress={handleOnRemoveData} label="Remove data" />
-            </Menu>
-          )}
+          <Menu>
+            {Boolean(user?.displayName) && (
+              <Spacer direction={["left", "bottom"]} size="s8">
+                <Text style={GeneralStyles.textLabelMediumSecondary}>
+                  Connected as {user?.displayName}
+                </Text>
+              </Spacer>
+            )}
+            <Menu.Item onPress={handleOnRemoveAccount} label="Remove account" />
+            <Menu.Item onPress={handleOnLogOut} label="Log out" />
+          </Menu>
           <Text
             style={StyleSheet.compose(
               GeneralStyles.textLabelMediumSecondary,

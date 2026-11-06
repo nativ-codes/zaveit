@@ -1,7 +1,7 @@
 import { safelyPrintError } from "@/common/utils";
 import { Analytics } from "@/config/analytics";
 import { ErrorHandler } from "@/config/errors";
-import { clearAllData, setAppAuthType } from "@/config/storage";
+import { clearAllData } from "@/config/storage";
 import { FirebaseAuthTypes, getAuth } from "@react-native-firebase/auth";
 import {
   collection,
@@ -17,7 +17,6 @@ import { confirmGoogleIdentity, signOut } from "./google-auth.service";
 
 export const logOut = async () => {
   try {
-    setAppAuthType();
     clearAllData();
     await signOut();
   } catch (error) {

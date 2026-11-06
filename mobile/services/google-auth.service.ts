@@ -76,7 +76,7 @@ export const signOut = async () => {
     await firebaseSignOut(getAuth());
   }
 
-  // Apple and anonymous users have no Google login to clear.
+  // Apple users have no Google login to clear.
   if (!GoogleSignin.hasPreviousSignIn()) {
     return;
   }

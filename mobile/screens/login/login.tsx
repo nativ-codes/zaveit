@@ -5,36 +5,40 @@ import { GeneralStyles } from "@/common/styles";
 import { safelyPrintError } from "@/common/utils";
 import { Analytics } from "@/config/analytics";
 import { ErrorHandler } from "@/config/errors";
-import { setAppAuthType, setInitialUserId } from "@/config/storage";
+import {
+  forgetFormerSignedOutUser,
+  isFormerSignedOutUser,
+  setInitialUserId,
+} from "@/config/storage";
 import { signInWithApple } from "@/services/apple-auth.service";
 import { signInWithGoogle } from "@/services/google-auth.service";
 import { syncPosts } from "@/services/login.service";
-import { AppAuthType } from "@/types";
 import * as Burnt from "burnt";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import React from "react";
-import { Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useState } from "react";
+import { Platform, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import styles from "./login.style";
+import { SignInProviderEnum } from "./login.type";
+import WhatChangedModal from "./what-changed-modal";
 
 function LoginScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
-  const handleSignIn = (authType: AppAuthType) => async () => {
-    try {
-      if (authType !== "google" && authType !== "apple") {
-        throw new Error("Invalid auth type");
-      }
+  // Read once per mount, so it shows every time the login screen opens until sign-in deletes the key.
+  const [isWhatChangedVisible, setIsWhatChangedVisible] = useState(isFormerSignedOutUser);
 
+  const handleSignIn = (authType: SignInProviderEnum) => async () => {
+    try {
       const signByAuthType =
-        authType === "google" ? signInWithGoogle : signInWithApple;
+        authType === SignInProviderEnum.google ? signInWithGoogle : signInWithApple;
       const userUUID = await signByAuthType();
 
       // No user means the user cancelled, which is not an error.
       if (userUUID) {
-        setAppAuthType(authType);
+        forgetFormerSignedOutUser();
         setInitialUserId();
         syncPosts();
         Analytics.sendEvent(Analytics.events.logged_in, { authType });
@@ -56,10 +60,6 @@ function LoginScreen() {
         haptic: "error",
       });
     }
-  };
-
-  const handleContinueWithoutAccount = () => {
-    setAppAuthType("anonymous");
   };
 
   return (
@@ -103,24 +103,20 @@ function LoginScreen() {
         <Button.Social
           label="Continue with Google"
           iconName="google"
-          onPress={handleSignIn("google")}
+          onPress={handleSignIn(SignInProviderEnum.google)}
         />
         {Platform.OS === "ios" && (
           <Button.Social
             label="Continue with Apple"
             iconName="apple"
-            onPress={handleSignIn("apple")}
+            onPress={handleSignIn(SignInProviderEnum.apple)}
           />
         )}
-        <TouchableOpacity
-          onPress={handleContinueWithoutAccount}
-          hitSlop={Units.s16}
-        >
-          <Text style={GeneralStyles.textLabelMediumSecondary}>
-            Continue without account
-          </Text>
-        </TouchableOpacity>
       </Spacer>
+      <WhatChangedModal
+        isVisible={isWhatChangedVisible}
+        onClose={() => setIsWhatChangedVisible(false)}
+      />
     </View>
   );
 }

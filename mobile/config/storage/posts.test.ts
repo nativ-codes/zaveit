@@ -3,7 +3,6 @@ import { documentDirectory, downloadAsync, readDirectoryAsync } from "@/test/fak
 import { getFirestore } from "@/test/fakes/firestore";
 import { PostType } from "@/types/posts";
 import { beforeEach, describe, expect, it } from "@jest/globals";
-import { setAppAuthType } from "./auth";
 import { getPosts, removePost, savePost } from "./posts";
 
 const post: PostType = {
@@ -26,7 +25,6 @@ const getCloudPosts = async (userId: string) => {
 describe("Posts of a signed-in user", () => {
   beforeEach(async () => {
     setCurrentUser({ uid: "user-1" });
-    setAppAuthType("google");
     await getFirestore().collection("lists").doc().set({
       userId: "user-1",
       posts: [],

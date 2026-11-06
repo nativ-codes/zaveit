@@ -5,7 +5,6 @@ import { removePostService, savePostService } from "@/services/posts.service";
 import { FrequentlyAccessedPostsType, PostType } from "@/types/posts";
 import * as FileSystem from "expo-file-system/legacy";
 import { ErrorHandler } from "../errors";
-import { getAppAuthType } from "./auth";
 import { storage } from "./storage";
 
 export const getPosts = (): PostType[] => {
@@ -35,23 +34,20 @@ export const increasePostAccessCount = (postId: string): void => {
 
 export const savePost = async (post: PostType): Promise<void> => {
   const posts = getPosts();
-  const appAuthType = getAppAuthType();
 
   posts.push(post);
   storage.set("posts", JSON.stringify(posts));
 
-  if (appAuthType === "google" || appAuthType === "apple") {
-    try {
-      await savePostService(post);
-    } catch (error) {
-      ErrorHandler.logError({
-        location: "savePost",
-        error: safelyPrintError(error),
-        metadata: {
-          post,
-        },
-      });
-    }
+  try {
+    await savePostService(post);
+  } catch (error) {
+    ErrorHandler.logError({
+      location: "savePost",
+      error: safelyPrintError(error),
+      metadata: {
+        post,
+      },
+    });
   }
 };
 
@@ -64,22 +60,19 @@ export const updatePost = async (post: PostType): Promise<void> => {
 
 export const removePost = async (post: PostType): Promise<void> => {
   try {
-    const appAuthType = getAppAuthType();
     removePostById(post);
     deleteImage(`${FileSystem.documentDirectory}${post.id}.jpg`);
 
-    if (appAuthType === "google" || appAuthType === "apple") {
-      try {
-        await removePostService(post);
-      } catch (error) {
-        ErrorHandler.logError({
-          location: "removePostAppAuthService",
-          error: safelyPrintError(error),
-          metadata: {
-            post,
-          },
-        });
-      }
+    try {
+      await removePostService(post);
+    } catch (error) {
+      ErrorHandler.logError({
+        location: "removePostService",
+        error: safelyPrintError(error),
+        metadata: {
+          post,
+        },
+      });
     }
   } catch (error) {
     ErrorHandler.logError({
