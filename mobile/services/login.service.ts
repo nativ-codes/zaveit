@@ -1,6 +1,6 @@
 import { safelyPrintError } from "@/common/utils/error-parsers";
 import { ErrorHandler } from "@/config/errors";
-import { getPosts, savePosts } from "@/config/storage/posts";
+import { getPosts, savePosts, updatePost } from "@/config/storage/posts";
 import { getAuth, signInWithEmailAndPassword } from "@react-native-firebase/auth";
 import { getUserList, savePostsService } from "./posts.service";
 
@@ -45,7 +45,14 @@ export const syncPosts = async (): Promise<boolean> => {
       await savePostsService(missingFromCloud);
     }
 
-    // The local copy wins, because edits aren't uploaded.
+    // The local copy wins, because edits aren't uploaded, except for a thumbnailUrl the migration script added.
+    const cloudUrls = new Map(cloudPosts.map(({ id, thumbnailUrl }) => [id, thumbnailUrl]));
+    for (const post of localPosts) {
+      const thumbnailUrl = cloudUrls.get(post.id);
+      if (!post.thumbnailUrl && thumbnailUrl) {
+        await updatePost({ ...post, thumbnailUrl });
+      }
+    }
     const localIds = new Set(localPosts.map(({ id }) => id));
     savePosts(cloudPosts.filter(({ id }) => !localIds.has(id)));
     return true;

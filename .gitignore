@@ -46,3 +46,6 @@ keys/
 core/
 mcp.json
 .cursor/mcp.json
+
+migrate-thumbnails-failures-*.log
+dry-run.out

@@ -20,4 +20,7 @@ export default StyleSheet.create({
     backgroundColor: Colors.black20,
     padding: Units.s8,
   },
+  topBarButtonDisabled: {
+    opacity: 0.5,
+  },
 });

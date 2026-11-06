@@ -14,6 +14,7 @@ import {
 } from "@react-native-firebase/firestore";
 import { confirmAppleIdentity } from "./apple-auth.service";
 import { confirmGoogleIdentity, signOut } from "./google-auth.service";
+import { deleteAllThumbnails } from "./thumbnails.service";
 
 export const logOut = async () => {
   try {
@@ -75,6 +76,8 @@ export const deleteAccount = async (): Promise<boolean> => {
     return false;
   }
 
+  // First, while the Posts still list them: if it fails nothing is deleted and the user can try again.
+  await deleteAllThumbnails(user);
   await deleteCloudData(user.uid);
   await user.delete();
 

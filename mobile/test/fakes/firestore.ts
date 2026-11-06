@@ -169,6 +169,24 @@ export const limit =
 export const query = (source: FakeQuery, ...constraints: Constraint[]) =>
   constraints.reduce((current, apply) => apply(current), source);
 export const getDocs = (source: FakeQuery) => source.get();
+// shortcut: runs once, with no conflict retry, so tests make concurrent writes before the transaction reads.
+export const runTransaction = async <T>(
+  _firestore: FakeFirestore,
+  update: (transaction: {
+    get: (ref: ReturnType<typeof docRef>) => ReturnType<ReturnType<typeof docRef>["get"]>;
+    update: (ref: ReturnType<typeof docRef>, changes: DocData) => void;
+  }) => Promise<T>
+): Promise<T> => {
+  const writes: (() => Promise<void>)[] = [];
+  const result = await update({
+    get: (ref) => ref.get(),
+    update: (ref, changes) => {
+      writes.push(() => ref.update(changes));
+    },
+  });
+  for (const write of writes) await write();
+  return result;
+};
 export const setDoc = (ref: ReturnType<typeof docRef>, data: DocData) =>
   ref.set(data);
 export const updateDoc = (ref: ReturnType<typeof docRef>, changes: DocData) =>

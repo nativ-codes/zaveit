@@ -7,6 +7,7 @@ import {
   getFirestore,
   limit,
   query,
+  runTransaction,
   updateDoc,
   where,
 } from "@react-native-firebase/firestore";
@@ -34,6 +35,21 @@ export const getUserList = async () => {
 
   const userList = userListQuery.docs[0];
   return { ref: userList.ref, posts: userList.data().posts as PostType[] };
+};
+
+// Rewrites the List's posts array in a transaction, so a change another device made meanwhile is kept.
+export const setThumbnailUrlService = async (postId: string, thumbnailUrl: string): Promise<void> => {
+  const { ref } = await getUserList();
+  await runTransaction(getFirestore(), async (transaction) => {
+    const posts = ((await transaction.get(ref)).data()?.posts ?? []) as PostType[];
+    // A URL only the phone knows would be deleted by the orphan script.
+    if (!posts.some(({ id }) => id === postId)) {
+      throw new Error("Post isn't in the cloud yet");
+    }
+    transaction.update(ref, {
+      posts: posts.map((post) => (post.id === postId ? { ...post, thumbnailUrl } : post)),
+    });
+  });
 };
 
 export const savePostService = async (post: PostType): Promise<void> => {

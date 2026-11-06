@@ -1,6 +1,6 @@
 import { ApiEndpoints } from "@/config/api";
 import { getAppCheckToken } from "@/config/app-check";
-import { getAuth, getIdToken } from "@react-native-firebase/auth";
+import { FirebaseAuthTypes, getAuth, getIdToken } from "@react-native-firebase/auth";
 import * as FileSystem from "expo-file-system/legacy";
 import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
 import { v4 as uuid } from "uuid";
@@ -63,5 +63,20 @@ export const uploadThumbnail = async (fileUri: string): Promise<string> => {
     return url;
   } finally {
     await FileSystem.deleteAsync(fileUri, { idempotent: true });
+  }
+};
+
+// Deletes every Thumbnail of the signed-in user. Throws on failure, so account deletion stops before anything else goes.
+export const deleteAllThumbnails = async (user: FirebaseAuthTypes.User): Promise<void> => {
+  const response = await fetch(ApiEndpoints.thumbnails, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${await getIdToken(user)}`,
+      "X-Firebase-AppCheck": await getAppCheckToken(),
+    },
+  });
+
+  if (response.status !== 204) {
+    throw new Error(`Thumbnail deletion answered ${response.status}`);
   }
 };

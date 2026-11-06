@@ -19,12 +19,14 @@ import {
 } from "@/config/storage";
 import { PostType } from "@/types";
 import Icon from "@expo/vector-icons/Feather";
+import * as Burnt from "burnt";
 import * as Linking from "expo-linking";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getPostDetails } from "../search/search.util";
+import { reloadThumbnail } from "./post-details.service";
 import styles from "./post-details.style";
 import { PostDetailsPropsType } from "./post-details.type";
 
@@ -33,6 +35,7 @@ function PostDetailsScreen() {
   const posts = usePosts();
   const post = getPostDetails({ posts, id }) as PostType;
   const insets = useSafeAreaInsets();
+  const [isReloadingImage, setIsReloadingImage] = useState(false);
 
   useEffect(() => {
     if (post) {
@@ -59,6 +62,29 @@ function PostDetailsScreen() {
       router.back();
     } else {
       router.navigate("/");
+    }
+  };
+
+  const handleReloadImage = async () => {
+    setIsReloadingImage(true);
+    try {
+      await reloadThumbnail(post);
+      Haptics.success();
+    } catch (error) {
+      ErrorHandler.logError({
+        location: "handleReloadImage",
+        error: safelyPrintError(error),
+        metadata: { post },
+      });
+      Burnt.toast({
+        title: "Unable to reload image",
+        message: "Please try again later.",
+        preset: "error",
+        duration: 5,
+      });
+      Haptics.error();
+    } finally {
+      setIsReloadingImage(false);
     }
   };
 
@@ -110,6 +136,20 @@ function PostDetailsScreen() {
             <TouchableOpacity activeOpacity={ACTIVE_OPACITY} onPress={goBack} style={styles.topBarButton} hitSlop={Units.s16}>
               <Icon name="chevron-left" size={Units.s24} color={Colors.white} />
             </TouchableOpacity>
+          }
+          right={
+            post ? (
+              <TouchableOpacity
+                activeOpacity={ACTIVE_OPACITY}
+                onPress={handleReloadImage}
+                disabled={isReloadingImage}
+                style={[styles.topBarButton, isReloadingImage && styles.topBarButtonDisabled]}
+                hitSlop={Units.s16}
+                accessibilityLabel="Reload image"
+              >
+                <Icon name="refresh-cw" size={Units.s20} color={Colors.white} />
+              </TouchableOpacity>
+            ) : undefined
           }
         />
       </View>

@@ -5,10 +5,13 @@ import { failNextBatchCommit, getFirestore } from "@/test/fakes/firestore";
 import { PostType } from "@/types/posts";
 import { appleAuth } from "@invertase/react-native-apple-authentication";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import { deleteAllThumbnails } from "@/services/thumbnails.service";
 import { deleteAccount } from "./account.service";
 
 // Pulled in through @/common/utils, and needs native Firebase.
 jest.mock("@/config/app-check", () => ({}));
+
+jest.mock("@/services/thumbnails.service");
 
 jest.mock("@/config/analytics", () => ({
   Analytics: { sendEvent: jest.fn(), events: { remove_account: "remove_account" } },
@@ -65,6 +68,7 @@ const signInAs = (providerId: string) => {
 
 const expectNothingDeleted = async (user: ReturnType<typeof signInAs>) => {
   expect(user.delete).not.toHaveBeenCalled();
+  expect(steps).not.toContain("thumbnails deleted, cloud 2");
   expect(await cloudDataExists()).toEqual(untouched);
   expect(getPosts()).toHaveLength(1);
 };
@@ -75,6 +79,9 @@ beforeEach(async () => {
   signIn.mockReset();
   performRequest.mockReset();
   steps.length = 0;
+  jest.mocked(deleteAllThumbnails).mockImplementation(async () => {
+    steps.push(`thumbnails deleted, cloud ${(await cloudDataExists()).lists}`);
+  });
   signIn.mockResolvedValue({ type: "success", data: { idToken: "token" } } as never);
   performRequest.mockResolvedValue({
     identityToken: "token",
@@ -94,7 +101,11 @@ describe("deleteAccount", () => {
 
     await expect(deleteAccount()).resolves.toBe(true);
 
-    expect(steps).toEqual(["identity confirmed, cloud 2", "login deleted, cloud 0, local 1"]);
+    expect(steps).toEqual([
+      "identity confirmed, cloud 2",
+      "thumbnails deleted, cloud 2",
+      "login deleted, cloud 0, local 1",
+    ]);
     expect(await cloudDataExists()).toEqual({ lists: 0, user: false });
     expect(getPosts()).toHaveLength(0);
   });
@@ -121,6 +132,7 @@ describe("deleteAccount", () => {
     expect(steps).toEqual([
       "identity confirmed, cloud 2",
       "revoked, cloud 2",
+      "thumbnails deleted, cloud 2",
       "login deleted, cloud 0, local 1",
     ]);
   });
@@ -161,13 +173,25 @@ describe("deleteAccount", () => {
     await expectNothingDeleted(user);
   });
 
-  it("keeps the login and all data when the cloud deletion fails", async () => {
+  it("keeps the login and all data when deleting the Thumbnails fails", async () => {
+    const user = signInAs("google.com");
+    jest.mocked(deleteAllThumbnails).mockRejectedValue(new Error("502") as never);
+
+    await expect(deleteAccount()).rejects.toThrow("502");
+
+    await expectNothingDeleted(user);
+  });
+
+  it("keeps the login and all Posts when the cloud deletion fails", async () => {
     const user = signInAs("google.com");
     failNextBatchCommit();
 
     await expect(deleteAccount()).rejects.toThrow("Batch failed");
 
-    await expectNothingDeleted(user);
+    // Thumbnails are already gone; retrying deletes an empty prefix and goes on.
+    expect(user.delete).not.toHaveBeenCalled();
+    expect(await cloudDataExists()).toEqual(untouched);
+    expect(getPosts()).toHaveLength(1);
   });
 
   it("keeps local data and stays signed in when deleting the login fails", async () => {

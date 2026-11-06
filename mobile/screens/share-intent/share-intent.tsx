@@ -32,7 +32,7 @@ import {
 } from "./share-intent.utils";
 
 function ShareIntentScreen() {
-  const { shareIntent, resetShareIntent } = useShareIntentContext();
+  const { isReady, shareIntent, resetShareIntent } = useShareIntentContext();
   const { url } = useLocalSearchParams<ShareIntentPropsType>();
 
   const router = useRouter();
@@ -69,8 +69,15 @@ function ShareIntentScreen() {
     });
     Haptics.error();
     resetShareIntent();
-    router.replace("/");
+    router.dismissTo("/");
   };
+
+  // Nothing to save, e.g. a dev reload replays the launch link of an already handled share: go Home instead of spinning.
+  useEffect(() => {
+    if (isReady && !shareIntent?.webUrl && !url) {
+      router.dismissTo("/");
+    }
+  }, [isReady, shareIntent, url, router]);
 
   useEffect(() => {
     const fetchMetadata = async () => {

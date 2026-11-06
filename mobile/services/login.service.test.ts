@@ -1,4 +1,4 @@
-import { getPosts, savePosts } from "@/config/storage/posts";
+import { getPosts, savePosts, updatePost } from "@/config/storage/posts";
 import { setCurrentUser } from "@/test/fakes/auth";
 import { failNextUpdate, getFirestore } from "@/test/fakes/firestore";
 import { PostType } from "@/types/posts";
@@ -73,6 +73,23 @@ describe("syncPosts", () => {
 
     expect(getPosts()).toEqual([makePost("edited", "New title")]);
     expect(await getCloudPosts()).toHaveLength(1);
+  });
+
+  it("takes the cloud thumbnailUrl for a local Post without one, keeping the local edit", async () => {
+    const thumbnailUrl = "https://img.nativ.codes/zaveit/user-1/abc.webp";
+    savePosts([makePost("edited", "New title"), makePost("own-url")]);
+    await givenCloudPosts([
+      { ...makePost("edited", "Old title"), thumbnailUrl },
+      { ...makePost("own-url"), thumbnailUrl: "https://img.nativ.codes/cloud.webp" },
+    ]);
+    await updatePost({ ...makePost("own-url"), thumbnailUrl: "https://img.nativ.codes/local.webp" });
+
+    await syncPosts();
+
+    expect(getPosts()).toEqual([
+      { ...makePost("edited", "New title"), thumbnailUrl },
+      { ...makePost("own-url"), thumbnailUrl: "https://img.nativ.codes/local.webp" },
+    ]);
   });
 
   it("keeps local Posts and uploads them on the next sync when a sync fails", async () => {

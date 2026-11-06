@@ -54,7 +54,7 @@ function SettingsScreen() {
   const handleOnRemoveAccount = async () => {
     Alert.alert(
       "Delete Account",
-      "Are you sure you want to delete your account? This action cannot be undone.",
+      "Are you sure you want to delete your account? This action cannot be undone.\n\nTo confirm it's you, you'll be asked to sign in again before anything is deleted.",
       [
         {
           text: "Cancel",
