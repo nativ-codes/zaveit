@@ -2,39 +2,73 @@ import { SCREEN_OPTIONS } from "@/common/constants";
 import { useShareIntent } from "@/common/utils";
 import { setMixpanelUserId } from "@/config/analytics";
 import { useAuth } from "@/config/contexts/auth.context";
+import { clearPendingPost, getPendingPost } from "@/config/storage/pending-post";
 import { router, Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
+import PendingPostModal from "./pending-post-modal";
+
+// Held until Firebase reports the user, so no screen shows before the guards below know where to go.
+SplashScreen.preventAutoHideAsync();
 
 function MainStack() {
   const { isAuthenticated, isLoading } = useAuth();
 
-  const [isMounted, setIsMounted] = useState(false);
+  const [pendingPostUrl, setPendingPostUrl] = useState<string>();
 
   useShareIntent();
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (isMounted && !isLoading) {
-      if (isAuthenticated) {
-        setMixpanelUserId();
-        router.replace("/");
-      } else {
-        router.replace("/login");
-      }
+    if (isLoading) {
+      return;
     }
-  }, [isAuthenticated, isLoading, isMounted]);
+
+    SplashScreen.hideAsync();
+
+    if (isAuthenticated) {
+      setMixpanelUserId();
+      setPendingPostUrl(getPendingPost());
+    }
+  }, [isAuthenticated, isLoading]);
+
+  // Cleared on either choice, so the prompt never repeats.
+  const closePendingPost = () => {
+    clearPendingPost();
+    setPendingPostUrl(undefined);
+  };
+
+  const handleOnSavePendingPost = () => {
+    const url = pendingPostUrl;
+    closePendingPost();
+    router.navigate({ pathname: "/share-intent", params: { url } });
+  };
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
-    <Stack screenOptions={SCREEN_OPTIONS}>
-      <Stack.Screen name="login" />
-      <Stack.Screen name="(tabs)" />
-      <Stack.Screen name="+not-found" />
-      <Stack.Screen name="post-details" />
-      <Stack.Screen name="view-posts" />
-    </Stack>
+    <>
+      {/* The router sends users to the first screen their guard allows, so no manual redirects. */}
+      <Stack screenOptions={SCREEN_OPTIONS}>
+        <Stack.Protected guard={!isAuthenticated}>
+          <Stack.Screen name="login" />
+        </Stack.Protected>
+        <Stack.Protected guard={isAuthenticated}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="post-details" />
+          <Stack.Screen name="view-posts" />
+          <Stack.Screen name="preferences" />
+          <Stack.Screen name="share-intent" />
+        </Stack.Protected>
+        <Stack.Screen name="+not-found" />
+      </Stack>
+      <PendingPostModal
+        url={pendingPostUrl}
+        onSave={handleOnSavePendingPost}
+        onDiscard={closePendingPost}
+      />
+    </>
   );
 }
 

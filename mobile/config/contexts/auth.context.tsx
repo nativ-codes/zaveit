@@ -1,4 +1,4 @@
-import { safelyPrintError } from '@/common/utils';
+import { safelyPrintError } from '@/common/utils/error-parsers';
 import { syncPosts } from '@/services/login.service';
 import { UserType } from '@/services/users.service';
 import { getAuth, onAuthStateChanged } from '@react-native-firebase/auth';

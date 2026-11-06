@@ -10,25 +10,37 @@ import {
   isFormerSignedOutUser,
   setInitialUserId,
 } from "@/config/storage";
+import {
+  dismissJustSharedPost,
+  useJustSharedPost,
+} from "@/config/storage/pending-post";
 import { signInWithApple } from "@/services/apple-auth.service";
 import { signInWithGoogle } from "@/services/google-auth.service";
 import { syncPosts } from "@/services/login.service";
 import * as Burnt from "burnt";
 import { Image } from "expo-image";
-import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Platform, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import styles from "./login.style";
 import { SignInProviderEnum } from "./login.type";
+import SignInToSaveModal from "./sign-in-to-save-modal";
 import WhatChangedModal from "./what-changed-modal";
 
 function LoginScreen() {
   const insets = useSafeAreaInsets();
-  const router = useRouter();
 
-  // Read once per mount, so it shows every time the login screen opens until sign-in deletes the key.
   const [isWhatChangedVisible, setIsWhatChangedVisible] = useState(isFormerSignedOutUser);
+
+  const justSharedUrl = useJustSharedPost();
+  // iOS can't present two modals at once, so this one waits for "what changed".
+  const signInToSaveUrl = isWhatChangedVisible ? undefined : justSharedUrl;
+
+  // The old key only drives this modal, so deleting it is what keeps the modal dismissed.
+  const handleOnWhatChangedClose = () => {
+    forgetFormerSignedOutUser();
+    setIsWhatChangedVisible(false);
+  };
 
   const handleSignIn = (authType: SignInProviderEnum) => async () => {
     try {
@@ -42,7 +54,6 @@ function LoginScreen() {
         setInitialUserId();
         syncPosts();
         Analytics.sendEvent(Analytics.events.logged_in, { authType });
-        router.replace("/");
       }
     } catch (error) {
       ErrorHandler.logError({
@@ -115,7 +126,11 @@ function LoginScreen() {
       </Spacer>
       <WhatChangedModal
         isVisible={isWhatChangedVisible}
-        onClose={() => setIsWhatChangedVisible(false)}
+        onClose={handleOnWhatChangedClose}
+      />
+      <SignInToSaveModal
+        url={signInToSaveUrl}
+        onClose={dismissJustSharedPost}
       />
     </View>
   );
