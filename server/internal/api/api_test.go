@@ -114,6 +114,39 @@ func TestV1RoutesRequireAppCheck(t *testing.T) {
 	}
 }
 
+func TestRequireUser(t *testing.T) {
+	verify := func(token string) (string, error) {
+		if token == "good" {
+			return "user-1", nil
+		}
+		return "", errors.New("rejected")
+	}
+	var reached string
+	handler := requireUser(verify, func(_ http.ResponseWriter, r *http.Request) { reached = userID(r) })
+
+	for header, want := range map[string]int{
+		"Bearer good": http.StatusOK,
+		"Bearer bad":  http.StatusUnauthorized,
+		"good":        http.StatusUnauthorized,
+		"":            http.StatusUnauthorized,
+	} {
+		reached = ""
+		req := httptest.NewRequest(http.MethodPost, "/v1/x", nil)
+		req.Header.Set("Authorization", header)
+		res := httptest.NewRecorder()
+		handler(res, req)
+		if res.Code != want {
+			t.Errorf("%q: got %d", header, res.Code)
+		}
+		if want == http.StatusOK && reached != "user-1" {
+			t.Errorf("%q: handler saw uid %q", header, reached)
+		}
+		if want != http.StatusOK && (reached != "" || strings.Contains(res.Body.String(), "bad")) {
+			t.Errorf("%q: got %s, handler saw %q", header, res.Body, reached)
+		}
+	}
+}
+
 func TestHealthNeedsNoAppCheck(t *testing.T) {
 	reject := func(string) error { return errors.New("rejected") }
 	res := httptest.NewRecorder()

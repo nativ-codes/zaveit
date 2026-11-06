@@ -2,9 +2,11 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"zaveit/server/internal/deepseek"
@@ -37,6 +39,34 @@ func requireAppCheck(verify VerifyToken, next http.HandlerFunc) http.HandlerFunc
 		}
 		next(w, r)
 	}
+}
+
+// VerifyUser returns the uid of a genuine Firebase ID token.
+type VerifyUser func(token string) (string, error)
+
+type uidKey struct{}
+
+// requireUser only lets signed-in users reach the handler, which reads their uid with userID.
+// Wrap it in v1 so App Check and the rate limit still apply.
+func requireUser(verify VerifyUser, next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		token, ok := strings.CutPrefix(r.Header.Get("Authorization"), "Bearer ")
+		var uid string
+		var err error
+		if ok {
+			uid, err = verify(token)
+		}
+		if !ok || err != nil {
+			writeError(w, http.StatusUnauthorized, "invalid id token")
+			return
+		}
+		next(w, r.WithContext(context.WithValue(r.Context(), uidKey{}, uid)))
+	}
+}
+
+func userID(r *http.Request) string {
+	uid, _ := r.Context().Value(uidKey{}).(string)
+	return uid
 }
 
 func writeJSON(w http.ResponseWriter, status int, body any) {
