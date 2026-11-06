@@ -9,6 +9,8 @@ import (
 	"zaveit/server/internal/api"
 	"zaveit/server/internal/appcheck"
 	"zaveit/server/internal/deepseek"
+	"zaveit/server/internal/idtoken"
+	"zaveit/server/internal/r2"
 )
 
 func getenv(key, fallback string) string {
@@ -18,29 +20,34 @@ func getenv(key, fallback string) string {
 	return fallback
 }
 
+func mustGetenv(key string) string {
+	value := os.Getenv(key)
+	if value == "" {
+		log.Fatal(key + " is required")
+	}
+	return value
+}
+
 func main() {
-	apiKey := os.Getenv("DEEPSEEK_API_KEY")
-	if apiKey == "" {
-		log.Fatal("DEEPSEEK_API_KEY is required")
-	}
-
-	projectNumber := os.Getenv("FIREBASE_PROJECT_NUMBER")
-	if projectNumber == "" {
-		log.Fatal("FIREBASE_PROJECT_NUMBER is required")
-	}
-
 	ai := deepseek.Client{
 		BaseURL: getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com"),
 		Model:   getenv("DEEPSEEK_MODEL", "deepseek-chat"),
-		APIKey:  apiKey,
+		APIKey:  mustGetenv("DEEPSEEK_API_KEY"),
 	}
 
 	check := api.SourcesCheck{Token: os.Getenv("SOURCES_CHECK_TOKEN")}
-	verifier := appcheck.New(projectNumber)
+	verifier := appcheck.New(mustGetenv("FIREBASE_PROJECT_NUMBER"))
+	users := idtoken.New(mustGetenv("FIREBASE_PROJECT_ID"))
+	store := r2.Client{
+		Endpoint:        mustGetenv("S3_URL"),
+		Bucket:          getenv("S3_BUCKET", "zaveit-r2"),
+		AccessKeyID:     mustGetenv("S3_ACCESS_KEY_ID"),
+		SecretAccessKey: mustGetenv("S3_SECRET_ACCESS_KEY"),
+	}
 
 	server := &http.Server{
 		Addr:              ":" + getenv("PORT", "8080"),
-		Handler:           api.NewRouter(ai, os.Getenv("LOG_TAG_DETAILS") == "true", check, verifier.Verify),
+		Handler:           api.NewRouter(ai, os.Getenv("LOG_TAG_DETAILS") == "true", check, verifier.Verify, users.Verify, store),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 

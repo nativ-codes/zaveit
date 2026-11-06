@@ -10,12 +10,13 @@ import (
 	"time"
 
 	"zaveit/server/internal/deepseek"
+	"zaveit/server/internal/r2"
 )
 
 // limitedRouter rejects every token, so requests under the limit get 401 without any upstream.
 func limitedRouter() http.Handler {
 	reject := func(string) error { return errors.New("rejected") }
-	return NewRouter(deepseek.Client{}, false, SourcesCheck{}, reject)
+	return NewRouter(deepseek.Client{}, false, SourcesCheck{}, reject, nil, r2.Client{})
 }
 
 func send(router http.Handler, path, forwardedFor string) *httptest.ResponseRecorder {
@@ -102,7 +103,7 @@ func TestHealthIsNotLimited(t *testing.T) {
 }
 
 func TestLimitResetsAfterTheWindow(t *testing.T) {
-	limiter := newRateLimiter()
+	limiter := newRateLimiter(rateLimitRequests, rateLimitWindow)
 	start := time.Now()
 	for range rateLimitRequests {
 		limiter.allow("a", start)
@@ -116,7 +117,7 @@ func TestLimitResetsAfterTheWindow(t *testing.T) {
 }
 
 func TestLimiterMemoryIsBounded(t *testing.T) {
-	limiter := newRateLimiter()
+	limiter := newRateLimiter(rateLimitRequests, rateLimitWindow)
 	start := time.Now()
 	for i := range rateLimitMaxClients * 2 {
 		limiter.allow(fmt.Sprint(i), start)

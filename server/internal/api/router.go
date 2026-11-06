@@ -10,14 +10,15 @@ import (
 	"time"
 
 	"zaveit/server/internal/deepseek"
+	"zaveit/server/internal/r2"
 )
 
 // VerifyToken returns nil when an App Check token is genuine.
 type VerifyToken func(token string) error
 
 // NewRouter is the list of every route the server has.
-func NewRouter(ai deepseek.Client, logTagDetails bool, check SourcesCheck, verify VerifyToken) http.Handler {
-	limiter := newRateLimiter()
+func NewRouter(ai deepseek.Client, logTagDetails bool, check SourcesCheck, verify VerifyToken, verifyUser VerifyUser, store r2.Client) http.Handler {
+	limiter := newRateLimiter(rateLimitRequests, rateLimitWindow)
 	v1 := func(next http.HandlerFunc) http.HandlerFunc {
 		return limitRate(limiter, requireAppCheck(verify, next))
 	}
@@ -27,6 +28,7 @@ func NewRouter(ai deepseek.Client, logTagDetails bool, check SourcesCheck, verif
 	mux.HandleFunc("GET /health/sources", checkSources(check))
 	mux.HandleFunc("GET /v1/metadata", v1(getMetadata))
 	mux.HandleFunc("POST /v1/tags", v1(suggestTags(ai, logTagDetails)))
+	mux.HandleFunc("POST /v1/thumbnails", v1(requireUser(verifyUser, uploadThumbnail(store))))
 	return logRequests(mux)
 }
 

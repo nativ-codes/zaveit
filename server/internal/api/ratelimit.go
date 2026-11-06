@@ -18,13 +18,15 @@ const (
 
 // rateLimiter counts requests per client in a fixed window. The server runs as one process, so memory is enough.
 type rateLimiter struct {
+	limit     int
+	window    time.Duration
 	mu        sync.Mutex
 	counts    map[string]int
 	windowEnd time.Time
 }
 
-func newRateLimiter() *rateLimiter {
-	return &rateLimiter{counts: map[string]int{}}
+func newRateLimiter(limit int, window time.Duration) *rateLimiter {
+	return &rateLimiter{limit: limit, window: window, counts: map[string]int{}}
 }
 
 func (l *rateLimiter) allow(client string, now time.Time) bool {
@@ -32,10 +34,10 @@ func (l *rateLimiter) allow(client string, now time.Time) bool {
 	defer l.mu.Unlock()
 	if !now.Before(l.windowEnd) || len(l.counts) >= rateLimitMaxClients {
 		clear(l.counts)
-		l.windowEnd = now.Add(rateLimitWindow)
+		l.windowEnd = now.Add(l.window)
 	}
 	l.counts[client]++
-	return l.counts[client] <= rateLimitRequests
+	return l.counts[client] <= l.limit
 }
 
 // limitRate runs before App Check so forged tokens are limited too.
