@@ -29,19 +29,23 @@ A Tag proposed by the AI model for a Post, which the user can keep or discard be
 _Avoid_: AI tag, generated tag
 
 **List**:
-All of a user's Posts.
-_Avoid_: Collection, library
+A named set of a user's Posts, chosen by one or more Tags, with its own link. A Post with any of the List's Tags is in it, so one Post can be in several Lists.
+_Avoid_: Collection, library, using "List" for all of a user's Posts
 
 **Published List**:
-A List that can be reached at its link on the web.
+A List whose page is online. Its owner can take it offline without deleting it.
 _Avoid_: Public list, because it is protected by a List Password
 
 **Username**:
-The unique name in a Published List's link.
+The unique name at the start of every link to a user's Lists, chosen once before the first List and kept until the account is deleted, even with no Lists left.
 _Avoid_: Handle, slug
 
+**List Path**:
+The part of a List's link after the Username, made from the List's name and unique among that user's Lists. Renaming the List changes it.
+_Avoid_: Slug, list URL
+
 **List Password**:
-The password that opens a Published List.
+The password that opens one Published List. Each List has its own.
 _Avoid_: Using "password" alone where it could mean an account password
 
 **Visitor**:
