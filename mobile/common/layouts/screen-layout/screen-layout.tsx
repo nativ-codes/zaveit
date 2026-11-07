@@ -1,5 +1,6 @@
 import React, { memo } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { TAB_BAR_HEIGHT, Units } from "@/common/constants";
@@ -12,7 +13,9 @@ function ScreenLayout({ children, testID, style, footer, hasTopInset = true }: S
 
   return (
     <View testID={`${testID}_ScreenLayout`} style={styles.wrapper}>
-      <ScrollView
+      {/* Adds the keyboard's height to the scrollable area and keeps the focused field above it. */}
+      <KeyboardAwareScrollView
+        bottomOffset={Units.s24}
         keyboardShouldPersistTaps="handled"
         testID={`${testID}_StaticScreenLayout_ScrollView`}
         contentContainerStyle={StyleSheet.compose(style, {
@@ -21,7 +24,7 @@ function ScreenLayout({ children, testID, style, footer, hasTopInset = true }: S
         })}
       >
         {children}
-      </ScrollView>
+      </KeyboardAwareScrollView>
       <View
         style={StyleSheet.compose(styles.footer, {
           bottom: insets.bottom,
