@@ -52,7 +52,7 @@ export default function App() {
     await load(token);
   }
 
-  if (!username) return (<><Landing /><Footer /></>);
+  if (!username) return <Landing />;
   if (loading) return null;
   return (
     <>
@@ -66,18 +66,24 @@ function Logo({ size }: { size: number }) {
   return <img className="logo" src="/icon.png" width={size} height={size} alt="Zaveit" />;
 }
 
-// The bare domain: no List can live here, so it explains what the links are and where to get the app.
+// The bare domain: no List can live here, so it only shows the app and where to get it.
 function Landing() {
   return (
-    <main className="prompt">
-      <div className="prompt-box">
-        <Logo size={72} />
+    <div className="landing">
+      <main className="landing-in">
+        <Logo size={120} />
         <h1>ZaveIt</h1>
-        <p>Lists shared from the ZaveIt app. Open the link you were given to see one.</p>
-        <a className="button" href="https://apps.apple.com/ro/app/zaveit-smart-bookmark-manager/id6747726703">Download on the App Store</a>
-        <a className="button" href="https://play.google.com/store/apps/details?id=com.nativcodes.zaveit">Get it on Google Play</a>
-      </div>
-    </main>
+        <div className="stores">
+          <a href="https://apps.apple.com/ro/app/zaveit-smart-bookmark-manager/id6747726703">
+            <img src="/app-store.png" width={150} height={44} alt="Download on the App Store" />
+          </a>
+          <a href="https://play.google.com/store/apps/details?id=com.nativcodes.zaveit">
+            <img src="/google-play.png" width={150} height={45} alt="Get it on Google Play" />
+          </a>
+        </div>
+      </main>
+      <Footer />
+    </div>
   );
 }
 
