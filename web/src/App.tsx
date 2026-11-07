@@ -3,20 +3,45 @@ import placeholder from "./placeholder.svg";
 import { searchPosts, type VisitorPost } from "./search";
 
 // The page knows only the URL before unlock: /<username>/<list-path>, or /<username> alone, which never unlocks.
-const [username = "", listPath = ""] = location.pathname.split("/").filter(Boolean).map((part) => decodeURIComponent(part).toLowerCase());
+const [username = "", listPath = ""] = location.pathname
+  .split("/")
+  .filter(Boolean)
+  .map((part) => decodeURIComponent(part).toLowerCase());
 const api = `/v1/published-lists/${encodeURIComponent(username || "-")}${listPath ? `/${encodeURIComponent(listPath)}` : ""}`;
 const tokenKey = `token:${username}/${listPath}`;
 
 const storage = {
-  get: () => { try { return sessionStorage.getItem(tokenKey); } catch { return null; } },
-  set: (token: string) => { try { sessionStorage.setItem(tokenKey, token); } catch { /* the tab just won't stay unlocked */ } },
-  clear: () => { try { sessionStorage.removeItem(tokenKey); } catch { /* nothing stored */ } },
+  get: () => {
+    try {
+      return sessionStorage.getItem(tokenKey);
+    } catch {
+      return null;
+    }
+  },
+  set: (token: string) => {
+    try {
+      sessionStorage.setItem(tokenKey, token);
+    } catch {
+      /* the tab just won't stay unlocked */
+    }
+  },
+  clear: () => {
+    try {
+      sessionStorage.removeItem(tokenKey);
+    } catch {
+      /* nothing stored */
+    }
+  },
 };
 
 type List = { name: string; posts: VisitorPost[] };
 
 const errorFor = (status: number) =>
-  status === 401 ? "Wrong password." : status === 429 ? "Too many tries. Try again later." : "Something went wrong. Try again.";
+  status === 401
+    ? "Wrong password."
+    : status === 429
+      ? "Too many tries. Try again later."
+      : "Something went wrong. Try again.";
 
 export default function App() {
   const [list, setList] = useState<List | null>(null);
@@ -24,7 +49,9 @@ export default function App() {
   const [error, setError] = useState("");
 
   async function load(token: string) {
-    const res = await fetch(api, { headers: { Authorization: `Bearer ${token}` } }).catch(() => null);
+    const res = await fetch(api, {
+      headers: { Authorization: `Bearer ${token}` },
+    }).catch(() => null);
     if (res?.ok) return setList(await res.json());
     if (res?.status === 401) storage.clear();
     else setError(errorFor(res?.status ?? 0));
@@ -63,7 +90,15 @@ export default function App() {
 }
 
 function Logo({ size }: { size: number }) {
-  return <img className="logo" src="/icon.png" width={size} height={size} alt="Zaveit" />;
+  return (
+    <img
+      className="logo"
+      src="/icon.png"
+      width={size}
+      height={size}
+      alt="Zaveit"
+    />
+  );
 }
 
 // The bare domain: no List can live here, so it only shows the app and where to get it.
@@ -75,10 +110,20 @@ function Landing() {
         <h1>ZaveIt</h1>
         <div className="stores">
           <a href="https://apps.apple.com/ro/app/zaveit-smart-bookmark-manager/id6747726703">
-            <img src="/app-store.png" width={150} height={44} alt="Download on the App Store" />
+            <img
+              src="/app-store.webp"
+              width={150}
+              height={44}
+              alt="Download on the App Store"
+            />
           </a>
           <a href="https://play.google.com/store/apps/details?id=com.nativcodes.zaveit">
-            <img src="/google-play.png" width={150} height={45} alt="Get it on Google Play" />
+            <img
+              src="/google-play.webp"
+              width={150}
+              height={45}
+              alt="Get it on Google Play"
+            />
           </a>
         </div>
       </main>
@@ -87,11 +132,19 @@ function Landing() {
   );
 }
 
-function Prompt({ error, onUnlock }: { error: string; onUnlock: (password: string) => Promise<void> }) {
+function Prompt({
+  error,
+  onUnlock,
+}: {
+  error: string;
+  onUnlock: (password: string) => Promise<void>;
+}) {
   const [busy, setBusy] = useState(false);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const password = new FormData(event.currentTarget).get("password") as string;
+    const password = new FormData(event.currentTarget).get(
+      "password",
+    ) as string;
     setBusy(true);
     await onUnlock(password);
     setBusy(false);
@@ -102,9 +155,22 @@ function Prompt({ error, onUnlock }: { error: string; onUnlock: (password: strin
         <Logo size={72} />
         <h1>{[username, listPath].filter(Boolean).join(" / ")}</h1>
         <p>This list is protected. Enter the password to view it.</p>
-        <input className="field" type="password" name="password" placeholder="Password" aria-label="Password" required autoFocus autoComplete="current-password" />
-        <div className="error" role="alert">{error}</div>
-        <button className="button" disabled={busy}>View list</button>
+        <input
+          className="field"
+          type="password"
+          name="password"
+          placeholder="Password"
+          aria-label="Password"
+          required
+          autoFocus
+          autoComplete="current-password"
+        />
+        <div className="error" role="alert">
+          {error}
+        </div>
+        <button className="button" disabled={busy}>
+          View list
+        </button>
       </form>
     </main>
   );
@@ -120,22 +186,46 @@ function Grid({ list }: { list: List }) {
       <div className="bar">
         <div className="bar-in">
           <Logo size={32} />
-          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search" aria-label="Search" />
-          <span className="count">{posts.length} of {list.posts.length}</span>
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search"
+            aria-label="Search"
+          />
+          <span className="count">
+            {posts.length} of {list.posts.length}
+          </span>
         </div>
       </div>
       <h1 className="heading">{list.name}</h1>
       {posts.length ? (
         <main className="grid">
           {posts.map((post, i) => (
-            <a key={i} className="tile" href={safeHref(post.url)} target="_blank" rel="noopener noreferrer">
-              <img src={post.thumbnailUrl || placeholder} alt="" loading="lazy" onError={(e) => (e.currentTarget.src = placeholder)} />
+            <a
+              key={i}
+              className="tile"
+              href={safeHref(post.url)}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src={post.thumbnailUrl || placeholder}
+                alt=""
+                loading="lazy"
+                onError={(e) => (e.currentTarget.src = placeholder)}
+              />
               <div className="overlay">
                 <div className="title">{post.title}</div>
                 <div className="author">{post.author}</div>
                 <div className="tags">
-                  {post.tags.slice(0, 3).map((tag) => <span key={tag} className="tag">#{tag}</span>)}
-                  {post.tags.length > 3 && <span className="tag">+{post.tags.length - 3}</span>}
+                  {post.tags.slice(0, 3).map((tag) => (
+                    <span key={tag} className="tag">
+                      #{tag}
+                    </span>
+                  ))}
+                  {post.tags.length > 3 && (
+                    <span className="tag">+{post.tags.length - 3}</span>
+                  )}
                 </div>
               </div>
             </a>
