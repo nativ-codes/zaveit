@@ -36,7 +36,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    document.title = `${list ? list.name : [username, listPath].filter(Boolean).join(" / ")} · Zaveit`;
+    document.title = `${list ? list.name : [username, listPath].filter(Boolean).join(" / ") || "Shared lists"} · Zaveit`;
   }, [list]);
 
   async function unlock(password: string) {
@@ -52,6 +52,7 @@ export default function App() {
     await load(token);
   }
 
+  if (!username) return (<><Landing /><Footer /></>);
   if (loading) return null;
   return (
     <>
@@ -63,6 +64,21 @@ export default function App() {
 
 function Logo({ size }: { size: number }) {
   return <img className="logo" src="/icon.png" width={size} height={size} alt="Zaveit" />;
+}
+
+// The bare domain: no List can live here, so it explains what the links are and where to get the app.
+function Landing() {
+  return (
+    <main className="prompt">
+      <div className="prompt-box">
+        <Logo size={72} />
+        <h1>ZaveIt</h1>
+        <p>Lists shared from the ZaveIt app. Open the link you were given to see one.</p>
+        <a className="button" href="https://apps.apple.com/ro/app/zaveit-smart-bookmark-manager/id6747726703">Download on the App Store</a>
+        <a className="button" href="https://play.google.com/store/apps/details?id=com.nativcodes.zaveit">Get it on Google Play</a>
+      </div>
+    </main>
+  );
 }
 
 function Prompt({ error, onUnlock }: { error: string; onUnlock: (password: string) => Promise<void> }) {
