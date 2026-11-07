@@ -48,6 +48,8 @@ function NewListScreen() {
         setTakenPaths((paths) => [...paths, listPath]);
         return;
       }
+      // iOS offers to save a filled secure field when it leaves the screen; oneTimeCode alone doesn't stop it.
+      setPassword("");
       router.replace({ pathname: "/manage-list", params: { listPath: list.listPath, name: list.name, username } });
     } catch {
       Burnt.toast({ title: "Couldn't save the List. Try again.", preset: "error" });

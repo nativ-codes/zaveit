@@ -1,4 +1,4 @@
-import { Button, TagItem, TopBar } from "@/common/components";
+import { Button, EmptyPlaceholder, TagItem, TopBar } from "@/common/components";
 import { Colors, Units } from "@/common/constants";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
@@ -13,7 +13,6 @@ import {
   MAX_LISTS,
   updateList,
 } from "@/services/lists.service";
-import { LegalEnum } from "@/types";
 import Icon from "@expo/vector-icons/Feather";
 import * as Burnt from "burnt";
 import * as Clipboard from "expo-clipboard";
@@ -73,6 +72,7 @@ function PublishScreen() {
   const [hasLoadError, setHasLoadError] = useState(false);
   const [username, setUsername] = useState("");
   const [isClaiming, setIsClaiming] = useState(false);
+  const [isClaimVisible, setIsClaimVisible] = useState(false);
   const { status, setStatus } = useUsernameStatus(username);
 
   const load = useCallback(async () => {
@@ -100,6 +100,7 @@ function PublishScreen() {
     try {
       if (await claimUsername(username)) {
         setAccount({ username, lists: [] });
+        openNewList(username, []);
       } else {
         // 409: someone else got it first, or this user already has one, which the reload shows.
         setStatus("taken");
@@ -155,6 +156,12 @@ function PublishScreen() {
     </>
   );
 
+  const openNewList = (owner: string | null | undefined, lists: List[]) =>
+    router.push({
+      pathname: "/new-list",
+      params: { username: owner, listPaths: lists.map((l) => l.listPath).join(",") },
+    });
+
   const openList = (list: List) =>
     router.push({ pathname: "/manage-list", params: { listPath: list.listPath, name: list.name, username: account?.username } });
 
@@ -175,7 +182,7 @@ function PublishScreen() {
   const renderCard = (list: List) => (
     <TouchableOpacity key={list.listPath} style={styles.card} onPress={() => openList(list)} activeOpacity={0.7}>
       <View style={styles.cardHead}>
-        <Text style={[GeneralStyles.textLabelLargePrimary, GeneralStyles.flex]} numberOfLines={1}>
+        <Text style={[GeneralStyles.textTitleSectionPrimary, GeneralStyles.flex]} numberOfLines={1}>
           {list.name}
         </Text>
         <Switch
@@ -192,14 +199,17 @@ function PublishScreen() {
         onPress={() => copyLink(list)}
         accessibilityLabel="Copy link"
       >
-        <Text style={styles.smallLink} numberOfLines={1}>
-          /{account?.username}/{list.listPath}
+        <Text style={[GeneralStyles.textLabelLargeSecondary, styles.smallLink]} numberOfLines={1}>
+          {HOST}
+          <Text style={styles.smallLinkPath}>
+            {account?.username}/{list.listPath}
+          </Text>
         </Text>
         <Icon name="copy" size={Units.s16} color={Colors.text.secondary} />
       </TouchableOpacity>
       <View style={styles.tags}>
         {list.tags.map((tag) => (
-          <TagItem key={tag} tag={tag} size="small" isReadOnly />
+          <TagItem key={tag} tag={tag} size="medium" isReadOnly />
         ))}
       </View>
     </TouchableOpacity>
@@ -208,23 +218,32 @@ function PublishScreen() {
   const renderLists = (lists: List[]) => (
     <>
       {lists.map(renderCard)}
-      {lists.length === 0 && (
-        <Text style={GeneralStyles.textLabelMediumSecondary}>No Lists yet. Make one to put it on the web.</Text>
-      )}
       <Button
         type="primary"
-        label="New list"
+        label="Add new list"
         isDisabled={lists.length >= MAX_LISTS}
-        onPress={() =>
-          router.push({
-            pathname: "/new-list",
-            params: { username: account?.username, listPaths: lists.map((l) => l.listPath).join(",") },
-          })
-        }
+        onPress={() => openNewList(account?.username, lists)}
       />
-      <Text style={GeneralStyles.textLabelMediumSecondary}>
+      <Text style={[GeneralStyles.textLabelMediumSecondary, GeneralStyles.textCenter]}>
         {lists.length} of {MAX_LISTS} Lists
       </Text>
+    </>
+  );
+
+  const renderEmpty = () => (
+    <>
+      <EmptyPlaceholder
+        message="No published lists"
+        instruction="Access your saved posts from anywhere with a link."
+      />
+      <TouchableOpacity
+        style={styles.textButton}
+        hitSlop={Units.s8}
+        accessibilityRole="button"
+        onPress={() => (account?.username ? openNewList(account.username, []) : setIsClaimVisible(true))}
+      >
+        <Text style={[GeneralStyles.textTitlePostMediumPrimary, styles.textButtonLabel]}>Add new list</Text>
+      </TouchableOpacity>
     </>
   );
 
@@ -242,26 +261,21 @@ function PublishScreen() {
     if (!account) {
       return <ActivityIndicator color={Colors.primary} />;
     }
-    return account.username ? renderLists(account.lists) : renderClaim();
+    if (account.username && account.lists.length > 0) {
+      return renderLists(account.lists);
+    }
+    if (!account.username && isClaimVisible) {
+      return renderClaim();
+    }
+    return renderEmpty();
   };
 
   return (
     <ScreenLayout>
-      <TopBar hasBackButton />
+      <Spacer direction="bottom" size="s8">
+        <TopBar left={<Text style={GeneralStyles.textTitleScreenPrimary}>Publish</Text>} />
+      </Spacer>
       <Spacer direction="horizontal" size="s16" gap="s16">
-        <Text style={GeneralStyles.textTitleScreenPrimary}>Publish your list</Text>
-        <Text style={GeneralStyles.textLabelLargeSecondary}>
-          Publishing puts a List of your saved posts on a web page. You pick which Tags go in each List and give it a
-          password. Visitors with the link and the password can only look and search. See the{" "}
-          <Text
-            style={GeneralStyles.textLink}
-            accessibilityRole="link"
-            onPress={() => router.push({ pathname: "/legal", params: { type: LegalEnum.TERMS_AND_CONDITIONS } })}
-          >
-            Terms
-          </Text>
-          .
-        </Text>
         {renderBody()}
       </Spacer>
     </ScreenLayout>

@@ -18,7 +18,7 @@ import * as Burnt from "burnt";
 import * as Clipboard from "expo-clipboard";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, Share, Switch, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, Alert, Linking, Share, Switch, Text, TextInput, View } from "react-native";
 import styles, { PRIMARY_SWITCH_TRACK } from "./publish.style";
 import TagRow from "./tag-row";
 
@@ -71,6 +71,8 @@ function ManageListScreen() {
         return;
       }
       setList(updated);
+      // iOS offers to save a filled secure field when it leaves the screen; oneTimeCode alone doesn't stop it.
+      setPassword("");
       setSheet(null);
       if (done) Burnt.toast({ title: done, preset: "done" });
     } catch {
@@ -152,20 +154,20 @@ function ManageListScreen() {
         <Menu>
           <Menu.Item
             label={`${HOST}${username}/${list.listPath}`}
-            onPress={share}
-            right={<Icon name="external-link" size={Units.s20} color={Colors.text.secondary} />}
-          />
-          <Menu.Item label="Share link" onPress={share} />
-          <Menu.Item
-            label="Copy link"
             onPress={copy}
             right={<Icon name="copy" size={Units.s20} color={Colors.text.secondary} />}
           />
+          <Menu.Item
+            label="Open link"
+            onPress={() => Linking.openURL(url)}
+            right={<Icon name="external-link" size={Units.s20} color={Colors.text.secondary} />}
+          />
+          <Menu.Item label="Share link" onPress={share} />
         </Menu>
         <Menu>
           <Menu.Item
             label="Tags"
-            description={list.tags.join(", ")}
+            description={list.tags.map((tag) => `#${tag}`).join(" ")}
             onPress={() => {
               setTags(list.tags);
               setSheet("tags");

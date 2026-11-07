@@ -54,13 +54,16 @@ export default StyleSheet.create({
     alignSelf: "flex-start",
   },
   smallLink: {
-    fontSize: 14,
-    color: Colors.text.secondary,
+    flexShrink: 1,
+  },
+  smallLinkPath: {
+    color: Colors.primary,
   },
   tags: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: Units.s8,
+    // Read-only medium tags keep the pill padding with no pill, so pull them back to the card edge.
+    marginHorizontal: -Units.s12,
   },
   input: {
     ...field,
@@ -84,6 +87,12 @@ export default StyleSheet.create({
   },
   linkPlaceholder: {
     color: Colors.text.placeholder,
+  },
+  textButton: {
+    alignSelf: "center",
+  },
+  textButtonLabel: {
+    color: Colors.primary,
   },
   bleed: {
     marginHorizontal: -Units.s16,

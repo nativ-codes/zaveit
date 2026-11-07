@@ -13,6 +13,11 @@ import styles from "./publish.style";
 function TagRow({ selected, onChange }: { selected: string[]; onChange: (tags: string[]) => void }) {
   const posts = usePosts();
   const userTags = useMemo(() => getSortedTags(posts), [posts]);
+  const tagCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    posts.forEach((post) => post.tags?.forEach((tag) => (counts[tag] = (counts[tag] || 0) + 1)));
+    return counts;
+  }, [posts]);
   const postCount = posts.filter((post) => post.tags?.some((tag) => selected.includes(tag))).length;
 
   const handleOnTagPress = (tag: string) => {
@@ -25,7 +30,13 @@ function TagRow({ selected, onChange }: { selected: string[]; onChange: (tags: s
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.bleed}>
         <Spacer style={GeneralStyles.directionRow} direction="horizontal" size="s16" gap="s8">
           {userTags.map((tag) => (
-            <TagItem key={tag} tag={tag} isSelected={selected.includes(tag)} onPress={() => handleOnTagPress(tag)} />
+            <TagItem
+              key={tag}
+              tag={`#${tag} (${tagCounts[tag]})`}
+              shouldUsePrefixedTag={false}
+              isSelected={selected.includes(tag)}
+              onPress={() => handleOnTagPress(tag)}
+            />
           ))}
         </Spacer>
       </ScrollView>

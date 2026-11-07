@@ -14,6 +14,12 @@ const baseTabBarItems: TabBarItemType[] = [
     iconUnfocused: "tag-multiple-outline",
   },
   {
+    name: "publish",
+    label: "PUBLISH",
+    iconFocused: "cloud-upload",
+    iconUnfocused: "cloud-upload-outline",
+  },
+  {
     name: "settings",
     label: "SETTINGS",
     iconFocused: "cog",
