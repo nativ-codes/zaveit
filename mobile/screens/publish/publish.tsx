@@ -1,4 +1,4 @@
-import { Button, EmptyPlaceholder, TagItem, TopBar } from "@/common/components";
+import { Button, TagItem, TopBar } from "@/common/components";
 import { Colors, Units } from "@/common/constants";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
@@ -18,13 +18,27 @@ import * as Burnt from "burnt";
 import * as Clipboard from "expo-clipboard";
 import { router, useFocusEffect } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  Switch,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { confirmOffline } from "./manage-list";
 import styles, { PRIMARY_SWITCH_TRACK } from "./publish.style";
 
 const CHECK_DELAY_MS = 500;
+const EXAMPLE_TAGS = ["books", "articles", "essays"];
 
-type UsernameStatus = "idle" | "invalid" | "checking" | "available" | "taken" | "error";
+type UsernameStatus =
+  | "idle"
+  | "invalid"
+  | "checking"
+  | "available"
+  | "taken"
+  | "error";
 
 const STATUS_TEXT: Record<UsernameStatus, string> = {
   idle: "3 to 30 letters, digits or hyphens",
@@ -88,7 +102,7 @@ function PublishScreen() {
   useFocusEffect(
     useCallback(() => {
       load();
-    }, [load])
+    }, [load]),
   );
 
   const handleOnUsernameChange = (text: string) => {
@@ -107,7 +121,10 @@ function PublishScreen() {
         await load();
       }
     } catch {
-      Burnt.toast({ title: "Couldn't claim the Username. Try again.", preset: "error" });
+      Burnt.toast({
+        title: "Couldn't claim the Username. Try again.",
+        preset: "error",
+      });
     } finally {
       setIsClaiming(false);
     }
@@ -137,13 +154,17 @@ function PublishScreen() {
           style={[
             GeneralStyles.textLabelMediumSecondary,
             status === "available" && styles.available,
-            (status === "invalid" || status === "taken" || status === "error") && styles.error,
+            (status === "invalid" ||
+              status === "taken" ||
+              status === "error") &&
+              styles.error,
           ]}
         >
           {STATUS_TEXT[status]}
         </Text>
         <Text style={GeneralStyles.textLabelMediumSecondary}>
-          Your Username is the start of every List link and can&apos;t be changed.
+          Your Username is the start of every List link and can&apos;t be
+          changed.
         </Text>
       </Spacer>
       <Button
@@ -159,14 +180,26 @@ function PublishScreen() {
   const openNewList = (owner: string | null | undefined, lists: List[]) =>
     router.push({
       pathname: "/new-list",
-      params: { username: owner, listPaths: lists.map((l) => l.listPath).join(",") },
+      params: {
+        username: owner,
+        listPaths: lists.map((l) => l.listPath).join(","),
+      },
     });
 
   const openList = (list: List) =>
-    router.push({ pathname: "/manage-list", params: { listPath: list.listPath, name: list.name, username: account?.username } });
+    router.push({
+      pathname: "/manage-list",
+      params: {
+        listPath: list.listPath,
+        name: list.name,
+        username: account?.username,
+      },
+    });
 
   const copyLink = async (list: List) => {
-    await Clipboard.setStringAsync(`https://${HOST}${account?.username}/${list.listPath}`);
+    await Clipboard.setStringAsync(
+      `https://${HOST}${account?.username}/${list.listPath}`,
+    );
     Burnt.toast({ title: "Link copied", preset: "done" });
   };
 
@@ -174,22 +207,37 @@ function PublishScreen() {
     try {
       await updateList(list.listPath, { published });
     } catch {
-      Burnt.toast({ title: "Couldn't update the List. Try again.", preset: "error" });
+      Burnt.toast({
+        title: "Couldn't update the List. Try again.",
+        preset: "error",
+      });
     }
     await load();
   };
 
   const renderCard = (list: List) => (
-    <TouchableOpacity key={list.listPath} style={styles.card} onPress={() => openList(list)} activeOpacity={0.7}>
+    <TouchableOpacity
+      key={list.listPath}
+      style={styles.card}
+      onPress={() => openList(list)}
+      activeOpacity={0.7}
+    >
       <View style={styles.cardHead}>
-        <Text style={[GeneralStyles.textTitleSectionPrimary, GeneralStyles.flex]} numberOfLines={1}>
+        <Text
+          style={[GeneralStyles.textTitleSectionPrimary, GeneralStyles.flex]}
+          numberOfLines={1}
+        >
           {list.name}
         </Text>
         <Switch
           value={list.published}
           thumbColor={Colors.white}
           trackColor={PRIMARY_SWITCH_TRACK}
-          onValueChange={(published) => (published ? setPublished(list, true) : confirmOffline(() => setPublished(list, false)))}
+          onValueChange={(published) =>
+            published
+              ? setPublished(list, true)
+              : confirmOffline(() => setPublished(list, false))
+          }
           accessibilityLabel={`Published ${list.name}`}
         />
       </View>
@@ -199,7 +247,10 @@ function PublishScreen() {
         onPress={() => copyLink(list)}
         accessibilityLabel="Copy link"
       >
-        <Text style={[GeneralStyles.textLabelLargeSecondary, styles.smallLink]} numberOfLines={1}>
+        <Text
+          style={[GeneralStyles.textLabelLargeSecondary, styles.smallLink]}
+          numberOfLines={1}
+        >
           {HOST}
           <Text style={styles.smallLinkPath}>
             {account?.username}/{list.listPath}
@@ -224,26 +275,70 @@ function PublishScreen() {
         isDisabled={lists.length >= MAX_LISTS}
         onPress={() => openNewList(account?.username, lists)}
       />
-      <Text style={[GeneralStyles.textLabelMediumSecondary, GeneralStyles.textCenter]}>
+      <Text
+        style={[
+          GeneralStyles.textLabelMediumSecondary,
+          GeneralStyles.textCenter,
+        ]}
+      >
         {lists.length} of {MAX_LISTS} Lists
       </Text>
     </>
   );
 
+  // A faded example of a published List card, so the empty state shows what the user will get.
   const renderEmpty = () => (
     <>
-      <EmptyPlaceholder
-        message="No published lists"
-        instruction="Access your saved posts from anywhere with a link."
+      <Spacer gap="s8">
+        <Text style={GeneralStyles.textTitleSectionPrimary}>
+          Share your saves with a link
+        </Text>
+        <Text style={GeneralStyles.textLabelLargeSecondary}>
+          Pick some Tags, get a link. Anyone can open it, no app needed.
+        </Text>
+      </Spacer>
+      <View style={styles.exampleCard} accessibilityLabel="Example List">
+        <View style={styles.cardHead}>
+          <Text
+            style={[
+              GeneralStyles.textTitleSectionPrimary,
+              GeneralStyles.flex,
+              styles.faded,
+            ]}
+          >
+            My reading list
+          </Text>
+          <View style={styles.exampleSwitch}>
+            <View style={styles.exampleThumb} />
+          </View>
+        </View>
+        <Text
+          style={[GeneralStyles.textLabelLargeSecondary, styles.faded]}
+          numberOfLines={1}
+        >
+          {HOST}
+          <Text style={styles.smallLinkPath}>
+            {account?.username || "your-name"}/my-reading-list
+          </Text>
+        </Text>
+        <View style={[styles.tags, styles.faded]}>
+          {EXAMPLE_TAGS.map((tag) => (
+            <TagItem key={tag} tag={tag} size="medium" isReadOnly />
+          ))}
+        </View>
+        <View style={styles.exampleBadge}>
+          <Text style={styles.exampleBadgeText}>EXAMPLE</Text>
+        </View>
+      </View>
+      <Button
+        type="primary"
+        label="Create your first list"
+        onPress={() =>
+          account?.username
+            ? openNewList(account.username, [])
+            : setIsClaimVisible(true)
+        }
       />
-      <TouchableOpacity
-        style={styles.textButton}
-        hitSlop={Units.s8}
-        accessibilityRole="button"
-        onPress={() => (account?.username ? openNewList(account.username, []) : setIsClaimVisible(true))}
-      >
-        <Text style={[GeneralStyles.textTitlePostMediumPrimary, styles.textButtonLabel]}>Add new list</Text>
-      </TouchableOpacity>
     </>
   );
 
@@ -273,7 +368,11 @@ function PublishScreen() {
   return (
     <ScreenLayout>
       <Spacer direction="bottom" size="s8">
-        <TopBar left={<Text style={GeneralStyles.textTitleScreenPrimary}>Publish</Text>} />
+        <TopBar
+          left={
+            <Text style={GeneralStyles.textTitleScreenPrimary}>Publish</Text>
+          }
+        />
       </Spacer>
       <Spacer direction="horizontal" size="s16" gap="s16">
         {renderBody()}

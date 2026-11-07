@@ -88,11 +88,48 @@ export default StyleSheet.create({
   linkPlaceholder: {
     color: Colors.text.placeholder,
   },
-  textButton: {
-    alignSelf: "center",
+  exampleCard: {
+    gap: Units.s8,
+    padding: Units.s16,
+    borderRadius: Units.s16,
+    borderWidth: 1.5,
+    borderStyle: "dashed",
+    borderColor: Colors.primaryLight,
+    backgroundColor: Colors.surface.primary,
   },
-  textButtonLabel: {
-    color: Colors.primary,
+  faded: {
+    opacity: 0.55,
+  },
+  // A static look-alike of the published Switch, so the example can't be toggled.
+  exampleSwitch: {
+    width: 44,
+    height: 26,
+    borderRadius: 13,
+    paddingHorizontal: 3,
+    justifyContent: "center",
+    alignItems: "flex-end",
+    backgroundColor: Colors.primaryLight,
+  },
+  exampleThumb: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: Colors.white,
+  },
+  exampleBadge: {
+    position: "absolute",
+    top: -10,
+    right: Units.s16,
+    paddingHorizontal: Units.s8,
+    paddingVertical: 2,
+    borderRadius: Units.s8,
+    backgroundColor: Colors.primary,
+  },
+  exampleBadgeText: {
+    color: Colors.white,
+    fontSize: 10,
+    fontWeight: "700",
+    letterSpacing: 1,
   },
   bleed: {
     marginHorizontal: -Units.s16,
