@@ -228,6 +228,8 @@ function SearchScreen() {
         ListHeaderComponent={listHeader}
         ItemSeparatorComponent={renderItemSeparator}
         keyboardShouldPersistTaps="handled"
+        // A Tag change replaces the list; anchoring to the old first Post scrolls the page by itself.
+        maintainVisibleContentPosition={{ disabled: true }}
         contentContainerStyle={{
           paddingTop: insets.top,
           paddingBottom: insets.bottom + TAB_BAR_HEIGHT + Units.s16,

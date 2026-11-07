@@ -8,7 +8,7 @@ import { removePost, usePosts } from "@/config/storage";
 import { PostType } from "@/types";
 import { FlashList } from "@shopify/flash-list";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getPostsForTag } from "../search/search.util";
@@ -63,11 +63,25 @@ function ViewPostsScreen() {
     [tag]
   );
 
+  // One row open at a time; it closes when another opens or the list starts scrolling.
+  const closeOpenRow = useRef<() => void>(undefined);
+
+  const handleOnRowOpen = useCallback((close: () => void) => {
+    if (closeOpenRow.current !== close) closeOpenRow.current?.();
+    closeOpenRow.current = close;
+  }, []);
+
+  const handleOnScrollBeginDrag = useCallback(() => {
+    closeOpenRow.current?.();
+    closeOpenRow.current = undefined;
+  }, []);
+
   const renderItem = useCallback(
     ({ item }: { item: PostType }) => (
       <View style={styles.rowInset}>
         <SwipePreviewPost
           post={item}
+          onOpen={handleOnRowOpen}
           onRemove={() => {
             removePost(item);
             Haptics.warning();
@@ -81,7 +95,7 @@ function ViewPostsScreen() {
         />
       </View>
     ),
-    [router]
+    [router, handleOnRowOpen]
   );
 
   const renderItemSeparator = useCallback(
@@ -111,6 +125,7 @@ function ViewPostsScreen() {
         ListEmptyComponent={renderListEmpty}
         ItemSeparatorComponent={renderItemSeparator}
         keyboardShouldPersistTaps="handled"
+        onScrollBeginDrag={handleOnScrollBeginDrag}
         contentContainerStyle={{
           paddingTop: insets.top,
           paddingBottom: insets.bottom + Units.s16,
