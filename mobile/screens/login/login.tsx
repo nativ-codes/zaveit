@@ -9,6 +9,7 @@ import {
   forgetFormerSignedOutUser,
   isFormerSignedOutUser,
   setInitialUserId,
+  watchPosts,
 } from "@/config/storage";
 import {
   dismissJustSharedPost,
@@ -16,7 +17,6 @@ import {
 } from "@/config/storage/pending-post";
 import { signInWithApple } from "@/services/apple-auth.service";
 import { signInWithGoogle } from "@/services/google-auth.service";
-import { syncPosts } from "@/services/login.service";
 import * as Burnt from "burnt";
 import { Image } from "expo-image";
 import React, { useState } from "react";
@@ -52,7 +52,7 @@ function LoginScreen() {
       if (userUUID) {
         forgetFormerSignedOutUser();
         setInitialUserId();
-        syncPosts();
+        watchPosts();
         Analytics.sendEvent(Analytics.events.logged_in, { authType });
       }
     } catch (error) {

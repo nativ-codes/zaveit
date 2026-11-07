@@ -1,23 +1,27 @@
 import { MAX_HORIZONTAL_SCROLLVIEW_POSTS } from "@/common/constants";
 import { getRandomPick } from "@/screens/search/search.util";
 import { FrequentlyAccessedPostsType, PostType } from "@/types/posts";
-import { useMemo } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import { useMMKVString } from "react-native-mmkv";
-import { getPosts } from "./posts";
+import { getPosts, subscribeToPosts } from "./posts";
 import { storage } from "./storage";
+
+// Every caller shares the same array, which changes only when the Posts do.
+export const usePosts = (): PostType[] =>
+  useSyncExternalStore(subscribeToPosts, getPosts);
 
 export const useFrequentlyAccessedPosts = (): PostType[] => {
   const [frequentlyAccessedPostsRaw] = useMMKVString(
     "frequentlyAccessedPosts",
     storage
   );
+  const posts = usePosts();
 
   return useMemo(() => {
     const frequentlyAccessedPosts = JSON.parse(
       frequentlyAccessedPostsRaw || "{}"
     ) as FrequentlyAccessedPostsType;
 
-    const posts = getPosts();
     const frequentlyAccessedPostsIds = Object.entries(frequentlyAccessedPosts)
       .sort(([, a]: [string, number], [, b]: [string, number]) => b - a)
       .slice(0, MAX_HORIZONTAL_SCROLLVIEW_POSTS)
@@ -32,17 +36,16 @@ export const useFrequentlyAccessedPosts = (): PostType[] => {
       const bCount = frequentlyAccessedPosts[b.id] || 0;
       return bCount - aCount;
     });
-  }, [frequentlyAccessedPostsRaw]);
+  }, [frequentlyAccessedPostsRaw, posts]);
 };
 
 export const useRecentlyAddedPosts = (): PostType[] => {
-  const [postsRaw] = useMMKVString("posts", storage);
+  const posts = usePosts();
 
-  return useMemo(() => {
-    const posts = JSON.parse(postsRaw || "[]");
-
-    return posts.slice(-MAX_HORIZONTAL_SCROLLVIEW_POSTS).reverse();
-  }, [postsRaw]);
+  return useMemo(
+    () => posts.slice(-MAX_HORIZONTAL_SCROLLVIEW_POSTS).reverse(),
+    [posts]
+  );
 };
 
 export const useRandomPickPost = (): PostType | null => {
@@ -51,14 +54,4 @@ export const useRandomPickPost = (): PostType | null => {
   return useMemo(() => getRandomPick(posts), [posts]);
 };
 
-export const usePosts = (): PostType[] => {
-  const [posts] = useMMKVString("posts", storage);
-
-  return useMemo(() => JSON.parse(posts || "[]"), [posts]);
-};
-
-export const useHasPosts = (): boolean => {
-  const posts = usePosts();
-
-  return useMemo(() => Boolean(posts.length), [posts]);
-};
+export const useHasPosts = (): boolean => usePosts().length > 0;

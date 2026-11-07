@@ -1,4 +1,4 @@
-import { getPosts } from "@/config/storage/posts";
+import { getPosts, stopWatchingPosts, watchPosts } from "@/config/storage/posts";
 import { makeThumbnail, uploadThumbnail } from "@/services/thumbnails.service";
 import { setCurrentUser } from "@/test/fakes/auth";
 import { getFirestore } from "@/test/fakes/firestore";
@@ -31,6 +31,8 @@ describe("Saving a new Post from the share screen", () => {
       userId: "user-1",
       posts: [],
     });
+    stopWatchingPosts();
+    await watchPosts();
   });
 
   it("waits for the Thumbnail upload still in flight and saves its URL", async () => {

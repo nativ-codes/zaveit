@@ -2,11 +2,8 @@ import { Menu, TopBar } from "@/common/components";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { deleteAllImages } from "@/common/utils/files";
-import { clearAllData, removeDuplicatePosts } from "@/config/storage";
+import { clearAllData } from "@/config/storage";
 import { storage } from "@/config/storage/storage";
-import { syncPosts } from "@/services/login.service";
-import { getAuth } from "@react-native-firebase/auth";
-import * as Burnt from "burnt";
 import React, { useState } from "react";
 import { Text } from "react-native";
 import { useMMKVString } from "react-native-mmkv";
@@ -17,26 +14,9 @@ import { StorageViewer } from "./storage-viewer";
 function DebugScreen() {
   const [name, setName] = useMMKVString("name", storage);
   const [mappings, setMappings] = useState(getDefaultMappings());
-  const [isSyncing, setIsSyncing] = useState(false);
 
   const handleOnNameChange = () => {
     setName(Math.random().toString());
-  };
-
-  const handleOnSync = async () => {
-    const uid = getAuth().currentUser?.uid;
-    if (!uid) {
-      Burnt.toast({ title: "Not logged in", preset: "error", duration: 2 });
-      return;
-    }
-    setIsSyncing(true);
-    const didSync = await syncPosts();
-    Burnt.toast(
-      didSync
-        ? { title: "Sync complete", preset: "done", duration: 2 }
-        : { title: "Sync failed", preset: "error", duration: 2 }
-    );
-    setIsSyncing(false);
   };
 
   const handleOnAddMapping = () => {
@@ -56,16 +36,8 @@ function DebugScreen() {
       <Spacer direction="horizontal" size="s16" gap="s32">
         <Menu>
           <Menu.Item onPress={handleOnNameChange} label={`Random: ${name}`} />
-          <Menu.Item
-            onPress={handleOnSync}
-            label={isSyncing ? "Syncing…" : "Sync posts & images"}
-          />
           <Menu.Item onPress={clearAllData} label="Clear all data" />
           <Menu.Item onPress={deleteAllImages} label="Delete all images" />
-          <Menu.Item
-            onPress={removeDuplicatePosts}
-            label="Remove duplicate posts"
-          />
         </Menu>
         <Menu>
           <Spacer direction={["left", "bottom"]} size="s8">

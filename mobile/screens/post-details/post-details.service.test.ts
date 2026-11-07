@@ -1,4 +1,4 @@
-import { getPosts, savePosts } from "@/config/storage/posts";
+import { getPosts, stopWatchingPosts, watchPosts } from "@/config/storage/posts";
 import { getMetadata } from "@/screens/share-intent/share-intent.utils";
 import { makeThumbnail, uploadThumbnail } from "@/services/thumbnails.service";
 import { setCurrentUser } from "@/test/fakes/auth";
@@ -22,7 +22,8 @@ describe("reloadThumbnail", () => {
   beforeEach(async () => {
     setCurrentUser({ uid: "user-1" });
     await list().set({ userId: "user-1", posts: [reloaded, other] });
-    savePosts([reloaded, other]);
+    stopWatchingPosts();
+    await watchPosts();
     jest.mocked(getMetadata).mockResolvedValue({ thumbnail: "https://example.com/a.jpg" } as never);
     jest.mocked(makeThumbnail).mockResolvedValue("file:///cache/thumb.webp");
   });
@@ -39,16 +40,19 @@ describe("reloadThumbnail", () => {
       { ...reloaded, thumbnailUrl: newUrl },
       { ...other, title: "Edited elsewhere" },
     ]);
-    expect(getPosts()).toEqual([{ ...reloaded, thumbnailUrl: newUrl }, other]);
+    expect(getPosts()).toEqual([
+      { ...reloaded, thumbnailUrl: newUrl },
+      { ...other, title: "Edited elsewhere" },
+    ]);
   });
 
-  it("throws and keeps the old local URL when the Post isn't in the cloud yet", async () => {
+  it("throws when the Post isn't in the cloud", async () => {
     await list().set({ userId: "user-1", posts: [other] });
     jest.mocked(uploadThumbnail).mockResolvedValue(newUrl);
 
     await expect(reloadThumbnail(reloaded)).rejects.toThrow("isn't in the cloud");
 
-    expect(getPosts()).toEqual([reloaded, other]);
+    expect(getPosts()).toEqual([other]);
   });
 
   it("throws and changes nothing when the upload fails", async () => {

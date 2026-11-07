@@ -6,6 +6,7 @@ import {
   getDocs,
   getFirestore,
   limit,
+  onSnapshot,
   query,
   runTransaction,
   updateDoc,
@@ -37,6 +38,19 @@ export const getUserList = async () => {
   const userList = userListQuery.docs[0];
   return { ref: userList.ref, posts: userList.data().posts as PostType[] };
 };
+
+// Firestore answers from its on-device cache first, so Posts show at launch before the network replies.
+// A user without a list gets [] until the first save creates one.
+export const watchUserPosts = (
+  userId: string,
+  onPosts: (posts: PostType[]) => void,
+  onError: (error: Error) => void
+): (() => void) =>
+  onSnapshot(
+    query(collection(getFirestore(), "lists"), where("userId", "==", userId), limit(1)),
+    (snapshot) => onPosts((snapshot.docs[0]?.data().posts ?? []) as PostType[]),
+    onError
+  );
 
 // Rewrites the List's posts array in a transaction, so a change another device made meanwhile is kept.
 export const setThumbnailUrlService = async (postId: string, thumbnailUrl: string): Promise<void> => {

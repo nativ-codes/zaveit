@@ -1,5 +1,5 @@
 import { safelyPrintError } from '@/common/utils/error-parsers';
-import { syncPosts } from '@/services/login.service';
+import { stopWatchingPosts, watchPosts } from '@/config/storage/posts';
 import { UserType } from '@/services/users.service';
 import { getAuth, onAuthStateChanged } from '@react-native-firebase/auth';
 import React, { createContext, useContext, useEffect, useState } from 'react';
@@ -29,13 +29,16 @@ function AuthProvider({ children }: AuthProviderPropsType) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    // Only the first event is app start. Sign-in fires this too, before the new user's list exists, so the login screen syncs that case.
+    // Only the first event is app start. Sign-in fires this too, before the new user's list exists, so the login screen watches that case.
     let isAppStart = true;
 
     const unsubscribe = onAuthStateChanged(getAuth(), async (firebaseUser) => {
       try {
         if (firebaseUser && isAppStart) {
-          syncPosts();
+          watchPosts();
+        }
+        if (!firebaseUser) {
+          stopWatchingPosts();
         }
         isAppStart = false;
 

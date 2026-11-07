@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
-import { getPosts, savePosts } from "@/config/storage/posts";
+import { storage } from "@/config/storage/storage";
 import { getAuth, setCurrentUser } from "@/test/fakes/auth";
 import { failNextBatchCommit, getFirestore } from "@/test/fakes/firestore";
 import { PostType } from "@/types/posts";
@@ -60,7 +60,7 @@ const signInAs = (providerId: string) => {
       steps.push(`identity confirmed, cloud ${(await cloudDataExists()).lists}`);
     }),
     delete: jest.fn(async () => {
-      steps.push(`login deleted, cloud ${(await cloudDataExists()).lists}, local ${getPosts().length}`);
+      steps.push(`login deleted, cloud ${(await cloudDataExists()).lists}, local ${storage.getAllKeys().length}`);
       setCurrentUser(null);
     }),
   };
@@ -72,7 +72,7 @@ const expectNothingDeleted = async (user: ReturnType<typeof signInAs>) => {
   expect(user.delete).not.toHaveBeenCalled();
   expect(steps).not.toContain("thumbnails deleted, cloud 2");
   expect(await cloudDataExists()).toEqual(untouched);
-  expect(getPosts()).toHaveLength(1);
+  expect(storage.getAllKeys()).toHaveLength(1);
 };
 
 beforeEach(async () => {
@@ -98,7 +98,7 @@ beforeEach(async () => {
   await getFirestore().collection("users").doc("user-1").set({});
   await getFirestore().collection("lists").doc("list-1").set({ userId: "user-1", posts: [post] });
   await getFirestore().collection("lists").doc("list-2").set({ userId: "user-1", posts: [] });
-  savePosts([post]);
+  storage.set("frequentlyAccessedPosts", JSON.stringify({ [post.id]: 1 }));
 });
 
 describe("deleteAccount", () => {
@@ -114,7 +114,7 @@ describe("deleteAccount", () => {
       "login deleted, cloud 0, local 1",
     ]);
     expect(await cloudDataExists()).toEqual({ lists: 0, user: false });
-    expect(getPosts()).toHaveLength(0);
+    expect(storage.getAllKeys()).toHaveLength(0);
   });
 
   it("clears the saved Google login, so the next sign-in shows the account picker", async () => {
@@ -220,7 +220,7 @@ describe("deleteAccount", () => {
     // Thumbnails are already gone; retrying deletes an empty prefix and goes on.
     expect(user.delete).not.toHaveBeenCalled();
     expect(await cloudDataExists()).toEqual(untouched);
-    expect(getPosts()).toHaveLength(1);
+    expect(storage.getAllKeys()).toHaveLength(1);
   });
 
   it("keeps local data and stays signed in when deleting the login fails", async () => {
@@ -229,7 +229,7 @@ describe("deleteAccount", () => {
 
     await expect(deleteAccount()).rejects.toThrow("network");
 
-    expect(getPosts()).toHaveLength(1);
+    expect(storage.getAllKeys()).toHaveLength(1);
     expect(getAuth().currentUser).toBe(user);
   });
 

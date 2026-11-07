@@ -6,6 +6,10 @@ const collections = new Map<string, Map<string, DocData>>();
 let nextDocId = 0;
 let failNextBatch = false;
 let failUpdate = false;
+const snapshotListeners = new Set<() => void>();
+
+// Like the real listener, every write reaches open listeners right away.
+const notifyListeners = () => snapshotListeners.forEach((listener) => listener());
 
 class ArrayUnion {
   constructor(readonly items: unknown[]) {}
@@ -19,6 +23,7 @@ export const resetFirestore = () => {
   nextDocId = 0;
   failNextBatch = false;
   failUpdate = false;
+  snapshotListeners.clear();
 };
 
 export const failNextUpdate = () => {
@@ -59,6 +64,7 @@ const docRef = (collectionName: string, id: string) => {
     id,
     set: async (data: DocData) => {
       docs.set(id, structuredClone(data));
+      notifyListeners();
     },
     update: async (changes: DocData) => {
       if (failUpdate) {
@@ -73,9 +79,11 @@ const docRef = (collectionName: string, id: string) => {
         });
       }
       docs.set(id, structuredClone(applyUpdate(docs.get(id)!, changes)));
+      notifyListeners();
     },
     delete: async () => {
       docs.delete(id);
+      notifyListeners();
     },
     get: async () => docSnapshot(collectionName, id),
   };
@@ -105,16 +113,19 @@ const buildQuery = (
     return buildQuery(collectionName, [...filters, { field, value }], max);
   },
   limit: (count: number) => buildQuery(collectionName, filters, count),
-  get: async () => {
-    const docs = [...getCollection(collectionName).entries()]
-      .filter(([, data]) =>
-        filters.every(({ field, value }) => data[field] === value)
-      )
-      .slice(0, max)
-      .map(([id]) => docSnapshot(collectionName, id));
-    return { docs, empty: docs.length === 0 };
-  },
+  get: async () => runQuery(collectionName, filters, max),
+  snapshot: () => runQuery(collectionName, filters, max),
 });
+
+const runQuery = (collectionName: string, filters: Filter[], max: number) => {
+  const docs = [...getCollection(collectionName).entries()]
+    .filter(([, data]) =>
+      filters.every(({ field, value }) => data[field] === value)
+    )
+    .slice(0, max)
+    .map(([id]) => docSnapshot(collectionName, id));
+  return { docs, empty: docs.length === 0 };
+};
 
 const batch = () => {
   const refs: { delete: () => Promise<void> }[] = [];
@@ -169,6 +180,19 @@ export const limit =
 export const query = (source: FakeQuery, ...constraints: Constraint[]) =>
   constraints.reduce((current, apply) => apply(current), source);
 export const getDocs = (source: FakeQuery) => source.get();
+// shortcut: never calls onError, add a failure switch when a test needs it.
+export const onSnapshot = (
+  source: FakeQuery,
+  onNext: (snapshot: ReturnType<FakeQuery["snapshot"]>) => void,
+  _onError?: (error: Error) => void
+) => {
+  const listener = () => onNext(source.snapshot());
+  snapshotListeners.add(listener);
+  listener();
+  return () => {
+    snapshotListeners.delete(listener);
+  };
+};
 // shortcut: runs once, with no conflict retry, so tests make concurrent writes before the transaction reads.
 export const runTransaction = async <T>(
   _firestore: FakeFirestore,

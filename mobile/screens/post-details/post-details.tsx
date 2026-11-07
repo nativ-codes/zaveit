@@ -37,11 +37,13 @@ function PostDetailsScreen() {
   const insets = useSafeAreaInsets();
   const [isReloadingImage, setIsReloadingImage] = useState(false);
 
+  // By id: every posts update brings a new object, which isn't another visit.
+  const postId = post?.id;
   useEffect(() => {
-    if (post) {
-      increasePostAccessCount(post.id);
+    if (postId) {
+      increasePostAccessCount(postId);
     }
-  }, [post]);
+  }, [postId]);
 
   const handleOpenInBrowser = async () => {
     try {
