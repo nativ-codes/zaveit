@@ -1,6 +1,6 @@
 import { ACTIVE_OPACITY } from "@/common/constants";
 import { GeneralStyles } from "@/common/styles";
-import React from "react";
+import React, { memo } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import styles from "./tag-item.style";
 import { TagItemPropsType, TagItemSizeEnum } from "./tag-item.type";
@@ -14,7 +14,7 @@ function TagItem({
   shouldUsePrefixedTag = true,
 }: TagItemPropsType) {
   const Wrapper = isReadOnly ? View : TouchableOpacity;
-  const onPressHandler = isReadOnly ? undefined : onPress;
+  const onPressHandler = isReadOnly || !onPress ? undefined : () => onPress(tag);
   const textStyle = StyleSheet.flatten([
     size === TagItemSizeEnum.small
       ? GeneralStyles.textLabelSmallSecondary
@@ -39,4 +39,4 @@ function TagItem({
   );
 }
 
-export default TagItem;
+export default memo(TagItem);

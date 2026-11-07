@@ -15,6 +15,7 @@ function PreviewPost({
   thumbnailUrl,
   title,
   tags,
+  id,
   onPress
 }: PreviewPostPropsType) {
   const domain = getDomainFromUrl(url);
@@ -22,7 +23,7 @@ function PreviewPost({
   return (
     <TouchableOpacity
       style={StyleSheet.compose(styles.container, GeneralStyles.shadow)}
-      onPress={onPress}
+      onPress={onPress && (() => onPress(id))}
       activeOpacity={ACTIVE_OPACITY}
       accessibilityRole="button"
       accessibilityLabel={`View details for ${title || url}`}

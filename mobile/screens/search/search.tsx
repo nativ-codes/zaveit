@@ -112,6 +112,12 @@ function SearchScreen() {
     setSearchQuery("");
   }, []);
 
+  // Stable, so memoized post cards don't re-render on every Tag tap.
+  const handleOnPostPress = useCallback(
+    (id: string) => router.push({ pathname: "/post-details", params: { id } }),
+    [router]
+  );
+
   const renderItem = useCallback(
     ({ item }: { item: SearchListItemType }) => {
       if (item.type === "empty") {
@@ -130,24 +136,17 @@ function SearchScreen() {
             onViewAll={() =>
               router.push({ pathname: "/view-posts", params: { tag: item.tag } })
             }
-            onPostPress={(id: string) =>
-              router.push({ pathname: "/post-details", params: { id } })
-            }
+            onPostPress={handleOnPostPress}
           />
         );
       }
       return (
         <View style={styles.filteredPostContainer}>
-          <PreviewPost
-            {...item.post}
-            onPress={() =>
-              router.push({ pathname: "/post-details", params: { id: item.post.id } })
-            }
-          />
+          <PreviewPost {...item.post} onPress={handleOnPostPress} />
         </View>
       );
     },
-    [posts, router]
+    [posts, router, handleOnPostPress]
   );
 
   const renderItemSeparator = useCallback(

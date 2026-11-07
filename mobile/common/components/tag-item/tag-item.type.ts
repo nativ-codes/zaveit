@@ -8,6 +8,7 @@ export type TagItemPropsType = {
   size?: keyof typeof TagItemSizeEnum;
   isSelected?: boolean;
   isReadOnly?: boolean;
-  onPress?: () => void;
+  // Gets the tag, so a list can pass one stable handler and the memo holds.
+  onPress?: (tag: string) => void;
   shouldUsePrefixedTag?: boolean;
 }; 
