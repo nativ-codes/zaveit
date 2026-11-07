@@ -5,5 +5,10 @@ services:
     build: .
     restart: unless-stopped
     env_file: .env
+    environment:
+      # The gitignored service-account key, mounted read-only; overrides the ./keys path .env uses for `go run`.
+      FIREBASE_SERVICE_ACCOUNT_KEY_FILE: /keys/zaveit-admin.json
+    volumes:
+      - ./keys:/keys:ro
     ports:
       - "8080:8080"

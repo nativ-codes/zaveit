@@ -16,7 +16,7 @@ import (
 // limitedRouter rejects every token, so requests under the limit get 401 without any upstream.
 func limitedRouter() http.Handler {
 	reject := func(string) error { return errors.New("rejected") }
-	return NewRouter(deepseek.Client{}, false, SourcesCheck{}, reject, nil, r2.Client{})
+	return NewRouter(deepseek.Client{}, false, SourcesCheck{}, reject, nil, r2.Client{}, nil, "")
 }
 
 func send(router http.Handler, path, forwardedFor string) *httptest.ResponseRecorder {
@@ -124,5 +124,28 @@ func TestLimiterMemoryIsBounded(t *testing.T) {
 	}
 	if len(limiter.counts) > rateLimitMaxClients {
 		t.Errorf("tracking %d clients", len(limiter.counts))
+	}
+}
+
+func TestKeyLimiterKeepsCountsWhenFull(t *testing.T) {
+	limiter := newKeyLimiter(2, time.Hour)
+	limiter.max = 3
+	start := time.Now()
+	limiter.allow("target", start)
+	limiter.allow("target", start)
+	limiter.allow("old", start.Add(-2*time.Hour))
+	limiter.allow("filler", start)
+
+	if !limiter.allow("new", start) {
+		t.Error("an expired window was not evicted to make room")
+	}
+	if limiter.allow("another", start) {
+		t.Error("a new key was let in while full")
+	}
+	if limiter.allow("target", start) {
+		t.Error("filling the map reset the target's count")
+	}
+	if !limiter.allow("target", start.Add(time.Hour)) {
+		t.Error("still limited in the next window")
 	}
 }

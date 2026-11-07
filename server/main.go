@@ -9,6 +9,7 @@ import (
 	"zaveit/server/internal/api"
 	"zaveit/server/internal/appcheck"
 	"zaveit/server/internal/deepseek"
+	"zaveit/server/internal/firestore"
 	"zaveit/server/internal/idtoken"
 	"zaveit/server/internal/r2"
 )
@@ -45,9 +46,14 @@ func main() {
 		SecretAccessKey: mustGetenv("S3_SECRET_ACCESS_KEY"),
 	}
 
+	db, err := firestore.New(mustGetenv("FIREBASE_SERVICE_ACCOUNT_KEY_FILE"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	server := &http.Server{
 		Addr:              ":" + getenv("PORT", "8080"),
-		Handler:           api.NewRouter(ai, os.Getenv("LOG_TAG_DETAILS") == "true", check, verifier.Verify, users.Verify, store),
+		Handler:           api.NewRouter(ai, os.Getenv("LOG_TAG_DETAILS") == "true", check, verifier.Verify, users.Verify, store, db, mustGetenv("VISITOR_TOKEN_SECRET")),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 

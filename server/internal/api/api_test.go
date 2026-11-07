@@ -26,7 +26,7 @@ func post(t *testing.T, body string, upstream http.HandlerFunc) *httptest.Respon
 
 	res := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodPost, "/v1/tags", strings.NewReader(body))
-	NewRouter(deepseek.Client{BaseURL: fake.URL, Model: "m", APIKey: "k"}, false, SourcesCheck{}, allowAll, nil, r2.Client{}).ServeHTTP(res, req)
+	NewRouter(deepseek.Client{BaseURL: fake.URL, Model: "m", APIKey: "k"}, false, SourcesCheck{}, allowAll, nil, r2.Client{}, nil, "").ServeHTTP(res, req)
 	return res
 }
 
@@ -97,7 +97,7 @@ func TestV1RoutesRequireAppCheck(t *testing.T) {
 		t.Error("DeepSeek must not be called without a valid token")
 	}))
 	defer fake.Close()
-	router := NewRouter(deepseek.Client{BaseURL: fake.URL}, false, SourcesCheck{}, reject, nil, r2.Client{})
+	router := NewRouter(deepseek.Client{BaseURL: fake.URL}, false, SourcesCheck{}, reject, nil, r2.Client{}, nil, "")
 
 	for _, req := range []*http.Request{
 		httptest.NewRequest(http.MethodPost, "/v1/tags", strings.NewReader(`{"title":"x"}`)),
@@ -151,7 +151,7 @@ func TestRequireUser(t *testing.T) {
 func TestHealthNeedsNoAppCheck(t *testing.T) {
 	reject := func(string) error { return errors.New("rejected") }
 	res := httptest.NewRecorder()
-	NewRouter(deepseek.Client{}, false, SourcesCheck{}, reject, nil, r2.Client{}).ServeHTTP(res, httptest.NewRequest(http.MethodGet, "/health", nil))
+	NewRouter(deepseek.Client{}, false, SourcesCheck{}, reject, nil, r2.Client{}, nil, "").ServeHTTP(res, httptest.NewRequest(http.MethodGet, "/health", nil))
 	if res.Code != http.StatusOK {
 		t.Errorf("got %d", res.Code)
 	}
@@ -159,7 +159,7 @@ func TestHealthNeedsNoAppCheck(t *testing.T) {
 
 func TestHealth(t *testing.T) {
 	res := httptest.NewRecorder()
-	NewRouter(deepseek.Client{}, false, SourcesCheck{}, allowAll, nil, r2.Client{}).ServeHTTP(res, httptest.NewRequest(http.MethodGet, "/health", nil))
+	NewRouter(deepseek.Client{}, false, SourcesCheck{}, allowAll, nil, r2.Client{}, nil, "").ServeHTTP(res, httptest.NewRequest(http.MethodGet, "/health", nil))
 	if res.Code != http.StatusOK {
 		t.Errorf("got %d", res.Code)
 	}
@@ -169,7 +169,7 @@ func TestSourcesRejectsBadToken(t *testing.T) {
 	for _, check := range []struct{ configured, sent string }{{"", ""}, {"secret", ""}, {"secret", "wrong"}} {
 		res := httptest.NewRecorder()
 		req := httptest.NewRequest(http.MethodGet, "/health/sources?token="+check.sent, nil)
-		NewRouter(deepseek.Client{}, false, SourcesCheck{Token: check.configured}, allowAll, nil, r2.Client{}).ServeHTTP(res, req)
+		NewRouter(deepseek.Client{}, false, SourcesCheck{Token: check.configured}, allowAll, nil, r2.Client{}, nil, "").ServeHTTP(res, req)
 		if res.Code != http.StatusUnauthorized {
 			t.Errorf("%+v: got %d", check, res.Code)
 		}
@@ -179,7 +179,7 @@ func TestSourcesRejectsBadToken(t *testing.T) {
 func TestMetadataRejectsBadURL(t *testing.T) {
 	for _, target := range []string{"/v1/metadata", "/v1/metadata?url=nope", "/v1/metadata?url=file%3A%2F%2F%2Fetc%2Fpasswd"} {
 		res := httptest.NewRecorder()
-		NewRouter(deepseek.Client{}, false, SourcesCheck{}, allowAll, nil, r2.Client{}).ServeHTTP(res, httptest.NewRequest(http.MethodGet, target, nil))
+		NewRouter(deepseek.Client{}, false, SourcesCheck{}, allowAll, nil, r2.Client{}, nil, "").ServeHTTP(res, httptest.NewRequest(http.MethodGet, target, nil))
 		if res.Code != http.StatusBadRequest {
 			t.Errorf("%s: got %d", target, res.Code)
 		}
@@ -197,7 +197,7 @@ func TestTagDetailsLogging(t *testing.T) {
 			io.WriteString(w, `{"choices":[{"message":{"content":"art"}}]}`)
 		}))
 		req := httptest.NewRequest(http.MethodPost, "/v1/tags", strings.NewReader(`{"title":"secret title"}`))
-		NewRouter(deepseek.Client{BaseURL: fake.URL}, enabled, SourcesCheck{}, allowAll, nil, r2.Client{}).ServeHTTP(httptest.NewRecorder(), req)
+		NewRouter(deepseek.Client{BaseURL: fake.URL}, enabled, SourcesCheck{}, allowAll, nil, r2.Client{}, nil, "").ServeHTTP(httptest.NewRecorder(), req)
 		fake.Close()
 
 		if got := strings.Contains(logs.String(), "secret title"); got != enabled {

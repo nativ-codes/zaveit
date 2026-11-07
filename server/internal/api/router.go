@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"zaveit/server/internal/deepseek"
+	"zaveit/server/internal/firestore"
 	"zaveit/server/internal/r2"
 )
 
@@ -17,7 +18,7 @@ import (
 type VerifyToken func(token string) error
 
 // NewRouter is the list of every route the server has.
-func NewRouter(ai deepseek.Client, logTagDetails bool, check SourcesCheck, verify VerifyToken, verifyUser VerifyUser, store r2.Client) http.Handler {
+func NewRouter(ai deepseek.Client, logTagDetails bool, check SourcesCheck, verify VerifyToken, verifyUser VerifyUser, store r2.Client, db *firestore.Client, visitorSecret string) http.Handler {
 	limiter := newRateLimiter(rateLimitRequests, rateLimitWindow)
 	v1 := func(next http.HandlerFunc) http.HandlerFunc {
 		return limitRate(limiter, requireAppCheck(verify, next))
@@ -30,6 +31,18 @@ func NewRouter(ai deepseek.Client, logTagDetails bool, check SourcesCheck, verif
 	mux.HandleFunc("POST /v1/tags", v1(suggestTags(ai, logTagDetails)))
 	mux.HandleFunc("POST /v1/thumbnails", v1(requireUser(verifyUser, uploadThumbnail(store))))
 	mux.HandleFunc("DELETE /v1/thumbnails", v1(requireUser(verifyUser, deleteThumbnails(store))))
+	mux.HandleFunc("GET /v1/username/{username}", v1(requireUser(verifyUser, checkUsername(db))))
+	mux.HandleFunc("POST /v1/username", v1(requireUser(verifyUser, claimUsername(db))))
+	mux.HandleFunc("DELETE /v1/username", v1(requireUser(verifyUser, deleteUsername(db))))
+	mux.HandleFunc("GET /v1/lists", v1(requireUser(verifyUser, getLists(db))))
+	mux.HandleFunc("POST /v1/lists", v1(requireUser(verifyUser, createList(db))))
+	mux.HandleFunc("PATCH /v1/lists/{listPath}", v1(requireUser(verifyUser, updateList(db))))
+	mux.HandleFunc("DELETE /v1/lists/{listPath}", v1(requireUser(verifyUser, deleteList(db))))
+	// Visitor routes: public, so the per-IP limit applies but not App Check.
+	unlock := limitRate(limiter, unlockList(db, []byte(visitorSecret)))
+	mux.HandleFunc("POST /v1/published-lists/{username}/{listPath}/unlock", unlock)
+	mux.HandleFunc("POST /v1/published-lists/{username}/unlock", unlock) // a bare /{username} link
+	mux.HandleFunc("GET /v1/published-lists/{username}/{listPath}", limitRate(limiter, getPublishedList(db, []byte(visitorSecret))))
 	return logRequests(mux)
 }
 

@@ -46,7 +46,7 @@ func thumbnailRouter(t *testing.T) (http.Handler, *[]storedObject) {
 		return "", errors.New("rejected")
 	}
 	store := r2.Client{Endpoint: fake.URL, Bucket: "bucket", AccessKeyID: "id", SecretAccessKey: "secret"}
-	return NewRouter(deepseek.Client{}, false, SourcesCheck{}, allowAll, verifyUser, store), &stored
+	return NewRouter(deepseek.Client{}, false, SourcesCheck{}, allowAll, verifyUser, store, nil, ""), &stored
 }
 
 var uploadCount int
@@ -110,7 +110,7 @@ func TestUploadThumbnailRejects(t *testing.T) {
 func TestUploadThumbnailNeedsAppCheck(t *testing.T) {
 	reject := func(string) error { return errors.New("rejected") }
 	verifyUser := func(string) (string, error) { return "user-1", nil }
-	router := NewRouter(deepseek.Client{}, false, SourcesCheck{}, reject, verifyUser, r2.Client{})
+	router := NewRouter(deepseek.Client{}, false, SourcesCheck{}, reject, verifyUser, r2.Client{}, nil, "")
 	if res := upload(router, "good", "image/webp", webp); res.Code != http.StatusUnauthorized {
 		t.Errorf("got %d", res.Code)
 	}
@@ -181,7 +181,7 @@ func deleteRouter(t *testing.T, keys []string, failDelete int) (http.Handler, *[
 		return "", errors.New("rejected")
 	}
 	store := r2.Client{Endpoint: fake.URL, Bucket: "bucket", AccessKeyID: "id", SecretAccessKey: "secret"}
-	return NewRouter(deepseek.Client{}, false, SourcesCheck{}, allowAll, verifyUser, store), &deleted
+	return NewRouter(deepseek.Client{}, false, SourcesCheck{}, allowAll, verifyUser, store, nil, ""), &deleted
 }
 
 func deleteAll(router http.Handler, token string) *httptest.ResponseRecorder {

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"maps"
 	"net"
 	"net/http"
 	"net/netip"
@@ -38,6 +39,45 @@ func (l *rateLimiter) allow(client string, now time.Time) bool {
 	}
 	l.counts[client]++
 	return l.counts[client] <= l.limit
+}
+
+// keyLimiter counts requests per key, each in its own fixed window from the key's first request. For keys a client
+// picks freely (from the URL), a full map evicts only expired windows and then refuses new keys: clearing every count
+// as rateLimiter does would reset the attacked key's counter. Refusing new keys can lock everyone out for a window,
+// which the spec accepts.
+type keyLimiter struct {
+	limit, max int
+	window     time.Duration
+	mu         sync.Mutex
+	windows    map[string]keyWindow
+}
+
+type keyWindow struct {
+	count int
+	end   time.Time
+}
+
+func newKeyLimiter(limit int, window time.Duration) *keyLimiter {
+	return &keyLimiter{limit: limit, max: rateLimitMaxClients, window: window, windows: map[string]keyWindow{}}
+}
+
+func (l *keyLimiter) allow(key string, now time.Time) bool {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	expired := func(_ string, w keyWindow) bool { return !now.Before(w.end) }
+	w, ok := l.windows[key]
+	if !ok && len(l.windows) >= l.max {
+		maps.DeleteFunc(l.windows, expired)
+		if len(l.windows) >= l.max {
+			return false
+		}
+	}
+	if !ok || expired(key, w) {
+		w = keyWindow{end: now.Add(l.window)}
+	}
+	w.count++
+	l.windows[key] = w
+	return w.count <= l.limit
 }
 
 // limitRate runs before App Check so forged tokens are limited too.
