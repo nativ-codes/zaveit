@@ -131,6 +131,11 @@ export default StyleSheet.create({
     fontWeight: "700",
     letterSpacing: 1,
   },
+  skeletonTags: {
+    flexDirection: "row",
+    gap: Units.s12,
+    paddingTop: Units.s4,
+  },
   bleed: {
     marginHorizontal: -Units.s16,
   },

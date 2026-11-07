@@ -1,5 +1,7 @@
+import { DimensionValue } from "react-native";
+
 export type SkeletonLoaderPropsType = {
-  width: number;
+  width: DimensionValue;
   height: number;
   borderRadius?: number;
-}; 
+};

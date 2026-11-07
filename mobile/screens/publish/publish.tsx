@@ -1,4 +1,4 @@
-import { Button, TagItem, TopBar } from "@/common/components";
+import { Button, SkeletonLoader, TagItem, TopBar } from "@/common/components";
 import { Colors, Units } from "@/common/constants";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
@@ -18,14 +18,7 @@ import * as Burnt from "burnt";
 import * as Clipboard from "expo-clipboard";
 import { router, useFocusEffect } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  Switch,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { confirmOffline } from "./manage-list";
 import styles, { PRIMARY_SWITCH_TRACK } from "./publish.style";
 
@@ -342,6 +335,58 @@ function PublishScreen() {
     </>
   );
 
+  // Mirrors a List card (name + switch, link, Tags) so the page doesn't jump when Lists arrive.
+  const renderLoading = () => (
+    <View
+      accessible
+      accessibilityLabel="Loading Lists"
+      accessibilityRole="progressbar"
+    >
+      <Spacer gap="s16">
+        {[0, 1].map((i) => (
+          <View key={i} style={styles.card}>
+            <View style={styles.cardHead}>
+              <SkeletonLoader
+                width="55%"
+                height={Units.s20}
+                borderRadius={Units.s6}
+              />
+              <View style={GeneralStyles.flex} />
+              <SkeletonLoader width={50} height={30} borderRadius={Units.s16} />
+            </View>
+            <SkeletonLoader
+              width="75%"
+              height={Units.s16}
+              borderRadius={Units.s6}
+            />
+            <View style={styles.skeletonTags}>
+              <SkeletonLoader
+                width={72}
+                height={Units.s16}
+                borderRadius={Units.s6}
+              />
+              <SkeletonLoader
+                width={56}
+                height={Units.s16}
+                borderRadius={Units.s6}
+              />
+              <SkeletonLoader
+                width={64}
+                height={Units.s16}
+                borderRadius={Units.s6}
+              />
+            </View>
+          </View>
+        ))}
+        <SkeletonLoader
+          width="100%"
+          height={Units.s64}
+          borderRadius={Units.s16}
+        />
+      </Spacer>
+    </View>
+  );
+
   const renderBody = () => {
     if (hasLoadError) {
       return (
@@ -354,7 +399,7 @@ function PublishScreen() {
       );
     }
     if (!account) {
-      return <ActivityIndicator color={Colors.primary} />;
+      return renderLoading();
     }
     if (account.username && account.lists.length > 0) {
       return renderLists(account.lists);
