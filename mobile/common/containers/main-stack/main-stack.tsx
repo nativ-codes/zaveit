@@ -59,6 +59,9 @@ function MainStack() {
           <Stack.Screen name="post-details" />
           <Stack.Screen name="view-posts" />
           <Stack.Screen name="preferences" />
+          <Stack.Screen name="publish" />
+          <Stack.Screen name="new-list" />
+          <Stack.Screen name="manage-list" />
           <Stack.Screen name="share-intent" />
         </Stack.Protected>
         <Stack.Screen name="+not-found" />

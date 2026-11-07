@@ -1,0 +1,77 @@
+appId: com.nativcodes.zaveit
+name: Publish a List
+# Needs the real server with Firestore configured and the app already signed in to a test account that has Posts
+# (no clearState: publishing needs a signed-in user). Run with:
+#   maestro test -e USERNAME=<free-or-own-username> -e TAG=<a Tag on its Posts> .maestro/publish.yaml
+# The test account's Username is claimed on the first run and reused after.
+env:
+  USERNAME: maestro-test
+  LIST: Maestro List
+  TAG: technology
+---
+- launchApp
+- runFlow: subflows/connect-dev-server.yaml
+- tapOn: "SETTINGS"
+- tapOn: "Publish your list"
+- extendedWaitUntil:
+    visible: "Claim|New list"
+    timeout: 15000
+
+- runFlow:
+    when:
+      visible: "Claim"
+    commands:
+      - tapOn: "Username"
+      - inputText: ${USERNAME}
+      - extendedWaitUntil:
+          visible: "Available"
+          timeout: 10000
+      - tapOn: "Claim"
+      - extendedWaitUntil:
+          visible: "New list"
+          timeout: 10000
+
+# Create a List with one of the account's Tags.
+- tapOn: "New list"
+- tapOn: "Name"
+- inputText: ${LIST}
+- tapOn: ${TAG}
+- tapOn: "List Password"
+- inputText: "abc123"
+- hideKeyboard
+- tapOn: "Save"
+- extendedWaitUntil:
+    visible: "Change List Password"
+    timeout: 15000
+- assertVisible: ${LIST}
+
+# Off asks to confirm; on doesn't.
+- tapOn: "Published.*"
+- tapOn: "Take offline"
+- extendedWaitUntil:
+    visible: "Your page is offline"
+    timeout: 10000
+- tapOn: "Published.*"
+- extendedWaitUntil:
+    visible: "Your page is online"
+    timeout: 10000
+
+# Rename: the link changes, with the warning.
+- tapOn: "Name.*"
+- eraseText: 50
+- inputText: "Maestro Renamed"
+- assertVisible: "The old link stops working.*"
+- tapOn: "Save"
+- extendedWaitUntil:
+    visible: ".*/${USERNAME}/maestro-renamed"
+    timeout: 10000
+
+# Delete frees the path and goes back to the Publish screen.
+- tapOn: "Delete list"
+- tapOn:
+    text: "Delete list"
+    index: 1
+- extendedWaitUntil:
+    visible: "New list"
+    timeout: 10000
+- assertNotVisible: "Maestro Renamed"

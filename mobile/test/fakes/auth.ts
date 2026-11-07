@@ -38,3 +38,5 @@ export const signOut = async () => {
   }
   auth.currentUser = null;
 };
+
+export const getIdToken = async (user: FakeUser) => `id-token-${user.uid}`;

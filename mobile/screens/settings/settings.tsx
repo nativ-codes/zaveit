@@ -106,6 +106,10 @@ function SettingsScreen() {
     router.push("/preferences");
   };
 
+  const handleOnPublishPress = () => {
+    router.push("/publish");
+  };
+
   return (
     <>
       <ScreenLayout>
@@ -126,13 +130,7 @@ function SettingsScreen() {
                 <Text style={GeneralStyles.textLabelMediumSecondary}>Soon</Text>
               }
             />
-            <Menu.Item
-              onPress={noop}
-              label="Publish your list"
-              right={
-                <Text style={GeneralStyles.textLabelMediumSecondary}>Soon</Text>
-              }
-            />
+            <Menu.Item onPress={handleOnPublishPress} label="Publish your list" />
           </Menu>
           <Menu>
             <Menu.Item

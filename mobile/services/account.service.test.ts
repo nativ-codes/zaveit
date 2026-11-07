@@ -6,10 +6,11 @@ import { PostType } from "@/types/posts";
 import { appleAuth } from "@invertase/react-native-apple-authentication";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { deleteAllThumbnails } from "@/services/thumbnails.service";
+import { ApiEndpoints } from "@/config/api";
 import { deleteAccount } from "./account.service";
 
 // Pulled in through @/common/utils, and needs native Firebase.
-jest.mock("@/config/app-check", () => ({}));
+jest.mock("@/config/app-check", () => ({ getAppCheckToken: async () => "app-check-token" }));
 
 jest.mock("@/services/thumbnails.service");
 
@@ -49,6 +50,7 @@ const cloudDataExists = async () => {
 
 const untouched = { lists: 2, user: true };
 const steps: string[] = [];
+const fetchSpy = jest.spyOn(global, "fetch");
 
 const signInAs = (providerId: string) => {
   const user = {
@@ -79,6 +81,10 @@ beforeEach(async () => {
   signIn.mockReset();
   performRequest.mockReset();
   steps.length = 0;
+  fetchSpy.mockImplementation(async (url, init) => {
+    steps.push(`${init?.method} ${url}, cloud ${(await cloudDataExists()).lists}`);
+    return new Response(null, { status: 204 });
+  });
   jest.mocked(deleteAllThumbnails).mockImplementation(async () => {
     steps.push(`thumbnails deleted, cloud ${(await cloudDataExists()).lists}`);
   });
@@ -103,6 +109,7 @@ describe("deleteAccount", () => {
 
     expect(steps).toEqual([
       "identity confirmed, cloud 2",
+      `DELETE ${ApiEndpoints.username}, cloud 2`,
       "thumbnails deleted, cloud 2",
       "login deleted, cloud 0, local 1",
     ]);
@@ -132,6 +139,7 @@ describe("deleteAccount", () => {
     expect(steps).toEqual([
       "identity confirmed, cloud 2",
       "revoked, cloud 2",
+      `DELETE ${ApiEndpoints.username}, cloud 2`,
       "thumbnails deleted, cloud 2",
       "login deleted, cloud 0, local 1",
     ]);
@@ -170,6 +178,27 @@ describe("deleteAccount", () => {
 
     await expect(deleteAccount()).rejects.toThrow("offline");
 
+    await expectNothingDeleted(user);
+  });
+
+  it("frees the Username with the ID token and App Check", async () => {
+    signInAs("google.com");
+
+    await deleteAccount();
+
+    expect(fetchSpy).toHaveBeenCalledWith(ApiEndpoints.username, {
+      method: "DELETE",
+      headers: { Authorization: "Bearer id-token-user-1", "X-Firebase-AppCheck": "app-check-token" },
+    });
+  });
+
+  it("keeps the Thumbnails, login and all data when freeing the Username fails", async () => {
+    const user = signInAs("google.com");
+    fetchSpy.mockResolvedValue(new Response(null, { status: 502 }));
+
+    await expect(deleteAccount()).rejects.toThrow("502");
+
+    expect(deleteAllThumbnails).not.toHaveBeenCalled();
     await expectNothingDeleted(user);
   });
 

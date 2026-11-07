@@ -23,6 +23,7 @@ export const getUserList = async () => {
 
   const userListQuery = await getDocs(
     query(
+      // Not a List: the top-level `lists` collection holds all of a user's Posts. Lists live on the server.
       collection(getFirestore(), "lists"),
       where("userId", "==", userId),
       limit(1)
