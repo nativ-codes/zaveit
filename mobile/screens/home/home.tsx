@@ -53,12 +53,12 @@ function HomeScreen() {
         />
       </Spacer>
 
-      <Spacer gap="s16">
+      <Spacer gap="s24">
         {hasPosts ? (
           <>
-            <RecentlyAddedSection onPostPress={handleOnPostPress} />
-            <FrequentlyAccessedSection onPostPress={handleOnPostPress} />
             <RandomPickSection onPostPress={handleOnPostPress} />
+            <FrequentlyAccessedSection onPostPress={handleOnPostPress} />
+            <RecentlyAddedSection onPostPress={handleOnPostPress} />
           </>
         ) : (
           <EmptyPlaceholder
