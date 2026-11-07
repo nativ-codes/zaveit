@@ -5,9 +5,6 @@ export default StyleSheet.create({
   itemSeparator: {
     height: Units.s16,
   },
-  tagSectionSeparator: {
-    height: Units.s24,
-  },
   filteredPostContainer: {
     paddingHorizontal: Units.s16,
   },

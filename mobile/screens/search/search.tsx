@@ -2,11 +2,9 @@ import {
   EmptyPlaceholder,
   HorizontalScrollViewTags,
   PreviewPost,
-  PreviewPostTile,
   SearchInput,
   TopBar,
 } from "@/common/components";
-import HorizontalScrollViewPosts from "@/common/components/horizontal-scrollview-posts/horizontal-scrollview-posts";
 import { Colors, TAB_BAR_HEIGHT, Units } from "@/common/constants";
 import { Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
@@ -17,21 +15,21 @@ import { useRouter } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import TagMosaic from "./components/tag-mosaic/tag-mosaic";
 import styles from "./search.style";
 import {
   getFilteredPosts,
-  getPostsForTag,
   getPrimaryTags,
   getSecondaryTags,
   getSortedMainTags,
   getSortedTags,
 } from "./search.util";
 
-type TagSectionItemType = { type: "tag-section"; tag: string };
 type FilteredPostItemType = { type: "filtered-post"; post: PostType };
 type EmptyItemType = { type: "empty"; message: string; instruction: string };
+type TagMosaicItemType = { type: "tag-mosaic" };
 type SearchListItemType =
-  | TagSectionItemType
+  | TagMosaicItemType
   | FilteredPostItemType
   | EmptyItemType;
 
@@ -105,8 +103,8 @@ function SearchScreen() {
         },
       ];
     }
-    return sortedMainTags.slice(0, 5).map((tag) => ({ type: "tag-section", tag }));
-  }, [selectedTags, searchQuery, filteredPosts, sortedTags, sortedMainTags]);
+    return [{ type: "tag-mosaic" }];
+  }, [selectedTags, searchQuery, filteredPosts, sortedTags]);
 
   const handleOnClearSearch = useCallback(() => {
     setSearchQuery("");
@@ -125,20 +123,8 @@ function SearchScreen() {
           <EmptyPlaceholder message={item.message} instruction={item.instruction} />
         );
       }
-      if (item.type === "tag-section") {
-        const tagPosts = getPostsForTag({ posts, tag: item.tag });
-        if (tagPosts.length === 0) return null;
-        return (
-          <HorizontalScrollViewPosts
-            title={`#${item.tag.toLowerCase()}`}
-            posts={tagPosts}
-            Element={PreviewPostTile}
-            onViewAll={() =>
-              router.push({ pathname: "/view-posts", params: { tag: item.tag } })
-            }
-            onPostPress={handleOnPostPress}
-          />
-        );
+      if (item.type === "tag-mosaic") {
+        return <TagMosaic tags={sortedMainTags} posts={posts} onTagPress={setSelectedPrimaryTag} />;
       }
       return (
         <View style={styles.filteredPostContainer}>
@@ -146,14 +132,11 @@ function SearchScreen() {
         </View>
       );
     },
-    [posts, router, handleOnPostPress]
+    [posts, handleOnPostPress, sortedMainTags]
   );
 
   const renderItemSeparator = useCallback(
     ({ leadingItem }: { leadingItem: SearchListItemType }) => {
-      if (leadingItem.type === "tag-section") {
-        return <View style={styles.tagSectionSeparator} />;
-      }
       if (leadingItem.type === "filtered-post") {
         return <View style={styles.itemSeparator} />;
       }
@@ -170,7 +153,7 @@ function SearchScreen() {
   const keyExtractor = useCallback(
     (item: SearchListItemType, index: number) => {
       if (item.type === "filtered-post") return item.post.id;
-      if (item.type === "tag-section") return `tag-${item.tag}`;
+      if (item.type === "tag-mosaic") return "tag-mosaic";
       return `empty-${index}`;
     },
     []
