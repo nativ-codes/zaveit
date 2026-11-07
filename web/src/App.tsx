@@ -113,7 +113,6 @@ function Landing() {
             <img
               src="/app-store.webp"
               width={150}
-              height={44}
               alt="Download on the App Store"
             />
           </a>
@@ -121,7 +120,6 @@ function Landing() {
             <img
               src="/google-play.webp"
               width={150}
-              height={45}
               alt="Get it on Google Play"
             />
           </a>
