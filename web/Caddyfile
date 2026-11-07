@@ -1,0 +1,6 @@
+# Plain HTTP inside the web network; the shared Caddy in front terminates TLS. No access log, so Visitor IPs aren't stored.
+:80 {
+	root * /srv
+	try_files {path} /index.html
+	file_server
+}

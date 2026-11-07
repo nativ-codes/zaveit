@@ -1,0 +1,12 @@
+name: zaveit-web
+
+services:
+  web:
+    build: .
+    container_name: zaveit-web
+    restart: unless-stopped
+    networks: [web]
+
+networks:
+  web:
+    external: true
