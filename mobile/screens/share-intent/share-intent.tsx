@@ -1,7 +1,6 @@
 import {
   Button,
   SpinningLoader,
-  TopBar,
   UpdatePostDetails,
 } from "@/common/components";
 import { ACTIVE_OPACITY, Colors, IMAGE_PLACEHOLDER, Units } from "@/common/constants";
@@ -187,17 +186,18 @@ function ShareIntentScreen() {
         </Spacer>
       }
     >
-      <View
-        style={StyleSheet.compose(styles.topBarContainer, {
-          top: insets.top,
+      <TouchableOpacity
+        activeOpacity={ACTIVE_OPACITY}
+        onPress={goBack}
+        style={StyleSheet.compose(styles.backButton, {
+          top: insets.top + Units.s8,
         })}
+        hitSlop={Units.s8}
+        accessibilityRole="button"
+        accessibilityLabel="Back"
       >
-        <TopBar left={
-          <TouchableOpacity activeOpacity={ACTIVE_OPACITY} onPress={goBack} style={styles.topBarButton} hitSlop={Units.s16}>
-            <Icon name="chevron-left" size={Units.s24} color={Colors.white} />
-          </TouchableOpacity>
-        }/>
-      </View>
+        <Icon name="arrow-left" size={Units.s20} color={Colors.white} />
+      </TouchableOpacity>
       {postMetadata ? (
         <UpdatePostDetails
           title={postMetadata.title}

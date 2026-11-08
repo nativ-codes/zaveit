@@ -5,6 +5,7 @@ import { savePost } from "@/config/storage/posts";
 import {
   fetchServerMetadata,
   fetchOEmbedMetadata,
+  fetchPage,
   fetchTikTokEmbedPage,
 } from "@/services/general.service";
 import { makeThumbnail, uploadThumbnail } from "@/services/thumbnails.service";
@@ -208,6 +209,57 @@ export const getServerMetadata = async ({
       metadata: {
         url,
       },
+    });
+    return undefined;
+  }
+};
+
+const decodeEntities = (text: string): string =>
+  text
+    .replace(/&quot;/g, '"')
+    .replace(/&#0?39;/g, "'")
+    .replace(/&amp;/g, "&");
+
+// Reads og:title and og:image (or twitter:image) the way the server's pageTags does.
+export const parsePageTags = (
+  html: string,
+  pageUrl: string
+): { title: string; thumbnail: string } => {
+  const tags: Record<string, string> = {};
+
+  for (const tag of html.match(/<meta\b[^>]*>/gi) ?? []) {
+    const name = tag.match(/(?:property|name)=["']([^"']+)["']/i)?.[1];
+    const content = tag.match(/content=["']([^"']*)["']/i)?.[1];
+
+    if (name && content && !tags[name.toLowerCase()]) {
+      tags[name.toLowerCase()] = decodeEntities(content);
+    }
+  }
+
+  const picture = tags["og:image"] || tags["twitter:image"];
+
+  return {
+    title: (tags["og:title"] || "").trim(),
+    thumbnail: picture ? new URL(picture, pageUrl).href : "",
+  };
+};
+
+export const getDeviceMetadata = async ({
+  url,
+}: GetServerMetadataType): Promise<GetServerMetadataReturnType | undefined> => {
+  try {
+    const response = await fetchPage(url);
+
+    if (!response.ok) {
+      throw new Error(`Page answered ${response.status}`);
+    }
+
+    return parsePageTags(await response.text(), url);
+  } catch (error) {
+    ErrorHandler.logError({
+      location: "getDeviceMetadata",
+      error: safelyPrintError(error),
+      metadata: { url },
     });
     return undefined;
   }

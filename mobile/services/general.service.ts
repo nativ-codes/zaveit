@@ -1,6 +1,7 @@
 import { ApiEndpoints } from "@/config/api";
 import { getAppCheckToken } from "@/config/app-check";
 import { PlatformConfig } from "@/types/posts";
+import { Platform } from "react-native";
 
 const TAGS_TIMEOUT_MS = 5000;
 
@@ -36,6 +37,19 @@ export const fetchTikTokEmbedPage = async ({
     },
   });
 };
+
+// Fetched from the phone itself: some sites (Instagram) show the server a login wall instead of the post.
+export const fetchPage = (url: string): Promise<Response> =>
+  fetch(url, {
+    headers: {
+      Accept: "text/html",
+      "User-Agent": Platform.select({
+        ios: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
+        default:
+          "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36",
+      }),
+    },
+  });
 
 export const fetchServerMetadata = async (url: string): Promise<Response> => {
   const encodedUrl = encodeURIComponent(url || "");

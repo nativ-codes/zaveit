@@ -5,6 +5,7 @@ import { getFirestore } from "@/test/fakes/firestore";
 import { PostType } from "@/types/posts";
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import {
+  parsePageTags,
   saveNewPost,
   startThumbnailUpload,
   THUMBNAIL_UPLOAD_TIMEOUT_MS,
@@ -74,5 +75,36 @@ describe("Saving a new Post from the share screen", () => {
     jest.useRealTimers();
 
     expect(getPosts()).toEqual([post]);
+  });
+});
+
+describe("Reading a page's own tags on the phone", () => {
+  it("takes og:title and the og:image with entities decoded", () => {
+    const html = `<head>
+      <meta property="og:title" content=" A post &quot;title&quot; ">
+      <meta property="og:image" content="https://cdn.example.com/a.jpg?x=1&amp;y=2" />
+      <meta property="og:image" content="https://cdn.example.com/second.jpg" />
+    </head>`;
+
+    expect(parsePageTags(html, "https://www.instagram.com/p/abc/")).toEqual({
+      title: 'A post "title"',
+      thumbnail: "https://cdn.example.com/a.jpg?x=1&y=2",
+    });
+  });
+
+  it("falls back to twitter:image and resolves a relative picture", () => {
+    const html = `<meta name="twitter:image" content="/img/cover.png">`;
+
+    expect(parsePageTags(html, "https://example.com/post/1")).toEqual({
+      title: "",
+      thumbnail: "https://example.com/img/cover.png",
+    });
+  });
+
+  it("finds nothing on a login wall", () => {
+    expect(parsePageTags("<title>Instagram</title>", "https://www.instagram.com/p/abc/")).toEqual({
+      title: "",
+      thumbnail: "",
+    });
   });
 });

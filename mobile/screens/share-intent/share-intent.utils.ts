@@ -7,7 +7,10 @@ import { getSuggestedTags } from "@/services/general.service";
 import { PostMetadataType } from "@/types";
 import { ShareIntent } from "expo-share-intent";
 import { getPlatformMetadata } from "./share-intent.platforms";
-import { getServerMetadata } from "./share-intent.service";
+import {
+  getDeviceMetadata,
+  getServerMetadata,
+} from "./share-intent.service";
 
 export type ParseTagsReturnType = {
   additionalTags: string[];
@@ -93,12 +96,27 @@ export const getMetadata = async (
     url: shareIntent.webUrl,
   });
 
-  if (serverMetadata?.title) {
+  const deviceMetadata = serverMetadata?.thumbnail
+    ? undefined
+    : await getDeviceMetadata({ url: shareIntent.webUrl });
+  const title = deviceMetadata?.title || serverMetadata?.title;
+  const thumbnail = serverMetadata?.thumbnail || deviceMetadata?.thumbnail;
+
+  if (title) {
+    if (!thumbnail) {
+      // A title without a picture is often a login wall (Instagram answers "Instagram").
+      ErrorHandler.logError({
+        location: "getMetadata",
+        error: safelyPrintError(new Error("No thumbnail found")),
+        metadata: { url: shareIntent.webUrl, title },
+      });
+    }
+
     return {
       url: shareIntent.webUrl || "",
-      title: serverMetadata.title || shareIntent.webUrl || "",
+      title,
       author: "",
-      thumbnail: serverMetadata.thumbnail,
+      thumbnail,
     };
   }
 
