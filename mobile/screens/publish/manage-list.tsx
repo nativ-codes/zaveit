@@ -288,8 +288,9 @@ function ManageListScreen() {
           onChangeText={setPassword}
           placeholder="New password"
           placeholderTextColor={Colors.text.placeholder}
-          // Plain text on purpose: it's shared with visitors, and iOS offers to save any secure field to the keychain.
-          textContentType="none"
+          secureTextEntry
+          // oneTimeCode stops iOS offering to save this shared List password to the keychain.
+          textContentType="oneTimeCode"
           autoComplete="off"
           importantForAutofill="no"
           spellCheck={false}

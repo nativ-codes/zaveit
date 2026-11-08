@@ -262,12 +262,13 @@ function PublishScreen() {
   const renderLists = (lists: List[]) => (
     <>
       {lists.map(renderCard)}
-      <Button
-        type="primary"
-        label="Add new list"
-        isDisabled={lists.length >= MAX_LISTS}
-        onPress={() => openNewList(account?.username, lists)}
-      />
+      {lists.length < MAX_LISTS && (
+        <Button
+          type="primary"
+          label="Add new list"
+          onPress={() => openNewList(account?.username, lists)}
+        />
+      )}
       <Text
         style={[
           GeneralStyles.textLabelMediumSecondary,
