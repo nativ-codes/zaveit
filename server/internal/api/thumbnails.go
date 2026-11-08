@@ -13,7 +13,7 @@ import (
 
 const (
 	maxThumbnailBytes = 200 << 10
-	thumbnailBaseURL  = "https://img.nativ.codes/"
+	thumbnailBaseURL  = "https://img.zaveit.app/"
 	// Keys are never rewritten, so the picture behind a URL never changes.
 	thumbnailCacheControl = "public, max-age=31536000, immutable"
 	uploadsPerMinute      = 30

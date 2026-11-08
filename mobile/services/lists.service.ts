@@ -9,7 +9,7 @@ export type NewList = { name: string; tags: string[]; password: string; publishe
 
 // Mirrors the server limit; raise to 10 with subscriptions.
 export const MAX_LISTS = 2;
-export const HOST = "zaveit.nativ.codes/";
+export const HOST = "zaveit.app/";
 
 // What a List name field drops as it's typed: anything but letters, digits, spaces and hyphens.
 export const LIST_NAME_DISALLOWED = /[^a-zA-Z0-9 -]/g;

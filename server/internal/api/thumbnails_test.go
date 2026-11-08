@@ -69,7 +69,7 @@ func TestUploadThumbnailStoresUnderUID(t *testing.T) {
 	res := upload(router, "good", "image/webp", webp)
 	var got struct{ URL string }
 	json.Unmarshal(res.Body.Bytes(), &got)
-	if res.Code != http.StatusCreated || !regexp.MustCompile(`^https://img\.nativ\.codes/zaveit/user-1/[A-Z2-7]{26}\.webp$`).MatchString(got.URL) {
+	if res.Code != http.StatusCreated || !regexp.MustCompile(`^https://img\.zaveit\.app/zaveit/user-1/[A-Z2-7]{26}\.webp$`).MatchString(got.URL) {
 		t.Fatalf("got %d %s", res.Code, res.Body)
 	}
 	if len(*stored) != 1 {

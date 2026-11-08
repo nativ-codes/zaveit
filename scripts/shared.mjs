@@ -5,7 +5,7 @@ import { initializeApp, applicationDefault } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 
 export const BUCKET = process.env.S3_BUCKET ?? "zaveit-r2";
-export const PUBLIC_BASE_URL = "https://img.nativ.codes/";
+export const PUBLIC_BASE_URL = "https://img.zaveit.app/";
 export const KEY_PREFIX = "zaveit/";
 
 export const r2 = new S3Client({
