@@ -4,7 +4,7 @@ import { memo } from "react";
 import { PostImagePropsType } from "./post-image.type";
 
 // expo-image keeps the R2 file in its disk cache; Posts without a Thumbnail show the placeholder.
-function PostImage({ thumbnailUrl, style }: PostImagePropsType) {
+function PostImage({ thumbnailUrl, style, onError }: PostImagePropsType) {
   return (
     <Image
       source={thumbnailUrl ?? IMAGE_PLACEHOLDER}
@@ -13,6 +13,7 @@ function PostImage({ thumbnailUrl, style }: PostImagePropsType) {
       placeholderContentFit="cover"
       contentFit="cover"
       style={style}
+      onError={onError}
     />
   );
 }

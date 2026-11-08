@@ -23,6 +23,7 @@ function PostDetails({
   thumbnailUrl,
   tags,
   timestamp,
+  onImageError,
 }: PostDetailsPropsType) {
   const handleOnTagPress = (tag: string) => {
     router.push({
@@ -51,7 +52,11 @@ function PostDetails({
 
   return (
     <Spacer gap="s16">
-      <PostImage thumbnailUrl={thumbnailUrl} style={styles.image} />
+      <PostImage
+        thumbnailUrl={thumbnailUrl}
+        style={styles.image}
+        onError={() => onImageError?.(thumbnailUrl)}
+      />
       <Spacer direction="horizontal" size="s16" gap="s16">
         <Spacer gap="s8">
           {title && (

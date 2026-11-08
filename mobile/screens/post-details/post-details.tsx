@@ -1,9 +1,4 @@
-import {
-  Button,
-  EmptyPlaceholder,
-  PostDetails,
-  TopBar,
-} from "@/common/components";
+import { Button, EmptyPlaceholder, PostDetails } from "@/common/components";
 import { ACTIVE_OPACITY } from "@/common/constants";
 import { Colors } from "@/common/constants/colors";
 import { Units } from "@/common/constants/units";
@@ -36,7 +31,10 @@ function PostDetailsScreen() {
   const post = getPostDetails({ posts, id }) as PostType;
   const insets = useSafeAreaInsets();
   const [isReloadingImage, setIsReloadingImage] = useState(false);
-
+  // Keyed by URL so a successful reload (new URL) hides the button again.
+  const [failedThumbnailUrl, setFailedThumbnailUrl] = useState<string>();
+  const showsPlaceholder =
+    !post?.thumbnailUrl || failedThumbnailUrl === post.thumbnailUrl;
   // By id: every posts update brings a new object, which isn't another visit.
   const postId = post?.id;
   useEffect(() => {
@@ -128,35 +126,36 @@ function PostDetailsScreen() {
         </Spacer>
       }
     >
-      <View
-        style={StyleSheet.compose(styles.topBarContainer, {
-          top: insets.top,
+      <TouchableOpacity
+        activeOpacity={ACTIVE_OPACITY}
+        onPress={goBack}
+        style={StyleSheet.compose(styles.backButton, {
+          top: insets.top + Units.s8,
         })}
+        hitSlop={Units.s8}
+        accessibilityRole="button"
+        accessibilityLabel="Back"
       >
-        <TopBar
-          left={
-            <TouchableOpacity activeOpacity={ACTIVE_OPACITY} onPress={goBack} style={styles.topBarButton} hitSlop={Units.s16}>
-              <Icon name="chevron-left" size={Units.s24} color={Colors.white} />
-            </TouchableOpacity>
-          }
-          right={
-            post ? (
-              <TouchableOpacity
-                activeOpacity={ACTIVE_OPACITY}
-                onPress={handleReloadImage}
-                disabled={isReloadingImage}
-                style={[styles.topBarButton, isReloadingImage && styles.topBarButtonDisabled]}
-                hitSlop={Units.s16}
-                accessibilityLabel="Reload image"
-              >
-                <Icon name="refresh-cw" size={Units.s20} color={Colors.white} />
-              </TouchableOpacity>
-            ) : undefined
-          }
-        />
-      </View>
+        <Icon name="arrow-left" size={Units.s20} color={Colors.white} />
+      </TouchableOpacity>
+      {post && showsPlaceholder && (
+        <TouchableOpacity
+          activeOpacity={ACTIVE_OPACITY}
+          onPress={handleReloadImage}
+          disabled={isReloadingImage}
+          style={[
+            styles.reloadButton,
+            isReloadingImage && styles.reloadButtonDisabled,
+          ]}
+          hitSlop={Units.s8}
+          accessibilityRole="button"
+          accessibilityLabel="Reload image"
+        >
+          <Icon name="refresh-cw" size={Units.s16} color={Colors.white} />
+        </TouchableOpacity>
+      )}
       {post ? (
-        <PostDetails {...post} />
+        <PostDetails {...post} onImageError={setFailedThumbnailUrl} />
       ) : (
         <View style={styles.errorContainer}>
           <EmptyPlaceholder
