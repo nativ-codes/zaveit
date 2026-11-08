@@ -115,8 +115,8 @@ func getLists(db *firestore.Client) http.HandlerFunc {
 		lists := []list{}
 		if name != "" {
 			username = &name
-			// One more than the limit, since two creates at once can make 11.
-			lists, err = userLists(r, db, userID(r), maxLists+1)
+			// Well above maxLists: racing creates, or Lists made under an older higher limit, must still show.
+			lists, err = userLists(r, db, userID(r), 100)
 		}
 		if err != nil {
 			log.Printf("lists read failed: %v", err)

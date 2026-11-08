@@ -68,7 +68,7 @@ describe("createList", () => {
 
   it("throws on any other refusal", async () => {
     setCurrentUser({ uid: "user-1" });
-    fakeFetch(403, { error: "you already have 10 lists" });
+    fakeFetch(403, { error: "you already have 2 lists" });
 
     await expect(createList(input)).rejects.toThrow("403");
   });

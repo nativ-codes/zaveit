@@ -7,7 +7,8 @@ export type List = { listPath: string; name: string; tags: string[]; published: 
 export type ListsResponse = { username: string | null; lists: List[] };
 export type NewList = { name: string; tags: string[]; password: string; published: boolean };
 
-export const MAX_LISTS = 10;
+// Mirrors the server limit; raise to 10 with subscriptions.
+export const MAX_LISTS = 2;
 export const HOST = "zaveit.nativ.codes/";
 
 // What a List name field drops as it's typed: anything but letters, digits, spaces and hyphens.

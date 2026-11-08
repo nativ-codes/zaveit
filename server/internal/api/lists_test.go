@@ -94,17 +94,17 @@ func TestCreateListClashIs409(t *testing.T) {
 	}
 }
 
-func TestCreateListRefusedAtTen(t *testing.T) {
+func TestCreateListRefusedAtMax(t *testing.T) {
 	router, fake := usernameRouter(t, allowAll)
 	withUsername(fake, "andrei", "u1")
-	for i := range 10 {
+	for i := range maxLists {
 		fake.Put(fmt.Sprintf("users/u1/lists/list-%d", i), map[string]any{"name": map[string]any{"stringValue": "x"}})
 	}
-	if res := ownerSend(router, "POST", "/v1/lists", "u1", `{"name":"eleventh","tags":["a"],"password":"abc","published":true}`); res.Code != http.StatusForbidden {
+	if res := ownerSend(router, "POST", "/v1/lists", "u1", `{"name":"one-more","tags":["a"],"password":"abc","published":true}`); res.Code != http.StatusForbidden {
 		t.Errorf("got %d %s", res.Code, res.Body)
 	}
-	if _, ok := fake.Doc("users/u1/lists/eleventh"); ok {
-		t.Error("an eleventh List was stored")
+	if _, ok := fake.Doc("users/u1/lists/one-more"); ok {
+		t.Error("a List over the limit was stored")
 	}
 }
 

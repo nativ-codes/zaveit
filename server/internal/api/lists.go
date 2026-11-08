@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"regexp"
@@ -22,7 +23,8 @@ import (
 // a user's Posts and is not a List.
 
 const (
-	maxLists = 10
+	// Raise to 10 with subscriptions.
+	maxLists = 2
 	// OWASP's 2023 figure for PBKDF2-HMAC-SHA256. Cost on the VPS is untested.
 	listPasswordIterations = 600_000
 )
@@ -156,10 +158,10 @@ func createList(db *firestore.Client) http.HandlerFunc {
 		if err == nil {
 			existing, err = userLists(r, db, uid, maxLists)
 		}
-		// shortcut: two creates at the same moment can both pass this count and make 11 Lists; accepted, add a
+		// shortcut: two creates at the same moment can both pass this count and make maxLists+1 Lists; accepted, add a
 		// counter document to the commit if that ever matters.
 		if err == nil && len(existing) >= maxLists {
-			writeError(w, http.StatusForbidden, "you already have 10 lists")
+			writeError(w, http.StatusForbidden, fmt.Sprintf("you already have %d lists", maxLists))
 			return
 		}
 
