@@ -12,10 +12,15 @@ export default StyleSheet.create({
     padding: Units.s16,
     gap: Units.s16,
   },
+  // Bottom-right of the image; the screen's reload button takes the bottom-left.
   domain: {
+    position: "absolute",
+    right: Units.s12,
+    // Leaves room on the left for the reload button (s12 + s36 + gap) on any phone width.
+    maxWidth: "80%",
+    bottom: Units.s12,
     flexDirection: "row",
     alignItems: "center",
-    alignSelf: "flex-start",
     gap: Units.s6,
     paddingHorizontal: Units.s12,
     paddingVertical: Units.s6,
@@ -25,6 +30,7 @@ export default StyleSheet.create({
   domainText: {
     ...GeneralStyles.textLabelMediumSecondary,
     color: Colors.primary,
+    flexShrink: 1,
   },
   metaRow: {
     flexDirection: "row",

@@ -18,11 +18,11 @@ export default StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "#00000073",
   },
-  // Sits on the bottom-right corner of the Post image (Units.s400 tall), styled like Home's shuffle button.
+  // Sits on the bottom-left corner of the Post image (Units.s400 tall), styled like Home's shuffle button; the domain badge takes the bottom-right.
   reloadButton: {
     position: "absolute",
     top: Units.s400 - Units.s36 - Units.s12,
-    right: Units.s12,
+    left: Units.s12,
     zIndex: 1000,
     width: Units.s36,
     height: Units.s36,

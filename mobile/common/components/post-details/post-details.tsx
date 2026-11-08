@@ -52,16 +52,18 @@ function PostDetails({
 
   return (
     <View>
-      <PostImage
-        thumbnailUrl={thumbnailUrl}
-        style={styles.image}
-        onError={() => onImageError?.(thumbnailUrl)}
-      />
-      <View style={styles.body}>
+      <View>
+        <PostImage
+          thumbnailUrl={thumbnailUrl}
+          style={styles.image}
+          onError={() => onImageError?.(thumbnailUrl)}
+        />
         <View style={styles.domain}>
           <Icon name="web" size={Units.s16} color={Colors.primary} />
-          <Text style={styles.domainText}>{getDomainFromUrl(url)}</Text>
+          <Text style={styles.domainText} numberOfLines={1}>{getDomainFromUrl(url)}</Text>
         </View>
+      </View>
+      <View style={styles.body}>
         {title && (
           <Text style={GeneralStyles.textTitlePostLargePrimary}>{title}</Text>
         )}
