@@ -5,6 +5,6 @@ export type SheetModalPropsType = {
   onRequestClose: () => void;
   title: string;
   body: string;
-  buttons: ReactNode;
+  buttons?: ReactNode;
   children?: ReactNode;
 };

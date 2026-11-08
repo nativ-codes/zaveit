@@ -61,7 +61,7 @@ function SheetModal({
                 </Text>
               </Spacer>
               {children}
-              <View style={styles.buttonContainer}>{buttons}</View>
+              {buttons && <View style={styles.buttonContainer}>{buttons}</View>}
             </Spacer>
           </KeyboardStickyView>
         </TouchableOpacity>

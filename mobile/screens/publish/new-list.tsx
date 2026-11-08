@@ -48,8 +48,6 @@ function NewListScreen() {
         setTakenPaths((paths) => [...paths, listPath]);
         return;
       }
-      // iOS offers to save a filled secure field when it leaves the screen; oneTimeCode alone doesn't stop it.
-      setPassword("");
       router.replace({ pathname: "/manage-list", params: { listPath: list.listPath, name: list.name, username } });
     } catch {
       Burnt.toast({ title: "Couldn't save the List. Try again.", preset: "error" });
@@ -101,10 +99,11 @@ function NewListScreen() {
             onChangeText={setPassword}
             placeholder="At least 3 characters"
             placeholderTextColor={Colors.text.placeholder}
-            secureTextEntry
-            // oneTimeCode keeps iOS from offering to save the List Password to the keychain.
-            textContentType="oneTimeCode"
+            // Plain text on purpose: it's shared with visitors, and iOS offers to save any secure field to the keychain.
+            textContentType="none"
             autoComplete="off"
+            importantForAutofill="no"
+            spellCheck={false}
             autoCapitalize="none"
             autoCorrect={false}
             maxLength={128}

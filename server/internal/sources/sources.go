@@ -31,6 +31,8 @@ const (
 	maxConcurrent = 5
 	maxPageBytes  = 4 << 20
 	userAgent     = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"
+	// Same as the app's fetchPage on iOS, for checking the phone's own page fetch.
+	phoneUserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1"
 )
 
 //go:embed links.txt
@@ -181,8 +183,11 @@ func checkLink(ctx context.Context, link string) Result {
 	start := time.Now()
 
 	meta, source, err := extract(ctx, link)
+	p := findPlatform(link)
+	if p == nil || p.oembed == "" {
+		meta, source, err = phoneFallback(ctx, link, meta, source, err)
+	}
 	if err == nil {
-		p := findPlatform(link)
 		if meta.title == "" {
 			err = errors.New("no title")
 		} else if p != nil && p.titleOnly {
@@ -210,6 +215,35 @@ func checkLink(ctx context.Context, link string) Result {
 		result.Error = strings.ReplaceAll(err.Error(), "\n", "; ")
 	}
 	return result
+}
+
+type userAgentKey struct{}
+
+// phoneFallback mirrors the app's getMetadata: when the server answer has no
+// picture, the phone fetches the page itself and its title wins.
+func phoneFallback(ctx context.Context, link string, meta metadata, source string, err error) (metadata, string, error) {
+	if err == nil && meta.picture != "" {
+		return meta, source, nil
+	}
+
+	phone, phoneErr := pageTags(context.WithValue(ctx, userAgentKey{}, phoneUserAgent), link)
+	if phoneErr != nil || (phone.title == "" && phone.picture == "") {
+		if err == nil {
+			return meta, source, nil // the caller reports the missing picture
+		}
+		return meta, source, errors.Join(err, sourceError("phone_page", phoneErr))
+	}
+
+	if phone.title != "" {
+		meta.title = phone.title
+	}
+	if meta.picture == "" {
+		meta.picture = phone.picture
+	}
+	if meta.title == "" {
+		return meta, source, errors.Join(err, errors.New("phone_page: no title"))
+	}
+	return meta, "phone_page", nil
 }
 
 // extract returns the first source's answer, as the app does. A source that
@@ -283,7 +317,11 @@ func request(ctx context.Context, method, target string) (*http.Response, error)
 		if err != nil {
 			return nil, err
 		}
-		req.Header.Set("User-Agent", userAgent)
+		agent, ok := ctx.Value(userAgentKey{}).(string)
+		if !ok {
+			agent = userAgent
+		}
+		req.Header.Set("User-Agent", agent)
 
 		res, err := httpClient.Do(req)
 		if err != nil || res.StatusCode != http.StatusTooManyRequests || attempt == 1 {

@@ -20,7 +20,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, Linking, Share, Switch, Text, TextInput, View } from "react-native";
 import styles, { PRIMARY_SWITCH_TRACK } from "./publish.style";
-import TagRow from "./tag-row";
+import { TagPicker } from "./tag-row";
 
 // Also used by the Publish screen's card switch.
 export const confirmOffline = (onYes: () => void) =>
@@ -71,8 +71,6 @@ function ManageListScreen() {
         return;
       }
       setList(updated);
-      // iOS offers to save a filled secure field when it leaves the screen; oneTimeCode alone doesn't stop it.
-      setPassword("");
       setSheet(null);
       if (done) Burnt.toast({ title: done, preset: "done" });
     } catch {
@@ -212,7 +210,7 @@ function ManageListScreen() {
           </>
         }
       >
-        <TagRow selected={tags} onChange={setTags} />
+        <TagPicker selected={tags} onChange={setTags} />
       </SheetModal>
       <SheetModal
         isVisible={sheet === "name"}
@@ -290,10 +288,11 @@ function ManageListScreen() {
           onChangeText={setPassword}
           placeholder="New password"
           placeholderTextColor={Colors.text.placeholder}
-          secureTextEntry
-          // oneTimeCode keeps iOS from offering to save the List Password to the keychain.
-          textContentType="oneTimeCode"
+          // Plain text on purpose: it's shared with visitors, and iOS offers to save any secure field to the keychain.
+          textContentType="none"
           autoComplete="off"
+          importantForAutofill="no"
+          spellCheck={false}
           autoCapitalize="none"
           autoCorrect={false}
           maxLength={128}

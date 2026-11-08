@@ -269,3 +269,38 @@ func TestLinksFileIsValid(t *testing.T) {
 		}
 	}
 }
+
+// fakePhoneWall answers the server's user agent with a login wall and the phone's with the post.
+func fakePhoneWall(t *testing.T, phonePage string) {
+	t.Helper()
+	original := httpClient
+	t.Cleanup(func() { httpClient = original })
+	httpClient = &http.Client{Transport: roundTripFunc(func(req *http.Request) (*http.Response, error) {
+		body, contentType := `<title>Instagram</title>`, "text/html"
+		switch {
+		case strings.HasPrefix(req.URL.String(), "https://img.test/"):
+			body, contentType = "", "image/jpeg"
+		case req.Header.Get("User-Agent") == phoneUserAgent:
+			body = phonePage
+		}
+		return &http.Response{StatusCode: 200, Status: "200", Header: http.Header{"Content-Type": {contentType}}, Body: io.NopCloser(strings.NewReader(body)), Request: req}, nil
+	})}
+}
+
+func TestPhoneFallbackFindsThePicture(t *testing.T) {
+	fakePhoneWall(t, `<meta property="og:title" content="A post"><meta property="og:image" content="https://img.test/p.jpg">`)
+
+	got := check("https://www.instagram.com/p/abc/")
+	if got.Status != StatusOK || got.Source != "phone_page" || got.Title != "A post" || got.Picture != "https://img.test/p.jpg" {
+		t.Errorf("got %+v", got)
+	}
+}
+
+func TestPhoneFallbackWallStillFails(t *testing.T) {
+	fakePhoneWall(t, `<title>Instagram</title>`)
+
+	got := check("https://www.instagram.com/p/abc/")
+	if got.Status != StatusFailed || got.Error != "no picture" {
+		t.Errorf("got %+v", got)
+	}
+}

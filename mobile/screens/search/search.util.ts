@@ -14,7 +14,21 @@ export const getSortedTags = (posts: PostType[]) => {
     .map(([tag]) => tag);
 };
 
-export const getSortedMainTags = (tags: string[]) => {
+type GetPickerTagsType = {
+  tags: string[];
+  selected: string[];
+  query: string;
+};
+
+// The List Tag picker's order: picked Tags first, then the rest as given. The query filters both.
+export const getPickerTags = ({ tags, selected, query }: GetPickerTagsType) => {
+  const q = query.trim().toLowerCase().replace(/^#/, "");
+  return [...selected, ...tags.filter((tag) => !selected.includes(tag))].filter(
+    (tag) => !q || tag.toLowerCase().includes(q)
+  );
+};
+
+export const getSortedMainTags =(tags: string[]) => {
   return tags.filter((tag) =>
     MAIN_TAGS.includes(tag as (typeof MAIN_TAGS)[number])
   );
