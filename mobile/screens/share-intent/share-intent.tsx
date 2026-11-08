@@ -1,12 +1,13 @@
 import {
   Button,
+  PostDetails,
   SpinningLoader,
   UpdatePostDetails,
 } from "@/common/components";
-import { ACTIVE_OPACITY, Colors, IMAGE_PLACEHOLDER, Units } from "@/common/constants";
+import { ACTIVE_OPACITY, Colors, Units } from "@/common/constants";
 import { ScreenLayout, Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
-import { getDomainFromUrl } from "@/common/utils";
+import { forceHttps, getDomainFromUrl } from "@/common/utils";
 import { safelyPrintError } from "@/common/utils/error-parsers";
 import { Haptics } from "@/common/utils/haptics";
 import { toggleTag } from "@/common/utils/misc";
@@ -199,19 +200,22 @@ function ShareIntentScreen() {
         <Icon name="arrow-left" size={Units.s20} color={Colors.white} />
       </TouchableOpacity>
       {postMetadata ? (
-        <UpdatePostDetails
+        <PostDetails
           title={postMetadata.title}
           author={postMetadata.author}
           url={postMetadata.url}
-          thumbnail={postMetadata.thumbnail || IMAGE_PLACEHOLDER}
-          additionalTags={tags.additionalTags}
-          selectedAdditionalTags={tags.selectedAdditionalTags}
-          mainTags={tags.mainTags}
-          selectedMainTags={tags.selectedMainTags}
-          onMainTagPress={handleOnMainTagPress}
-          onAdditionalTagPress={handleOnAdditionalTagPress}
-          isLoading={!Boolean(tags.mainTags.length)}
-        />
+          thumbnailUrl={postMetadata.thumbnail && forceHttps(postMetadata.thumbnail)}
+        >
+          <UpdatePostDetails
+            additionalTags={tags.additionalTags}
+            selectedAdditionalTags={tags.selectedAdditionalTags}
+            mainTags={tags.mainTags}
+            selectedMainTags={tags.selectedMainTags}
+            onMainTagPress={handleOnMainTagPress}
+            onAdditionalTagPress={handleOnAdditionalTagPress}
+            isLoading={!Boolean(tags.mainTags.length)}
+          />
+        </PostDetails>
       ) : (
         <View style={GeneralStyles.spinningLoaderContainer}>
           <SpinningLoader />

@@ -1,27 +1,15 @@
-import { ACTIVE_OPACITY } from "@/common/constants";
-import { Colors } from "@/common/constants/colors";
 import { Units } from "@/common/constants/units";
-import { Row, Spacer } from "@/common/layouts";
+import { Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
-import { forceHttps, safelyPrintError } from "@/common/utils";
-import { Haptics } from "@/common/utils/haptics";
-import { ErrorHandler } from "@/config/errors";
-import Icon from "@expo/vector-icons/MaterialCommunityIcons";
-import * as Burnt from "burnt";
-import * as Clipboard from "expo-clipboard";
-import { Image } from "expo-image";
 import React from "react";
-import { ScrollView, Text, TouchableOpacity } from "react-native";
+import { ScrollView, Text } from "react-native";
 import SkeletonLoader from "../skeleton-loader/skeleton-loader";
 import TagItem from "../tag-item/tag-item";
 import styles from "./update-post-details.style";
 import { UpdatePostDetailsPropsType } from "./update-post-details.type";
 
+// Add Post's Tag picking; the screen renders it under PostDetails.
 function UpdatePostDetails({
-  title,
-  author,
-  url,
-  thumbnail,
   additionalTags,
   selectedAdditionalTags,
   mainTags,
@@ -30,24 +18,6 @@ function UpdatePostDetails({
   onAdditionalTagPress,
   isLoading
 }: UpdatePostDetailsPropsType) {
-  const handleOnCopyToClipboard = async () => {
-    try {
-      await Clipboard.setStringAsync(url);
-
-      Burnt.toast({
-        title: "Copied to clipboard.",
-        preset: "done",
-        duration: 2,
-      });
-      Haptics.light();
-    } catch (error) {
-      ErrorHandler.logError({
-        location: "handleOnCopyToClipboard",
-        error: safelyPrintError(error),
-      });
-    }
-  };
-
   const renderSkeletonTags = (count: number, isHorizontal: boolean = false) => {
     const skeletonTags = Array.from({ length: count }, (_, index) => (
       <SkeletonLoader
@@ -85,89 +55,59 @@ function UpdatePostDetails({
   };
 
   return (
-    <Spacer gap="s16">
-      {thumbnail && (
-        <Image
-          source={{ uri: forceHttps(thumbnail) }}
-          style={styles.image}
-        />
-      )}
-      <Spacer direction="horizontal" size="s16" gap="s16">
-        <Spacer gap="s8">
-          {title && (
-            <Text style={GeneralStyles.textTitlePostLargePrimary}>{title}</Text>
-          )}
-          {author && (
-            <Text style={GeneralStyles.textLabelMediumSecondary}>
-              by {author}
-            </Text>
-          )}
-        </Spacer>
-        <TouchableOpacity
-          activeOpacity={ACTIVE_OPACITY}
-          onPress={handleOnCopyToClipboard}
-        >
-          <Row
-            center={<Text style={GeneralStyles.textLink} numberOfLines={2}>{url}</Text>}
-            right={
-              <Icon name="content-copy" size={Units.s24} color={Colors.primary} />
-            }
-          />
-        </TouchableOpacity>
-
-        <Spacer gap="s16" direction="top" size="s16">
-          <Text style={GeneralStyles.textLabelLargePrimary}>
-            Select at least one main tag:
-          </Text>
-          {isLoading ? (
-            renderSkeletonTags(3, true)
-          ) : (
-            <ScrollView
-              style={styles.mainTagsContainer}
-              horizontal
-              showsHorizontalScrollIndicator={false}
+    <>
+      <Spacer gap="s16" direction="top" size="s16">
+        <Text style={GeneralStyles.textLabelLargePrimary}>
+          Select at least one main tag:
+        </Text>
+        {isLoading ? (
+          renderSkeletonTags(3, true)
+        ) : (
+          <ScrollView
+            style={styles.mainTagsContainer}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+          >
+            <Spacer
+              style={GeneralStyles.directionRow}
+              direction="horizontal"
+              size="s16"
+              gap="s8"
             >
-              <Spacer
-                style={GeneralStyles.directionRow}
-                direction="horizontal"
-                size="s16"
-                gap="s8"
-              >
-                {mainTags?.map((tag) => (
+              {mainTags?.map((tag) => (
+                <TagItem
+                  key={tag}
+                  tag={tag}
+                  isSelected={selectedMainTags?.includes(tag)}
+                  onPress={() => onMainTagPress(tag)}
+                />
+              ))}
+            </Spacer>
+          </ScrollView>
+        )}
+      </Spacer>
+
+      <Spacer gap="s16" direction="top" size="s16">
+        <Text style={GeneralStyles.textLabelLargePrimary}>
+          Additional tags:
+        </Text>
+        {isLoading
+          ? renderSkeletonTags(5)
+          : additionalTags &&
+            additionalTags.length > 0 && (
+              <Spacer gap="s8" style={styles.tagsContainer}>
+                {additionalTags.map((tag) => (
                   <TagItem
                     key={tag}
                     tag={tag}
-                    isSelected={selectedMainTags?.includes(tag)}
-                    onPress={() => onMainTagPress(tag)}
+                    isSelected={selectedAdditionalTags?.includes(tag)}
+                    onPress={() => onAdditionalTagPress(tag)}
                   />
                 ))}
               </Spacer>
-            </ScrollView>
-          )}
-        </Spacer>
-
-        <Spacer gap="s16" direction="top" size="s16">
-          <Text style={GeneralStyles.textLabelLargePrimary}>
-            Additional tags:
-          </Text>
-          {isLoading
-            ? renderSkeletonTags(5)
-            : additionalTags &&
-              additionalTags.length > 0 && (
-                <Spacer gap="s8" style={styles.tagsContainer}>
-                  {additionalTags.map((tag) => (
-                    <TagItem
-                      key={tag}
-                      tag={tag}
-                      isSelected={selectedAdditionalTags?.includes(tag)}
-                      onPress={() => onAdditionalTagPress(tag)}
-                    />
-                  ))}
-                </Spacer>
-              )}
-        </Spacer>
+            )}
       </Spacer>
-    </Spacer>
+    </>
   );
 }
 

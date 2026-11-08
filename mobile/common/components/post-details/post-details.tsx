@@ -31,6 +31,7 @@ function PostDetails({
   tags,
   timestamp,
   onImageError,
+  children,
 }: PostDetailsPropsType) {
   const handleOnCopyToClipboard = async () => {
     try {
@@ -77,7 +78,7 @@ function PostDetails({
                 </Text>
               </View>
             )}
-            {Boolean(timestamp) && (
+            {!!timestamp && (
               <View style={styles.meta}>
                 <Icon name="calendar-blank-outline" size={Units.s16} color={Colors.text.secondary} />
                 <Text style={GeneralStyles.textLabelMediumSecondary}>
@@ -113,6 +114,7 @@ function PostDetails({
             ))}
           </View>
         )}
+        {children}
       </View>
     </View>
   );
