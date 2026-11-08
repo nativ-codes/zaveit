@@ -48,6 +48,17 @@ export default StyleSheet.create({
     fontWeight: "700",
     lineHeight: 28,
   },
+  shuffleButton: {
+    position: "absolute",
+    top: Units.s16,
+    right: Units.s16,
+    width: Units.s48,
+    height: Units.s48,
+    borderRadius: Units.s24,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: Colors.primary,
+  },
   domain: {
     color: "#FFFFFFBB",
     fontSize: 13,

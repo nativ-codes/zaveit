@@ -1,7 +1,7 @@
 import { MAX_HORIZONTAL_SCROLLVIEW_POSTS } from "@/common/constants";
 import { getRandomPick } from "@/screens/search/search.util";
 import { FrequentlyAccessedPostsType, PostType } from "@/types/posts";
-import { useMemo, useSyncExternalStore } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import { useMMKVString } from "react-native-mmkv";
 import { getPosts, subscribeToPosts } from "./posts";
 import { storage } from "./storage";
@@ -48,10 +48,20 @@ export const useRecentlyAddedPosts = (): PostType[] => {
   );
 };
 
-export const useRandomPickPost = (): PostType | null => {
+export const useRandomPickPost = () => {
   const posts = usePosts();
+  const [pickedId, setPickedId] = useState<string | null>(null);
+  const initial = useMemo(() => getRandomPick(posts), [posts]);
+  // Falls back to the initial pick if the shuffled Post was deleted.
+  const post = posts.find((p) => p.id === pickedId) ?? initial;
 
-  return useMemo(() => getRandomPick(posts), [posts]);
+  // Never lands on the Post already shown, unless it is the only one.
+  const shuffle = () => {
+    const others = posts.filter((p) => p.id !== post?.id);
+    setPickedId(getRandomPick(others.length ? others : posts)?.id ?? null);
+  };
+
+  return { post, shuffle };
 };
 
 export const useHasPosts = (): boolean => usePosts().length > 0;
