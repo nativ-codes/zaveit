@@ -67,24 +67,24 @@ func TestYouTubeOEmbed(t *testing.T) {
 	}
 }
 
-func TestTikTokEmbedPage(t *testing.T) {
-	state := `{"source":{"data":{"/embed/v2/1":{"videoData":{"itemInfos":{"text":" Clip ","covers":["https://img.test/c.jpg"]}}}}}}`
+func TestTikTokPage(t *testing.T) {
+	state := `{"__DEFAULT_SCOPE__":{"webapp.video-detail":{"itemInfo":{"itemStruct":{"desc":" Clip ","video":{"cover":"https://img.test/c.jpg"}}}}}}`
 	useFake(t, fakeTransport{
-		"https://www.tiktok.com/embed/v2/1": {status: 200, body: `<script id="__FRONTITY_CONNECT_STATE__" type="application/json">` + state + `</script>`},
-		"https://img.test/":                 picture,
+		"https://www.tiktok.com/@/video/1": {status: 200, body: `<script id="__UNIVERSAL_DATA_FOR_REHYDRATION__" type="application/json">` + state + `</script>`},
+		"https://img.test/":                picture,
 	})
 
-	got := check("https://www.tiktok.com/@a/video/1")
-	if got.Status != StatusOK || got.Source != "tiktok_embed" || got.Title != "Clip" {
+	got := check("https://www.tiktok.com/@a/photo/1")
+	if got.Status != StatusOK || got.Source != "tiktok_page" || got.Title != "Clip" || got.Picture != "https://img.test/c.jpg" {
 		t.Errorf("got %+v", got)
 	}
 }
 
-func TestTikTokFallsBackWhenEmbedPageChanges(t *testing.T) {
+func TestTikTokFallsBackWhenPageChanges(t *testing.T) {
 	useFake(t, fakeTransport{
-		"https://www.tiktok.com/embed/v2/1": {status: 200, body: `<html>new layout</html>`},
-		"https://www.tiktok.com/oembed":     {status: 200, body: `{"title":"Clip","thumbnail_url":"https://img.test/c.jpg"}`},
-		"https://img.test/":                 picture,
+		"https://www.tiktok.com/@/video/1": {status: 200, body: `<html>new layout</html>`},
+		"https://www.tiktok.com/oembed":    {status: 200, body: `{"title":"Clip","thumbnail_url":"https://img.test/c.jpg"}`},
+		"https://img.test/":                picture,
 	})
 
 	got := check("https://www.tiktok.com/@a/video/1")

@@ -6,7 +6,7 @@ import {
   fetchServerMetadata,
   fetchOEmbedMetadata,
   fetchPage,
-  fetchTikTokEmbedPage,
+  fetchTikTokVideoPage,
 } from "@/services/general.service";
 import { makeThumbnail, uploadThumbnail } from "@/services/thumbnails.service";
 import { PlatformConfig, PostType } from "@/types";
@@ -65,19 +65,10 @@ type GetTikTokEmbedMetadataType = {
   url: string;
 };
 
-type TikTokEmbedItemInfosType = {
-  text?: string;
-  covers?: string[];
-};
-
-type TikTokEmbedAuthorInfosType = {
-  nickName?: string;
-  uniqueId?: string;
-};
-
-type TikTokEmbedVideoDataType = {
-  itemInfos?: TikTokEmbedItemInfosType;
-  authorInfos?: TikTokEmbedAuthorInfosType;
+type TikTokItemStructType = {
+  desc?: string;
+  video?: { cover?: string };
+  author?: { nickname?: string; uniqueId?: string };
 };
 
 const getTikTokVideoId = (url: string): string | undefined => {
@@ -85,47 +76,18 @@ const getTikTokVideoId = (url: string): string | undefined => {
   return match?.[1];
 };
 
-const parseFrontityConnectState = (html: string): unknown => {
+// The embed page and oEmbed stopped carrying the cover in Nov 2026; the video page's rehydration data still does.
+const findTikTokItem = (html: string): TikTokItemStructType | undefined => {
   const match = html.match(
-    /<script[^>]*id="__FRONTITY_CONNECT_STATE__"[^>]*>([\s\S]*?)<\/script>/
+    /<script[^>]*id="__UNIVERSAL_DATA_FOR_REHYDRATION__"[^>]*>([\s\S]*?)<\/script>/
   );
 
   if (!match?.[1]) {
     return undefined;
   }
 
-  return JSON.parse(match[1]);
-};
-
-const findTikTokVideoData = (
-  state: unknown
-): TikTokEmbedVideoDataType | undefined => {
-  if (!state || typeof state !== "object") {
-    return undefined;
-  }
-
-  const source = (state as { source?: { data?: Record<string, unknown> } })
-    .source;
-  const pages = source?.data;
-
-  if (!pages) {
-    return undefined;
-  }
-
-  for (const page of Object.values(pages)) {
-    if (!page || typeof page !== "object") {
-      continue;
-    }
-
-    const videoData = (page as { videoData?: TikTokEmbedVideoDataType })
-      .videoData;
-
-    if (videoData?.itemInfos) {
-      return videoData;
-    }
-  }
-
-  return undefined;
+  return JSON.parse(match[1])?.__DEFAULT_SCOPE__?.["webapp.video-detail"]
+    ?.itemInfo?.itemStruct;
 };
 
 export const getTikTokEmbedMetadata = async ({
@@ -140,18 +102,16 @@ export const getTikTokEmbedMetadata = async ({
       return undefined;
     }
 
-    const response = await fetchTikTokEmbedPage({ videoId });
+    const response = await fetchTikTokVideoPage({ videoId });
 
     if (!response.ok) {
-      throw new Error("Failed to fetch TikTok embed metadata");
+      throw new Error("Failed to fetch TikTok video page");
     }
 
-    const html = await response.text();
-    const videoData = findTikTokVideoData(parseFrontityConnectState(html));
-    const title = videoData?.itemInfos?.text?.trim();
-    const thumbnail = videoData?.itemInfos?.covers?.[0];
-    const author =
-      videoData?.authorInfos?.nickName || videoData?.authorInfos?.uniqueId;
+    const item = findTikTokItem(await response.text());
+    const title = item?.desc?.trim();
+    const thumbnail = item?.video?.cover;
+    const author = item?.author?.nickname || item?.author?.uniqueId;
 
     if (!title && !thumbnail) {
       return undefined;

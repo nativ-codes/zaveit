@@ -5,6 +5,7 @@ import { getFirestore } from "@/test/fakes/firestore";
 import { PostType } from "@/types/posts";
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import {
+  getTikTokEmbedMetadata,
   parsePageTags,
   saveNewPost,
   startThumbnailUpload,
@@ -106,5 +107,43 @@ describe("Reading a page's own tags on the phone", () => {
       title: "",
       thumbnail: "",
     });
+  });
+});
+
+describe("Reading a TikTok post", () => {
+  it("takes the caption, cover and author from the video page, photo posts included", async () => {
+    const state = {
+      __DEFAULT_SCOPE__: {
+        "webapp.video-detail": {
+          itemInfo: {
+            itemStruct: {
+              desc: " A clip ",
+              video: { cover: "https://p16.tiktokcdn.com/c.jpeg" },
+              author: { nickname: "Scout", uniqueId: "scout2015" },
+            },
+          },
+        },
+      },
+    };
+    const fetchMock = jest
+      .spyOn(global, "fetch")
+      .mockResolvedValue(
+        new Response(
+          `<script id="__UNIVERSAL_DATA_FOR_REHYDRATION__" type="application/json">${JSON.stringify(state)}</script>`
+        )
+      );
+
+    const result = await getTikTokEmbedMetadata({
+      url: "https://www.tiktok.com/@scout2015/photo/123",
+    });
+
+    expect(fetchMock.mock.calls[0][0]).toBe("https://www.tiktok.com/@/video/123");
+    expect(result).toEqual({
+      author: "Scout",
+      title: "A clip",
+      thumbnail: "https://p16.tiktokcdn.com/c.jpeg",
+      url: "https://www.tiktok.com/@scout2015/photo/123",
+    });
+    fetchMock.mockRestore();
   });
 });

@@ -49,7 +49,7 @@ var (
 	sharedAddressSpace = netip.MustParsePrefix("100.64.0.0/10")
 
 	tiktokVideoID = regexp.MustCompile(`/(?:video|photo)/(\d+)`)
-	tiktokState   = regexp.MustCompile(`(?s)<script[^>]*id="__FRONTITY_CONNECT_STATE__"[^>]*>(.*?)</script>`)
+	tiktokState   = regexp.MustCompile(`(?s)<script[^>]*id="__UNIVERSAL_DATA_FOR_REHYDRATION__"[^>]*>(.*?)</script>`)
 	metaTag       = regexp.MustCompile(`(?is)<meta\s[^>]*>`)
 	metaName      = regexp.MustCompile(`(?i)\s(?:property|name)\s*=\s*["']([^"']+)["']`)
 	metaContent   = regexp.MustCompile(`(?is)\scontent\s*=\s*(?:"([^"]*)"|'([^']*)')`)
@@ -261,11 +261,11 @@ func extract(ctx context.Context, link string) (metadata, string, error) {
 		}
 
 		if p.tiktok {
-			meta, err := tiktokEmbed(ctx, target)
+			meta, err := tiktokPage(ctx, target)
 			if err == nil && (meta.title != "" || meta.picture != "") {
-				return meta, "tiktok_embed", nil
+				return meta, "tiktok_page", nil
 			}
-			errs = append(errs, sourceError("tiktok_embed", err))
+			errs = append(errs, sourceError("tiktok_page", err))
 		}
 
 		if p.oembed != "" {
@@ -415,13 +415,16 @@ func pageTags(ctx context.Context, link string) (metadata, error) {
 	return meta, nil
 }
 
-func tiktokEmbed(ctx context.Context, link string) (metadata, error) {
+// tiktokPage reads the video page's rehydration data. The embed page and oEmbed
+// stopped carrying the cover in Nov 2026. Photo posts only carry it under /video/,
+// and the page answers without the username.
+func tiktokPage(ctx context.Context, link string) (metadata, error) {
 	id := tiktokVideoID.FindStringSubmatch(link)
 	if id == nil {
 		return metadata{}, errors.New("no video id in url")
 	}
 
-	body, err := getBody(ctx, "https://www.tiktok.com/embed/v2/"+id[1])
+	body, err := getBody(ctx, "https://www.tiktok.com/@/video/"+id[1])
 	if err != nil {
 		return metadata{}, err
 	}
@@ -432,33 +435,25 @@ func tiktokEmbed(ctx context.Context, link string) (metadata, error) {
 	}
 
 	var state struct {
-		Source struct {
-			Data map[string]struct {
-				VideoData *struct {
-					ItemInfos *struct {
-						Text   string   `json:"text"`
-						Covers []string `json:"covers"`
-					} `json:"itemInfos"`
-				} `json:"videoData"`
-			} `json:"data"`
-		} `json:"source"`
+		Scope struct {
+			Detail struct {
+				ItemInfo struct {
+					ItemStruct struct {
+						Desc  string `json:"desc"`
+						Video struct {
+							Cover string `json:"cover"`
+						} `json:"video"`
+					} `json:"itemStruct"`
+				} `json:"itemInfo"`
+			} `json:"webapp.video-detail"`
+		} `json:"__DEFAULT_SCOPE__"`
 	}
 	if err := json.Unmarshal(script[1], &state); err != nil {
 		return metadata{}, err
 	}
 
-	for _, page := range state.Source.Data {
-		if page.VideoData == nil || page.VideoData.ItemInfos == nil {
-			continue
-		}
-		info := page.VideoData.ItemInfos
-		meta := metadata{title: strings.TrimSpace(info.Text)}
-		if len(info.Covers) > 0 {
-			meta.picture = info.Covers[0]
-		}
-		return meta, nil
-	}
-	return metadata{}, errors.New("itemInfos missing")
+	item := state.Scope.Detail.ItemInfo.ItemStruct
+	return metadata{title: strings.TrimSpace(item.Desc), picture: item.Video.Cover}, nil
 }
 
 func checkPicture(ctx context.Context, picture string) error {

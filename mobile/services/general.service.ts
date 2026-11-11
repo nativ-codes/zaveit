@@ -22,14 +22,15 @@ export const fetchOEmbedMetadata = async ({
   return response;
 };
 
-type FetchTikTokEmbedPageType = {
+type FetchTikTokVideoPageType = {
   videoId: string;
 };
 
-export const fetchTikTokEmbedPage = async ({
+// Photo posts only carry their cover under /video/, and the page answers without the username.
+export const fetchTikTokVideoPage = async ({
   videoId,
-}: FetchTikTokEmbedPageType): Promise<Response> => {
-  return fetch(`https://www.tiktok.com/embed/v2/${videoId}`, {
+}: FetchTikTokVideoPageType): Promise<Response> => {
+  return fetch(`https://www.tiktok.com/@/video/${videoId}`, {
     headers: {
       Accept: "text/html",
       "User-Agent":
