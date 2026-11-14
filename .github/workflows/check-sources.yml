@@ -1,0 +1,41 @@
+name: Check sources
+
+# Catches sites (TikTok, Reddit, ...) changing their pages before users notice missing thumbnails.
+on:
+  schedule:
+    - cron: "0 */8 * * *" # every 8 hours (00:00, 08:00, 16:00 UTC)
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: server/go.mod
+          cache: false # standard library only, nothing to cache
+
+      - name: Check links
+        working-directory: server
+        run: |
+          set -o pipefail
+          go run ./cmd/check-sources | tee ../report.txt
+
+      - name: Email on failure
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_HOST }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          from: zaveit monitor <${{ secrets.SMTP_USERNAME }}>
+          to: hello@nativ.codes
+          subject: "zaveit: source check failed"
+          body: |
+            Some links stopped returning a title or picture. Failed links are in the attached report.
+            Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          attachments: report.txt

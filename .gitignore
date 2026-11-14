@@ -4,6 +4,8 @@
 node_modules/
 
 # Expo
+promo/
+./claude/worktrees
 .expo/
 dist/
 web-build/
@@ -41,7 +43,13 @@ app-example
 android/
 ios/
 .env
-fastlane/
+.env.alert
+mobile/fastlane/.env.*
+mobile/fastlane/_keys/
+mobile/fastlane/_old/
+mobile/fastlane/report.xml
+mobile/fastlane/README.md
+mobile/fastlane/.DS_Store
 keys/
 core/
 mcp.json
