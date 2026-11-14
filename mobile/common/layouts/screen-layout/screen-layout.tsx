@@ -4,6 +4,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { TAB_BAR_HEIGHT, Units } from "@/common/constants";
+import { getNavBarOffset } from "@/common/utils";
 
 import styles from "./screen-layout.style";
 import { ScreenLayoutPropsType } from "./screen-layout.type";
@@ -20,14 +21,14 @@ function ScreenLayout({ children, testID, style, footer, hasTopInset = true }: S
         testID={`${testID}_StaticScreenLayout_ScrollView`}
         contentContainerStyle={StyleSheet.compose(style, {
           paddingTop: hasTopInset ? insets.top : 0,
-          paddingBottom: insets.bottom + TAB_BAR_HEIGHT + Units.s16,
+          paddingBottom: insets.bottom + TAB_BAR_HEIGHT + getNavBarOffset(insets.bottom) + Units.s16,
         })}
       >
         {children}
       </KeyboardAwareScrollView>
       <View
         style={StyleSheet.compose(styles.footer, {
-          bottom: insets.bottom,
+          bottom: insets.bottom + getNavBarOffset(insets.bottom),
         })}
       >
         {footer}

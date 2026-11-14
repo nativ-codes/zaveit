@@ -6,6 +6,7 @@ import {
   TopBar,
 } from "@/common/components";
 import { Colors, TAB_BAR_HEIGHT, Units } from "@/common/constants";
+import { getNavBarOffset } from "@/common/utils";
 import { Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
 import { usePosts } from "@/config/storage";
@@ -215,7 +216,7 @@ function SearchScreen() {
         maintainVisibleContentPosition={{ disabled: true }}
         contentContainerStyle={{
           paddingTop: insets.top,
-          paddingBottom: insets.bottom + TAB_BAR_HEIGHT + Units.s16,
+          paddingBottom: insets.bottom + TAB_BAR_HEIGHT + getNavBarOffset(insets.bottom) + Units.s16,
         }}
       />
     </View>

@@ -2,7 +2,7 @@ import { Button } from "@/common/components";
 import { Units } from "@/common/constants";
 import { Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
-import { safelyPrintError } from "@/common/utils";
+import { getNavBarOffset, safelyPrintError } from "@/common/utils";
 import { Analytics } from "@/config/analytics";
 import { ErrorHandler } from "@/config/errors";
 import {
@@ -108,7 +108,7 @@ function LoginScreen() {
         direction="horizontal"
         size="s16"
         style={StyleSheet.compose(styles.buttonsWrapper, {
-          paddingBottom: insets.bottom + Units.s16,
+          paddingBottom: insets.bottom + getNavBarOffset(insets.bottom) + Units.s16,
         })}
       >
         <Button.Social

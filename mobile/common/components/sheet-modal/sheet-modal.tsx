@@ -5,7 +5,7 @@ import {
 } from "@/common/constants";
 import { Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
-import { noop } from "@/common/utils";
+import { getNavBarOffset, noop } from "@/common/utils";
 import React from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
@@ -49,7 +49,7 @@ function SheetModal({
               size="s24"
               direction="full"
               style={StyleSheet.compose(styles.container, {
-                marginBottom: insets.bottom || Units.s16,
+                marginBottom: (insets.bottom || Units.s16) + getNavBarOffset(insets.bottom),
               })}
             >
               <Spacer gap="s8">

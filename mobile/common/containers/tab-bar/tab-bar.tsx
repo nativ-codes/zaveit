@@ -3,6 +3,7 @@ import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import React from "react";
 
 import { ACTIVE_OPACITY, Colors, Units } from "@/common/constants";
+import { getNavBarOffset } from "@/common/utils";
 import { GeneralStyles } from "@/common/styles";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { TAB_BAR_ITEMS } from "./tab-bar.constants";
@@ -14,7 +15,7 @@ function TabBar({ state, navigation, insets }: BottomTabBarProps) {
       style={StyleSheet.flatten([
         styles.tabBarStyle,
         {
-          bottom: insets.bottom || Units.s16,
+          bottom: (insets.bottom || Units.s16) + getNavBarOffset(insets.bottom),
         },
         GeneralStyles.shadow,
       ])}

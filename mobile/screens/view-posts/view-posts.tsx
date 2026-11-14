@@ -2,7 +2,7 @@ import { EmptyPlaceholder, TopBar } from "@/common/components";
 import SwipePreviewPost from "@/common/components/swipe-preview-post/swipe-preview-post";
 import { Colors, Units } from "@/common/constants";
 import { GeneralStyles } from "@/common/styles";
-import { idExtractor } from "@/common/utils";
+import { getNavBarOffset, idExtractor } from "@/common/utils";
 import { Haptics } from "@/common/utils/haptics";
 import { removePost, usePosts } from "@/config/storage";
 import { PostType } from "@/types";
@@ -128,7 +128,7 @@ function ViewPostsScreen() {
         onScrollBeginDrag={handleOnScrollBeginDrag}
         contentContainerStyle={{
           paddingTop: insets.top,
-          paddingBottom: insets.bottom + Units.s16,
+          paddingBottom: insets.bottom + getNavBarOffset(insets.bottom) + Units.s16,
         }}
         extraData={tag}
       />

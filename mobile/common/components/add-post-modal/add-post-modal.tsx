@@ -7,7 +7,7 @@ import {
 } from "@/common/constants";
 import { Spacer } from "@/common/layouts";
 import { GeneralStyles } from "@/common/styles";
-import { noop } from "@/common/utils";
+import { getNavBarOffset, noop } from "@/common/utils";
 import { URL_REGEX } from "@/common/utils/regex";
 import * as Clipboard from "expo-clipboard";
 import React, { useState } from "react";
@@ -74,7 +74,7 @@ function AddPostModal({ isVisible, onClose, onSubmit }: AddPostModalPropsType) {
               size="s24"
               direction="full"
               style={StyleSheet.compose(styles.container, {
-                marginBottom: insets.bottom || Units.s16,
+                marginBottom: (insets.bottom || Units.s16) + getNavBarOffset(insets.bottom),
               })}
             >
               <Text style={GeneralStyles.textTitlePostMediumPrimary}>
