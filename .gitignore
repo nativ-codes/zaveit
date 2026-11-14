@@ -43,6 +43,7 @@ app-example
 android/
 ios/
 .env
+.env.build
 .env.alert
 mobile/fastlane/.env.*
 mobile/fastlane/_keys/
