@@ -1,0 +1,4 @@
+# Deploy entry point. Run from mobile/fastlane:
+#   bundle exec fastlane deploy platform:ios stage:prod
+# Lanes, config and docs: node_modules/fastlane-kit/README.md
+import("../node_modules/fastlane-kit/Fastfile")
