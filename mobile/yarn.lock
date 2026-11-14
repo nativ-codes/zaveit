@@ -4883,9 +4883,9 @@ fast-levenshtein@^2.0.6:
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
   integrity sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==
 
-"fastlane-kit@github:nativ-codes/fastlane-kit#v0.1.1":
-  version "0.1.1"
-  resolved "https://codeload.github.com/nativ-codes/fastlane-kit/tar.gz/19e858bc835a36e79761aabafe9ce7d10c4e5440"
+"fastlane-kit@github:nativ-codes/fastlane-kit#v0.1.2":
+  version "0.1.2"
+  resolved "https://codeload.github.com/nativ-codes/fastlane-kit/tar.gz/ed1c736e98f4cd00ba52624630b50275428a9cbc"
 
 faye-websocket@0.11.4:
   version "0.11.4"
