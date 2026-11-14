@@ -23,6 +23,8 @@ jobs:
         run: |
           set -o pipefail
           go run ./cmd/check-sources | tee ../report.txt
+          # The command only exits 1 on "failed"; here a "blocked" link alerts too.
+          grep -q "status: ok$" ../report.txt
 
       - name: Email on failure
         if: failure()
@@ -36,6 +38,6 @@ jobs:
           to: hello@nativ.codes
           subject: "zaveit: source check failed"
           body: |
-            Some links stopped returning a title or picture. Failed links are in the attached report.
+            Some links failed or were blocked. They are listed in the attached report.
             Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           attachments: report.txt
