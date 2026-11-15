@@ -3,7 +3,7 @@ name: Check sources
 # Catches sites (TikTok, Reddit, ...) changing their pages before users notice missing thumbnails.
 on:
   schedule:
-    - cron: "0 */8 * * *" # every 8 hours (00:00, 08:00, 16:00 UTC)
+    - cron: "0 12 * * *" # daily at 12:00 UTC
   workflow_dispatch:
 
 jobs:
