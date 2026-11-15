@@ -96,13 +96,7 @@ export const getTikTokEmbedMetadata = async ({
   GetOEmbedMetadataReturnType | undefined
 > => {
   try {
-    const videoId = getTikTokVideoId(url);
-
-    if (!videoId) {
-      return undefined;
-    }
-
-    const response = await fetchTikTokVideoPage({ videoId });
+    const response = await fetchTikTokVideoPage(getTikTokVideoId(url), url);
 
     if (!response.ok) {
       throw new Error("Failed to fetch TikTok video page");

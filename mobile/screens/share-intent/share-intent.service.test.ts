@@ -146,4 +146,15 @@ describe("Reading a TikTok post", () => {
     });
     fetchMock.mockRestore();
   });
+
+  it("reads an unresolved short link from the page it serves", async () => {
+    const fetchMock = jest
+      .spyOn(global, "fetch")
+      .mockResolvedValue(new Response(""));
+
+    await getTikTokEmbedMetadata({ url: "https://vm.tiktok.com/ZN85V68Ku/" });
+
+    expect(fetchMock.mock.calls[0][0]).toBe("https://vm.tiktok.com/ZN85V68Ku/");
+    fetchMock.mockRestore();
+  });
 });

@@ -50,7 +50,7 @@ function ShareIntentScreen() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const thumbnailUpload = useRef<Promise<string | undefined>>(
-    Promise.resolve(undefined)
+    Promise.resolve(undefined),
   );
 
   const isSaveDisabled = !Boolean(tags.selectedMainTags.length) || isLoading;
@@ -87,7 +87,7 @@ function ShareIntentScreen() {
 
       try {
         const data = await getMetadata(
-          shareIntent.webUrl ? shareIntent : { webUrl: url }
+          shareIntent.webUrl ? shareIntent : { webUrl: url },
         );
         setPostMetadata(data);
         thumbnailUpload.current = startThumbnailUpload(data?.thumbnail);
@@ -204,7 +204,9 @@ function ShareIntentScreen() {
           title={postMetadata.title}
           author={postMetadata.author}
           url={postMetadata.url}
-          thumbnailUrl={postMetadata.thumbnail && forceHttps(postMetadata.thumbnail)}
+          thumbnailUrl={
+            postMetadata.thumbnail && forceHttps(postMetadata.thumbnail)
+          }
         >
           <UpdatePostDetails
             additionalTags={tags.additionalTags}

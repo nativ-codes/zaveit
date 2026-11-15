@@ -41,12 +41,12 @@ function AddPostModal({ isVisible, onClose, onSubmit }: AddPostModalPropsType) {
   };
 
   const handleOnZavePost = () => {
-      const trimmedUrl = url.trim();
+    const trimmedUrl = url.trim();
 
-      if (trimmedUrl) {
-        onSubmit(trimmedUrl);
-        handleOnClose();
-      }
+    if (trimmedUrl) {
+      onSubmit(trimmedUrl);
+      handleOnClose();
+    }
   };
 
   return (
@@ -74,7 +74,8 @@ function AddPostModal({ isVisible, onClose, onSubmit }: AddPostModalPropsType) {
               size="s24"
               direction="full"
               style={StyleSheet.compose(styles.container, {
-                marginBottom: (insets.bottom || Units.s16) + getNavBarOffset(insets.bottom),
+                marginBottom:
+                  (insets.bottom || Units.s16) + getNavBarOffset(insets.bottom),
               })}
             >
               <Text style={GeneralStyles.textTitlePostMediumPrimary}>

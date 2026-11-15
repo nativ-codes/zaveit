@@ -22,15 +22,13 @@ export const fetchOEmbedMetadata = async ({
   return response;
 };
 
-type FetchTikTokVideoPageType = {
-  videoId: string;
-};
-
 // Photo posts only carry their cover under /video/, and the page answers without the username.
-export const fetchTikTokVideoPage = async ({
-  videoId,
-}: FetchTikTokVideoPageType): Promise<Response> => {
-  return fetch(`https://www.tiktok.com/@/video/${videoId}`, {
+// Without an id (Android fetch keeps the short link as response.url), the short link itself serves the video page.
+export const fetchTikTokVideoPage = async (
+  videoId: string | undefined,
+  url: string
+): Promise<Response> => {
+  return fetch(videoId ? `https://www.tiktok.com/@/video/${videoId}` : url, {
     headers: {
       Accept: "text/html",
       "User-Agent":
