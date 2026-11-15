@@ -21,7 +21,12 @@ var mainTags = []string{
 	"health", "fitness", "education", "business", "finance", "nature",
 	"animals", "history", "culture", "politics", "entertainment", "fashion",
 	"beauty", "gaming", "books", "movies", "photography", "architecture",
-	"design", "cars", "space", "weather", "environment", "other",
+	"design", "cars", "space", "weather", "environment",
+	"comedy", "news", "lifestyle", "diy", "home", "family", "relationships",
+	"dance", "motivation", "religion",
+	"tv", "celebrities", "career", "shopping", "crime", "military",
+	"real-estate", "mental-health", "asmr",
+	"other",
 }
 
 var systemPrompt = "Generate 3 relevant one-word english tags, for this content. " +
