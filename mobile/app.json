@@ -8,7 +8,7 @@
     "scheme": "zaveit",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "buildNumber": "3",
+      "buildNumber": "4",
       "supportsTablet": true,
       "bundleIdentifier": "com.nativcodes.zaveit",
       "googleServicesFile": "./keys/GoogleService-Info.plist",
