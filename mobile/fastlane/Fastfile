@@ -2,3 +2,9 @@
 #   bundle exec fastlane deploy platform:ios stage:prod
 # Lanes, config and docs: node_modules/fastlane-kit/README.md
 import("../node_modules/fastlane-kit/Fastfile")
+
+desc "Regenerate one stale App Store profile (e.g. after a cert change). Params: id:<bundle id> [stage:prod]"
+lane :refresh_profile do |options|
+  _, keys = kit_load_env!(options[:stage] || "prod")
+  match(type: "appstore", git_url: kit_env!("MATCH_GIT_URL"), app_identifier: options[:id], readonly: false, force: true, api_key: kit_asc_api_key(keys))
+end
