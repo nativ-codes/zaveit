@@ -82,7 +82,7 @@
       "@react-native-google-signin/google-signin",
       "fastlane-kit",
       "./plugins/with-non-modular-headers.js",
-      "./plugins/with-optional-portrait.js"
+      "fastlane-kit/optional-portrait"
     ],
     "experiments": {
       "typedRoutes": true
